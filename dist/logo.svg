@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="nanosandbox terminal icon">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0a0a"/>
+      <stop offset="60%" stop-color="#1a0a0a"/>
+      <stop offset="100%" stop-color="#0a0505"/>
+    </linearGradient>
+
+    <linearGradient id="stroke" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ff6b6b"/>
+      <stop offset="100%" stop-color="#ff8a8a"/>
+    </linearGradient>
+
+    <filter id="neon" x="-35%" y="-35%" width="170%" height="170%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feColorMatrix in="b" type="matrix"
+        values="1 0 0 0 0.2
+                0 0.3 0 0 0
+                0 0 0.3 0 0
+                0 0 0 0.75 0" result="c"/>
+      <feMerge>
+        <feMergeNode in="c"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <pattern id="scan" width="8" height="8" patternUnits="userSpaceOnUse">
+      <rect width="8" height="2" fill="#e5e7eb" opacity="0.04"/>
+    </pattern>
+  </defs>
+
+  <rect x="64" y="64" width="384" height="384" rx="96" fill="url(#bg)"/>
+
+  <rect x="116" y="140" width="280" height="232" rx="64"
+        fill="#110808" stroke="url(#stroke)" stroke-width="14" filter="url(#neon)"/>
+
+  <!-- Sparkles -->
+  <g fill="#ff6b6b" opacity="0.92" transform="translate(166 164)">
+    <path d="M0 0l6 14 14 6-14 6-6 14-6-14-14-6 14-6z"/>
+    <path d="M42 0l6 14 14 6-14 6-6 14-6-14-14-6 14-6z"/>
+    <path d="M84 0l6 14 14 6-14 6-6 14-6-14-14-6 14-6z"/>
+  </g>
+
+  <!-- Prompts -->
+  <path d="M212 224l32 28-32 28"
+        fill="none" stroke="#e5e7eb" stroke-width="18"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <path d="M260 280h104"
+        stroke="#ff6b6b" stroke-width="16" stroke-linecap="round" opacity="0.95"/>
+
+  <path d="M156 280l32 28-32 28"
+        fill="none" stroke="#e5e7eb" stroke-width="18"
+        stroke-linecap="round" stroke-linejoin="round" opacity="0.92"/>
+
+  <path d="M204 340h84"
+        stroke="#331a1a" stroke-width="14"
+        stroke-linecap="round" opacity="0.95"/>
+</svg>
