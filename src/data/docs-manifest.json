@@ -1,0 +1,114 @@
+[
+  {
+    "slug": "getting-started",
+    "label": "Getting Started",
+    "order": 1,
+    "pages": [
+      {
+        "slug": "installation",
+        "title": "Installation",
+        "description": "Install the nanosb CLI on your system",
+        "order": "1",
+        "path": "getting-started/installation"
+      },
+      {
+        "slug": "quick-start",
+        "title": "Quick Start",
+        "description": "Get up and running with nanosandbox in minutes",
+        "order": "2",
+        "path": "getting-started/quick-start"
+      },
+      {
+        "slug": "system-requirements",
+        "title": "System Requirements",
+        "description": "Platform requirements and prerequisites",
+        "order": "3",
+        "path": "getting-started/system-requirements"
+      }
+    ]
+  },
+  {
+    "slug": "cli",
+    "label": "CLI Reference",
+    "order": 2,
+    "pages": [
+      {
+        "slug": "commands",
+        "title": "Commands",
+        "description": "Complete CLI command reference for nanosb",
+        "order": "1",
+        "path": "cli/commands"
+      },
+      {
+        "slug": "configuration",
+        "title": "Configuration",
+        "description": "sandbox.yml configuration reference",
+        "order": "2",
+        "path": "cli/configuration"
+      },
+      {
+        "slug": "global-flags",
+        "title": "Global Flags",
+        "description": "Flags available across all nanosb commands",
+        "order": "3",
+        "path": "cli/global-flags"
+      },
+      {
+        "slug": "tui-mode",
+        "title": "TUI Mode",
+        "description": "Interactive terminal UI for managing sandboxes",
+        "order": "4",
+        "path": "cli/tui-mode"
+      }
+    ]
+  },
+  {
+    "slug": "agents",
+    "label": "Agents",
+    "order": 4,
+    "pages": [
+      {
+        "slug": "overview",
+        "title": "Agents Overview",
+        "description": "AI coding agents supported by Nanosandbox",
+        "order": "1",
+        "path": "agents/overview"
+      },
+      {
+        "slug": "mcp-servers",
+        "title": "MCP Servers",
+        "description": "Configuring Model Context Protocol servers",
+        "order": "2",
+        "path": "agents/mcp-servers"
+      },
+      {
+        "slug": "skills",
+        "title": "Skills",
+        "description": "Extending agent capabilities with skills",
+        "order": "3",
+        "path": "agents/skills"
+      }
+    ]
+  },
+  {
+    "slug": "troubleshooting",
+    "label": "Troubleshooting",
+    "order": 5,
+    "pages": [
+      {
+        "slug": "common-errors",
+        "title": "Common Errors",
+        "description": "Solutions for common issues",
+        "order": "1",
+        "path": "troubleshooting/common-errors"
+      },
+      {
+        "slug": "doctor-command",
+        "title": "Doctor Command",
+        "description": "Diagnosing runtime prerequisites",
+        "order": "2",
+        "path": "troubleshooting/doctor-command"
+      }
+    ]
+  }
+]

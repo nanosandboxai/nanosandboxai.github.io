@@ -1,0 +1,27 @@
+[
+  {
+    "slug": "linux-runtime-hardening",
+    "title": "Linux Runtime Hardening",
+    "date": "",
+    "description": "Reaching production-grade parity on Linux with comprehensive KVM runtime testing and optimization.",
+    "tags": [
+      "linux",
+      "kvm",
+      "runtime"
+    ],
+    "author": "Nanosandbox Team",
+    "content": "\n# Linux Runtime Hardening\n\nThe KVM runtime is functional but still in active development. Our top priority is reaching production-grade parity with the macOS runtime.\n\n## What's Working\n\n- VM creation and lifecycle management via libkrun + KVM\n- OCI image pulling and layer extraction\n- Basic command execution and output streaming\n- TSI networking for outbound connections\n\n## What's In Progress\n\n- Comprehensive E2E test coverage on multiple distributions (Ubuntu 22.04+, Fedora 38+, Debian 12+)\n- gvproxy networking integration for bridge mode\n- Performance optimization for syscall-heavy workloads\n- Installation scripts and dependency management for major distributions\n\n## Target\n\nStable Linux support with full feature parity with the macOS runtime. This means the same `nanosb` CLI, TUI, and SDK will work identically on both platforms.\n\n---\n\n*Nanosandbox is open source. Find us at [github.com/nanosandboxai](https://github.com/nanosandboxai).*\n"
+  },
+  {
+    "slug": "whats-coming-next",
+    "title": "Windows Support",
+    "date": "",
+    "description": "Bringing Nanosandbox to Windows via the Windows Hypervisor Platform (WHPX).",
+    "tags": [
+      "windows",
+      "platform"
+    ],
+    "author": "Nanosandbox Team",
+    "content": "\n# Windows Support\n\nNanosandbox is coming to Windows. By leveraging WHPX (Windows Hypervisor Platform), we will bring the same lightweight microVM experience to Windows users.\n\n## What This Means\n\n- The same `nanosb` CLI and TUI you use on macOS and Linux will work on Windows\n- WHPX provides native hypervisor-level isolation without requiring third-party virtualization software\n- Cross-platform teams can standardize on a single sandboxing tool across macOS, Linux, and Windows\n\n## Why It Matters\n\nTeams that span multiple operating systems should not need different tooling per platform. Windows support means every developer on the team gets the same interface, the same commands, and the same guarantees — regardless of their OS.\n\n---\n\n*Nanosandbox is open source. Find us at [github.com/nanosandboxai](https://github.com/nanosandboxai).*\n"
+  }
+]
