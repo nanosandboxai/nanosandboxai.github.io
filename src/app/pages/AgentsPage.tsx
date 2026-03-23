@@ -71,7 +71,7 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="text-[#888] text-xs hover:text-white transition-colors"
+      className="text-[var(--text-tertiary)] text-xs hover:text-[var(--text-heading)] transition-colors"
     >
       {copied ? '[copied!]' : '[copy]'}
     </button>
@@ -192,15 +192,15 @@ export default function AgentsPage() {
       {/* Left: configurator */}
       <div className="flex-1 min-w-0">
         <div className="mb-6 font-mono">
-          <h1 className="text-2xl font-bold text-[#ff6b6b] mb-2">Agent Configurator</h1>
-          <p className="text-[#888] text-sm">
+          <h1 className="text-2xl font-bold text-[var(--accent)] mb-2">Agent Configurator</h1>
+          <p className="text-[var(--text-tertiary)] text-sm">
             Configure an AI coding agent with MCP servers and skills, then generate a sandbox.yml.
           </p>
         </div>
 
         {/* Step 1: Select Agent */}
-        <div className="mb-6 border border-[#333] bg-[#0d0d0d] p-4 font-mono">
-          <h2 className="text-sm font-bold text-[#ff6b6b] mb-3">1. Select Agent</h2>
+        <div className="mb-6 border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 font-mono">
+          <h2 className="text-sm font-bold text-[var(--accent)] mb-3">1. Select Agent</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             {AGENTS.map((agent) => (
               <button
@@ -208,14 +208,14 @@ export default function AgentsPage() {
                 onClick={() => selectAgent(agent.id)}
                 className={`border p-3 text-left transition-colors ${
                   selectedAgent === agent.id
-                    ? 'border-[#ff6b6b] bg-[#1a1010] text-white'
-                    : 'border-[#333] bg-[#111] text-[#888] hover:border-[#555] hover:text-white'
+                    ? 'border-[var(--accent)] bg-[var(--bg-selected)] text-[var(--text-heading)]'
+                    : 'border-[var(--border-secondary)] bg-[var(--bg-tertiary)] text-[var(--text-tertiary)] hover:border-[var(--text-muted)] hover:text-[var(--text-heading)]'
                 }`}
               >
-                <span className="text-[#ff6b6b] mr-1">{agent.icon}</span>
+                <span className="text-[var(--accent)] mr-1">{agent.icon}</span>
                 <span className="text-sm font-bold">{agent.label}</span>
                 {registry.models?.[agent.id] && (
-                  <div className="text-[#666] text-xs mt-1">
+                  <div className="text-[var(--text-muted)] text-xs mt-1">
                     {registry.models[agent.id].models?.length ?? 0} models
                   </div>
                 )}
@@ -227,8 +227,8 @@ export default function AgentsPage() {
         {selectedAgent && (
           <>
             {/* Step 2: Select Model */}
-            <div className="mb-6 border border-[#333] bg-[#0d0d0d] p-4 font-mono">
-              <h2 className="text-sm font-bold text-[#ff6b6b] mb-3">2. Select Model</h2>
+            <div className="mb-6 border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 font-mono">
+              <h2 className="text-sm font-bold text-[var(--accent)] mb-3">2. Select Model</h2>
               {models.length > 0 ? (
                 <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto">
                   {models.map((model) => (
@@ -237,8 +237,8 @@ export default function AgentsPage() {
                       onClick={() => setSelectedModel(selectedModel === model ? '' : model)}
                       className={`px-2 py-0.5 text-xs border transition-colors ${
                         selectedModel === model
-                          ? 'bg-[#ff6b6b] border-[#ff6b6b] text-black'
-                          : 'bg-[#1a1a1a] border-[#333] text-[#888] hover:border-[#555] hover:text-white'
+                          ? 'bg-[var(--accent)] border-[var(--accent)] text-black'
+                          : 'bg-[var(--bg-elevated)] border-[var(--border-secondary)] text-[var(--text-tertiary)] hover:border-[var(--text-muted)] hover:text-[var(--text-heading)]'
                       }`}
                     >
                       {model}
@@ -246,16 +246,16 @@ export default function AgentsPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-[#666] text-xs">No models available for this agent.</p>
+                <p className="text-[var(--text-muted)] text-xs">No models available for this agent.</p>
               )}
             </div>
 
             {/* Step 3: Select MCPs */}
-            <div className="mb-6 border border-[#333] bg-[#0d0d0d] p-4 font-mono">
-              <h2 className="text-sm font-bold text-[#ff6b6b] mb-3">
+            <div className="mb-6 border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 font-mono">
+              <h2 className="text-sm font-bold text-[var(--accent)] mb-3">
                 3. Select MCP Servers
                 {selectedMcps.size > 0 && (
-                  <span className="text-[#888] font-normal ml-2">({selectedMcps.size} selected)</span>
+                  <span className="text-[var(--text-tertiary)] font-normal ml-2">({selectedMcps.size} selected)</span>
                 )}
               </h2>
 
@@ -265,7 +265,7 @@ export default function AgentsPage() {
                   value={mcpSearch}
                   onChange={(e) => setMcpSearch(e.target.value)}
                   placeholder="search mcp servers..."
-                  className="w-full bg-[#111] border border-[#333] text-white text-xs px-3 py-1.5 placeholder-[#555] focus:outline-none focus:border-[#ff6b6b] transition-colors"
+                  className="w-full bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] text-[var(--text-heading)] text-xs px-3 py-1.5 placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
                 />
               </div>
 
@@ -275,7 +275,7 @@ export default function AgentsPage() {
                     <button
                       key={name}
                       onClick={() => toggleMcp(name)}
-                      className="px-2 py-0.5 text-xs bg-[#ff6b6b] text-black border border-[#ff6b6b]"
+                      className="px-2 py-0.5 text-xs bg-[var(--accent)] text-black border border-[var(--accent)]"
                     >
                       {name} x
                     </button>
@@ -290,23 +290,23 @@ export default function AgentsPage() {
                     onClick={() => toggleMcp(server.name)}
                     className={`border p-2 text-left text-xs transition-colors ${
                       selectedMcps.has(server.name)
-                        ? 'border-[#ff6b6b] bg-[#1a1010]'
-                        : 'border-[#333] bg-[#111] hover:border-[#555]'
+                        ? 'border-[var(--accent)] bg-[var(--bg-selected)]'
+                        : 'border-[var(--border-secondary)] bg-[var(--bg-tertiary)] hover:border-[var(--text-muted)]'
                     }`}
                   >
-                    <span className="text-white font-bold">{server.title || server.name}</span>
-                    <p className="text-[#888] line-clamp-1 mt-0.5">{server.description}</p>
+                    <span className="text-[var(--text-heading)] font-bold">{server.title || server.name}</span>
+                    <p className="text-[var(--text-tertiary)] line-clamp-1 mt-0.5">{server.description}</p>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Step 4: Select Skills */}
-            <div className="mb-20 border border-[#333] bg-[#0d0d0d] p-4 font-mono">
-              <h2 className="text-sm font-bold text-[#ff6b6b] mb-3">
+            <div className="mb-20 border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 font-mono">
+              <h2 className="text-sm font-bold text-[var(--accent)] mb-3">
                 4. Select Skills
                 {selectedSkills.size > 0 && (
-                  <span className="text-[#888] font-normal ml-2">({selectedSkills.size} selected)</span>
+                  <span className="text-[var(--text-tertiary)] font-normal ml-2">({selectedSkills.size} selected)</span>
                 )}
               </h2>
 
@@ -316,7 +316,7 @@ export default function AgentsPage() {
                   value={skillSearch}
                   onChange={(e) => setSkillSearch(e.target.value)}
                   placeholder="search skills..."
-                  className="w-full bg-[#111] border border-[#333] text-white text-xs px-3 py-1.5 placeholder-[#555] focus:outline-none focus:border-[#ff6b6b] transition-colors"
+                  className="w-full bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] text-[var(--text-heading)] text-xs px-3 py-1.5 placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
                 />
               </div>
 
@@ -326,7 +326,7 @@ export default function AgentsPage() {
                     <button
                       key={name}
                       onClick={() => toggleSkill(name)}
-                      className="px-2 py-0.5 text-xs bg-[#ff6b6b] text-black border border-[#ff6b6b]"
+                      className="px-2 py-0.5 text-xs bg-[var(--accent)] text-black border border-[var(--accent)]"
                     >
                       {name} x
                     </button>
@@ -341,21 +341,21 @@ export default function AgentsPage() {
                     onClick={() => toggleSkill(skill.name)}
                     className={`border p-2 text-left text-xs transition-colors ${
                       selectedSkills.has(skill.name)
-                        ? 'border-[#ff6b6b] bg-[#1a1010]'
-                        : 'border-[#333] bg-[#111] hover:border-[#555]'
+                        ? 'border-[var(--accent)] bg-[var(--bg-selected)]'
+                        : 'border-[var(--border-secondary)] bg-[var(--bg-tertiary)] hover:border-[var(--text-muted)]'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-1">
-                      <span className="text-white font-bold truncate">{skill.name}</span>
+                      <span className="text-[var(--text-heading)] font-bold truncate">{skill.name}</span>
                       <span className={`text-[10px] flex-shrink-0 px-1 border ${
                         skill.source === 'registry'
                           ? 'text-[#ff6b6b] border-[#ff6b6b]/30'
-                          : 'text-[#666] border-[#333]'
+                          : 'text-[var(--text-muted)] border-[var(--border-secondary)]'
                       }`}>
                         {skill.source}
                       </span>
                     </div>
-                    <p className="text-[#888] line-clamp-1 mt-0.5">{skill.description}</p>
+                    <p className="text-[var(--text-tertiary)] line-clamp-1 mt-0.5">{skill.description}</p>
                   </button>
                 ))}
               </div>
@@ -367,32 +367,32 @@ export default function AgentsPage() {
       {/* Right: YAML panel — always visible */}
       <div className="w-80 flex-shrink-0">
         <div className="sticky top-4">
-          <div className="border border-[#ff6b6b] bg-[#0d0d0d] p-4 font-mono">
+          <div className="border border-[var(--accent)] bg-[var(--bg-secondary)] p-4 font-mono">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-[#ff6b6b] text-lg font-bold">sandbox.yml</h3>
+              <h3 className="text-[var(--accent)] text-lg font-bold">sandbox.yml</h3>
               {generatedYaml && <CopyButton text={generatedYaml} />}
             </div>
 
             {generatedYaml ? (
               <>
-                <pre className="text-[#e0e0e0] text-xs leading-relaxed whitespace-pre-wrap mb-4">{generatedYaml}</pre>
+                <pre className="text-[var(--text-primary)] text-xs leading-relaxed whitespace-pre-wrap mb-4">{generatedYaml}</pre>
 
-                <div className="border-t border-[#333] pt-3">
-                  <p className="text-[#888] text-xs mb-2"># Save as sandbox.yml and launch:</p>
-                  <div className="bg-[#111] border border-[#333] p-2 text-xs space-y-1">
-                    <div className="text-[#e0e0e0]">nanosb</div>
+                <div className="border-t border-[var(--border-secondary)] pt-3">
+                  <p className="text-[var(--text-tertiary)] text-xs mb-2"># Save as sandbox.yml and launch:</p>
+                  <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-2 text-xs space-y-1">
+                    <div className="text-[var(--text-primary)]">nanosb</div>
                   </div>
                 </div>
 
-                <div className="border-t border-[#333] pt-3 mt-3">
-                  <p className="text-[#888] text-xs mb-2"># Or run a single sandbox:</p>
-                  <div className="bg-[#111] border border-[#333] p-2 text-xs space-y-1">
-                    <div className="text-[#e0e0e0]">nanosb --sandbox {selectedAgent}</div>
+                <div className="border-t border-[var(--border-secondary)] pt-3 mt-3">
+                  <p className="text-[var(--text-tertiary)] text-xs mb-2"># Or run a single sandbox:</p>
+                  <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-2 text-xs space-y-1">
+                    <div className="text-[var(--text-primary)]">nanosb --sandbox {selectedAgent}</div>
                   </div>
                 </div>
               </>
             ) : (
-              <div className="text-[#666] text-sm text-center py-12">
+              <div className="text-[var(--text-muted)] text-sm text-center py-12">
                 Select an agent to generate<br />sandbox.yml configuration
               </div>
             )}
@@ -404,7 +404,7 @@ export default function AgentsPage() {
       {/* {selectedAgent && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-12 right-6 z-50 px-5 py-3 bg-[#ff6b6b] text-black font-mono text-sm font-bold hover:bg-[#ff8a8a] transition-colors shadow-lg shadow-[#ff6b6b]/20"
+          className="fixed bottom-12 right-6 z-50 px-5 py-3 bg-[var(--accent)] text-black font-mono text-sm font-bold hover:bg-[var(--accent-hover)] transition-colors shadow-lg shadow-[#ff6b6b]/20"
         >
           $ generate sandbox.yml
           {configCount > 0 && (

@@ -24,10 +24,10 @@ export default function ComingSoonDetailPage() {
   if (!post) {
     return (
       <div className="max-w-4xl mx-auto">
-        <div className="border border-[#333] bg-[#111] p-8 text-center font-mono">
-          <p className="text-[#ff6b6b] text-lg mb-2">404</p>
-          <p className="text-[#888] text-sm">Post not found: {slug}</p>
-          <Link to="/coming-soon" className="text-[#ff6b6b] text-sm hover:underline mt-4 inline-block">
+        <div className="border border-[var(--border-secondary)] bg-[var(--bg-tertiary)] p-8 text-center font-mono">
+          <p className="text-[var(--accent)] text-lg mb-2">404</p>
+          <p className="text-[var(--text-tertiary)] text-sm">Post not found: {slug}</p>
+          <Link to="/coming-soon" className="text-[var(--accent)] text-sm hover:underline mt-4 inline-block">
             Back to coming soon
           </Link>
         </div>
@@ -38,24 +38,24 @@ export default function ComingSoonDetailPage() {
   return (
     <div className="max-w-4xl mx-auto">
       {/* Breadcrumbs */}
-      <div className="flex items-center gap-2 mb-4 font-mono text-xs text-[#666]">
-        <Link to="/coming-soon" className="text-[#ff6b6b] hover:underline">
+      <div className="flex items-center gap-2 mb-4 font-mono text-xs text-[var(--text-muted)]">
+        <Link to="/coming-soon" className="text-[var(--accent)] hover:underline">
           coming soon
         </Link>
         <span>/</span>
-        <span className="text-white">{post.title}</span>
+        <span className="text-[var(--text-heading)]">{post.title}</span>
       </div>
 
       {/* Post metadata */}
       <div className="mb-6 font-mono">
-        <div className="flex items-center gap-3 text-xs text-[#666] mb-2">
+        <div className="flex items-center gap-3 text-xs text-[var(--text-muted)] mb-2">
           {post.date && <span>{post.date}</span>}
           {post.author && <span>{post.author}</span>}
         </div>
         {post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {post.tags.map((tag) => (
-              <span key={tag} className="px-2 py-0.5 bg-[#1a1a1a] border border-[#333] text-[#888] text-xs">
+              <span key={tag} className="px-2 py-0.5 bg-[var(--bg-elevated)] border border-[var(--border-secondary)] text-[var(--text-tertiary)] text-xs">
                 {tag}
               </span>
             ))}

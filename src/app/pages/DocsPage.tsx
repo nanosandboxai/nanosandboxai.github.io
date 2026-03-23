@@ -60,7 +60,7 @@ export default function DocsPage() {
   return (
     <div className="flex gap-6 min-h-[calc(100vh-12rem)]">
       {/* Sidebar */}
-      <aside className="w-56 flex-shrink-0 border-r border-[#333] pr-4 hidden md:block">
+      <aside className="w-56 flex-shrink-0 border-r border-[var(--border-secondary)] pr-4 hidden md:block">
         <DocsSidebar sections={manifest} activePath={docPath} />
       </aside>
 
@@ -68,12 +68,12 @@ export default function DocsPage() {
       <div className="flex-1 min-w-0">
         {/* Breadcrumbs */}
         {currentSection && currentPage && (
-          <div className="flex items-center gap-2 mb-4 font-mono text-xs text-[#666]">
-            <span className="text-[#ff6b6b]">docs</span>
+          <div className="flex items-center gap-2 mb-4 font-mono text-xs text-[var(--text-muted)]">
+            <span className="text-[var(--accent)]">docs</span>
             <span>/</span>
             <span>{currentSection.label}</span>
             <span>/</span>
-            <span className="text-white">{currentPage.title}</span>
+            <span className="text-[var(--text-heading)]">{currentPage.title}</span>
           </div>
         )}
 
@@ -83,9 +83,9 @@ export default function DocsPage() {
             <DocPageActions issueUrl={getDocsIssueUrl(currentPage?.title ?? '')} />
           </>
         ) : (
-          <div className="border border-[#333] bg-[#111] p-8 text-center font-mono">
-            <p className="text-[#ff6b6b] text-lg mb-2">404</p>
-            <p className="text-[#888] text-sm">Page not found: {docPath}</p>
+          <div className="border border-[var(--border-secondary)] bg-[var(--bg-tertiary)] p-8 text-center font-mono">
+            <p className="text-[var(--accent)] text-lg mb-2">404</p>
+            <p className="text-[var(--text-tertiary)] text-sm">Page not found: {docPath}</p>
           </div>
         )}
       </div>

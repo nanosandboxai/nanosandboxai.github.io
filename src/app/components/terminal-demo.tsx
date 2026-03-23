@@ -140,13 +140,13 @@ export default function TerminalDemo({ demos }: TerminalDemoProps = {}) {
   }, [visibleLines, typedChars, demo])
 
   return (
-    <div className="border border-[#444] bg-black font-mono text-sm">
+    <div className="border border-[var(--border-primary)] bg-[var(--bg-inverse)] font-mono text-sm">
       {/* Title bar */}
-      <div className="flex items-center justify-between px-3 py-1.5 border-b border-[#333] bg-[#111]">
+      <div className="flex items-center justify-between px-3 py-1.5 border-b border-[var(--border-secondary)] bg-[var(--bg-tertiary)]">
         <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[var(--terminal-red)]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[var(--terminal-yellow)]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[var(--terminal-green)]" />
         </div>
         <div className="flex gap-1">
           {allDemos.map((d, i) => (
@@ -155,15 +155,15 @@ export default function TerminalDemo({ demos }: TerminalDemoProps = {}) {
               onClick={() => handleTabClick(i)}
               className={`px-2 py-0.5 text-xs border transition-colors ${
                 activeDemo === i
-                  ? 'bg-[#ff6b6b] border-[#ff6b6b] text-black'
-                  : 'bg-[#1a1a1a] border-[#333] text-[#888] hover:border-[#555] hover:text-white'
+                  ? 'bg-[var(--accent)] border-[var(--accent)] text-black'
+                  : 'bg-[var(--bg-elevated)] border-[var(--border-secondary)] text-[var(--text-tertiary)] hover:border-[var(--text-muted)] hover:text-[var(--text-heading)]'
               }`}
             >
               {d.title}
             </button>
           ))}
         </div>
-        <span className="text-[#666] text-xs">nanosb</span>
+        <span className="text-[var(--text-muted)] text-xs">nanosb</span>
       </div>
 
       {/* Terminal body — fixed height */}
@@ -176,7 +176,7 @@ export default function TerminalDemo({ demos }: TerminalDemoProps = {}) {
 
           if (line.type === 'comment') {
             return (
-              <div key={i} className="text-[#555] text-xs">
+              <div key={i} className="text-[var(--text-muted)] text-xs">
                 {i <= visibleLines ? line.text : ''}
               </div>
             )
@@ -186,11 +186,11 @@ export default function TerminalDemo({ demos }: TerminalDemoProps = {}) {
             const displayed = isCommandTyping ? line.text.slice(0, typedChars) : line.text
             return (
               <div key={i} className="flex items-center gap-2">
-                <span className="text-[#ff6b6b]">$</span>
-                <span className="text-white">
+                <span className="text-[var(--accent)]">$</span>
+                <span className="text-[var(--text-heading)]">
                   {displayed}
                   {isCommandTyping && (
-                    <span className="inline-block w-2 h-4 bg-[#ff6b6b] ml-0.5 align-middle animate-pulse" />
+                    <span className="inline-block w-2 h-4 bg-[var(--accent)] ml-0.5 align-middle animate-pulse" />
                   )}
                 </span>
               </div>
@@ -199,7 +199,7 @@ export default function TerminalDemo({ demos }: TerminalDemoProps = {}) {
 
           // output
           return (
-            <div key={i} className="text-[#b0b0b0] text-xs leading-relaxed">
+            <div key={i} className="text-[var(--text-secondary)] text-xs leading-relaxed">
               {line.text}
             </div>
           )
@@ -208,8 +208,8 @@ export default function TerminalDemo({ demos }: TerminalDemoProps = {}) {
         {/* Idle cursor after all lines */}
         {visibleLines >= demo.lines.length && (
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-[#ff6b6b]">$</span>
-            <span className="inline-block w-2 h-4 bg-[#ff6b6b] animate-pulse" />
+            <span className="text-[var(--accent)]">$</span>
+            <span className="inline-block w-2 h-4 bg-[var(--accent)] animate-pulse" />
           </div>
         )}
       </div>

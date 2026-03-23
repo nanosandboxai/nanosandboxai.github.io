@@ -1,4 +1,5 @@
 import { createRoot } from 'react-dom/client'
+import { ThemeProvider } from 'next-themes'
 import { BrowserRouter, Routes, Route } from 'react-router'
 import Layout from './app/Layout'
 import Home from './app/pages/Home'
@@ -13,9 +14,10 @@ import ComingSoonDetailPage from './app/pages/ComingSoonDetailPage'
 import './styles/index.css'
 
 createRoot(document.getElementById('root')!).render(
-  <BrowserRouter>
-    <Routes>
-      <Route element={<Layout />}>
+  <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="mcp" element={<McpPage />} />
         <Route path="skill" element={<SkillPage />} />
@@ -26,6 +28,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="coming-soon" element={<ComingSoonPage />} />
         <Route path="coming-soon/:slug" element={<ComingSoonDetailPage />} />
       </Route>
-    </Routes>
-  </BrowserRouter>
+      </Routes>
+    </BrowserRouter>
+  </ThemeProvider>
 )

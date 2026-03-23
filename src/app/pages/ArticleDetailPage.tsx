@@ -24,10 +24,10 @@ export default function ArticleDetailPage() {
   if (!article) {
     return (
       <div className="max-w-4xl mx-auto">
-        <div className="border border-[#333] bg-[#111] p-8 text-center font-mono">
-          <p className="text-[#ff6b6b] text-lg mb-2">404</p>
-          <p className="text-[#888] text-sm">Article not found: {slug}</p>
-          <Link to="/articles" className="text-[#ff6b6b] text-sm hover:underline mt-4 inline-block">
+        <div className="border border-[var(--border-secondary)] bg-[var(--bg-tertiary)] p-8 text-center font-mono">
+          <p className="text-[var(--accent)] text-lg mb-2">404</p>
+          <p className="text-[var(--text-tertiary)] text-sm">Article not found: {slug}</p>
+          <Link to="/articles" className="text-[var(--accent)] text-sm hover:underline mt-4 inline-block">
             Back to articles
           </Link>
         </div>
@@ -38,24 +38,24 @@ export default function ArticleDetailPage() {
   return (
     <div className="max-w-4xl mx-auto">
       {/* Breadcrumbs */}
-      <div className="flex items-center gap-2 mb-4 font-mono text-xs text-[#666]">
-        <Link to="/articles" className="text-[#ff6b6b] hover:underline">
+      <div className="flex items-center gap-2 mb-4 font-mono text-xs text-[var(--text-muted)]">
+        <Link to="/articles" className="text-[var(--accent)] hover:underline">
           articles
         </Link>
         <span>/</span>
-        <span className="text-white">{article.title}</span>
+        <span className="text-[var(--text-heading)]">{article.title}</span>
       </div>
 
       {/* Article metadata */}
       <div className="mb-6 font-mono">
-        <div className="flex items-center gap-3 text-xs text-[#666] mb-2">
+        <div className="flex items-center gap-3 text-xs text-[var(--text-muted)] mb-2">
           {article.date && <span>{article.date}</span>}
           {article.author && <span>{article.author}</span>}
         </div>
         {article.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {article.tags.map((tag) => (
-              <span key={tag} className="px-2 py-0.5 bg-[#1a1a1a] border border-[#333] text-[#888] text-xs">
+              <span key={tag} className="px-2 py-0.5 bg-[var(--bg-elevated)] border border-[var(--border-secondary)] text-[var(--text-tertiary)] text-xs">
                 {tag}
               </span>
             ))}

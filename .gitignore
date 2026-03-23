@@ -9,6 +9,8 @@ Cargo.lock
 *.swo
 *~
 
+
+dist/
 .env
 
 node_modules/
