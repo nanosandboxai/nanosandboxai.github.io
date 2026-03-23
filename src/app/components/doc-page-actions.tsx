@@ -4,12 +4,12 @@ interface DocPageActionsProps {
 
 export function DocPageActions({ issueUrl }: DocPageActionsProps) {
   return (
-    <div className="flex items-center gap-4 mt-8 pt-4 border-t border-[#333] font-mono text-xs">
+    <div className="flex items-center gap-4 mt-8 pt-4 border-t border-[var(--border-secondary)] font-mono text-xs">
       <a
         href={issueUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-1.5 text-[#888] hover:text-[#ff6b6b] transition-colors"
+        className="flex items-center gap-1.5 text-[var(--text-tertiary)] hover:text-[var(--accent)] transition-colors"
       >
         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

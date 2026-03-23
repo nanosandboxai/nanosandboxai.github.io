@@ -13,7 +13,7 @@ function CopyButton({ text, className = '' }: { text: string; className?: string
   return (
     <button
       onClick={handleCopy}
-      className={`text-[#888] text-xs hover:text-white transition-colors ${className}`}
+      className={`text-[var(--text-tertiary)] text-xs hover:text-[var(--text-heading)] transition-colors ${className}`}
     >
       {copied ? '[copied!]' : '[copy]'}
     </button>
@@ -24,15 +24,15 @@ export default function Home() {
   return (
     <>
       {/* Hero Section */}
-      <div className="mb-6 border border-[#444] bg-black p-6 font-mono">
+      <div className="mb-6 border border-[var(--border-primary)] bg-[var(--bg-inverse)] p-6 font-mono">
         <div className="flex items-center gap-5 mb-4">
           <img src="/logo.svg" alt="Nanosandbox" className="w-18 h-18 flex-shrink-0" />
           <div>
-            <h1 className="text-3xl font-bold text-[#ff6b6b] mb-1">NANOSANDBOX</h1>
-            <p className="text-white text-lg">VM-Isolated Sandboxes for AI Code Agents</p>
+            <h1 className="text-3xl font-bold text-[var(--accent)] mb-1">NANOSANDBOX</h1>
+            <p className="text-[var(--text-heading)] text-lg">VM-Isolated Sandboxes for AI Code Agents</p>
           </div>
         </div>
-        <p className="text-[#888] text-sm leading-relaxed">
+        <p className="text-[var(--text-tertiary)] text-sm leading-relaxed">
           Deploy AI agents in hardware-isolated microVMs with sub-second boot times.
           <br />
           OCI image support, cross-platform (macOS, Linux, Windows), and built-in
@@ -42,15 +42,15 @@ export default function Home() {
       </div>
 
       {/* Getting Started */}
-      <div className="mb-6 border border-[#333] bg-[#0d0d0d] p-4 font-mono">
-        <h2 className="text-lg font-bold text-[#ff6b6b] mb-3">$ Getting Started</h2>
+      <div className="mb-6 border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 font-mono">
+        <h2 className="text-lg font-bold text-[var(--accent)] mb-3">$ Getting Started</h2>
         <div className="text-sm">
           <div className="flex items-center justify-between mb-1">
-            <p className="text-[#888] text-xs"># Install nanosb</p>
+            <p className="text-[var(--text-tertiary)] text-xs"># Install nanosb</p>
             <CopyButton text="curl -fsSL https://github.com/nanosandboxai/cli/releases/latest/download/install.sh | bash" />
           </div>
-          <div className="bg-[#111] border border-[#333] p-3">
-            <code className="text-[#e0e0e0]">
+          <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-3">
+            <code className="text-[var(--text-primary)]">
               curl -fsSL https://github.com/nanosandboxai/cli/releases/latest/download/install.sh | bash
             </code>
           </div>
@@ -63,8 +63,8 @@ export default function Home() {
       </div>
 
       {/* Features */}
-      <div className="mb-6 border border-[#333] bg-[#0d0d0d] p-4 font-mono">
-        <h2 className="text-lg font-bold text-[#ff6b6b] mb-3">$ Features</h2>
+      <div className="mb-6 border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 font-mono">
+        <h2 className="text-lg font-bold text-[var(--accent)] mb-3">$ Features</h2>
         <div className="space-y-2 text-sm">
           {[
             { name: 'VM-Level Isolation', desc: 'Each sandbox runs in its own microVM via libkrun with an independent kernel' },
@@ -77,10 +77,10 @@ export default function Home() {
             { name: 'Streaming I/O', desc: 'Real-time output streaming with backpressure handling' },
           ].map((f) => (
             <div key={f.name} className="flex items-start gap-2">
-              <span className="text-[#ff6b6b]">&#10003;</span>
+              <span className="text-[var(--accent)]">&#10003;</span>
               <div>
-                <span className="text-white">{f.name}</span>
-                <p className="text-[#888] text-xs">{f.desc}</p>
+                <span className="text-[var(--text-heading)]">{f.name}</span>
+                <p className="text-[var(--text-tertiary)] text-xs">{f.desc}</p>
               </div>
             </div>
           ))}
@@ -88,8 +88,8 @@ export default function Home() {
       </div>
 
       {/* Common Commands */}
-      <div className="mb-6 border border-[#333] bg-[#0d0d0d] p-4 font-mono">
-        <h2 className="text-lg font-bold text-[#ff6b6b] mb-3">$ Common Commands</h2>
+      <div className="mb-6 border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 font-mono">
+        <h2 className="text-lg font-bold text-[var(--accent)] mb-3">$ Common Commands</h2>
         <div className="space-y-1.5 text-xs">
           {[
             { cmd: 'nanosb pull <IMAGE>', desc: 'Pull an OCI image from a registry' },
@@ -103,8 +103,8 @@ export default function Home() {
             { cmd: 'nanosb cleanup', desc: 'Clean up stale project clones' },
           ].map((c) => (
             <div key={c.cmd} className="flex items-center gap-2 group">
-              <span className="text-white w-48 flex-shrink-0">{c.cmd}</span>
-              <span className="text-[#888] flex-1">{c.desc}</span>
+              <span className="text-[var(--text-heading)] w-48 flex-shrink-0">{c.cmd}</span>
+              <span className="text-[var(--text-tertiary)] flex-1">{c.desc}</span>
               <CopyButton text={c.cmd} className="opacity-0 group-hover:opacity-100" />
             </div>
           ))}
@@ -112,14 +112,14 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <div className="border border-[#444] bg-black p-4 font-mono text-center">
-        <div className="flex items-center justify-center gap-8 text-xs text-[#888] mb-2">
-          <a href="/docs" className="hover:text-[#ff6b6b] transition-colors">Documentation</a>
-          <a href="https://github.com/nanosandboxai" className="hover:text-[#ff6b6b] transition-colors" target="_blank" rel="noopener noreferrer">GitHub</a>
-          <a href="/agents" className="hover:text-[#ff6b6b] transition-colors">Agents</a>
-          <a href="/mcp" className="hover:text-[#ff6b6b] transition-colors">MCP</a>
+      <div className="border border-[var(--border-primary)] bg-[var(--bg-inverse)] p-4 font-mono text-center">
+        <div className="flex items-center justify-center gap-8 text-xs text-[var(--text-tertiary)] mb-2">
+          <a href="/docs" className="hover:text-[var(--accent)] transition-colors">Documentation</a>
+          <a href="https://github.com/nanosandboxai" className="hover:text-[var(--accent)] transition-colors" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="/agents" className="hover:text-[var(--accent)] transition-colors">Agents</a>
+          <a href="/mcp" className="hover:text-[var(--accent)] transition-colors">MCP</a>
         </div>
-        <p className="text-[#666] text-xs">NanoSandbox &copy; 2026 | Open Source Project</p>
+        <p className="text-[var(--text-muted)] text-xs">NanoSandbox &copy; 2026 | Open Source Project</p>
       </div>
     </>
   )

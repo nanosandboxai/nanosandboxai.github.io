@@ -46,13 +46,13 @@ export function DocsSidebar({ sections, activePath }: DocsSidebarProps) {
           <div key={section.slug}>
             <button
               onClick={() => toggle(section.slug)}
-              className="w-full flex items-center gap-2 px-3 py-2 text-left text-[#888] hover:text-white hover:bg-[#111] transition-colors"
+              className="w-full flex items-center gap-2 px-3 py-2 text-left text-[var(--text-tertiary)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-tertiary)] transition-colors"
             >
-              <span className="text-[#ff6b6b] text-xs">{expanded[section.slug] ? '▾' : '▸'}</span>
+              <span className="text-[var(--accent)] text-xs">{expanded[section.slug] ? '▾' : '▸'}</span>
               <span className="text-xs font-bold uppercase tracking-wider">{section.label}</span>
             </button>
             {expanded[section.slug] && (
-              <div className="ml-4 border-l border-[#333] space-y-0.5">
+              <div className="ml-4 border-l border-[var(--border-secondary)] space-y-0.5">
                 {section.pages.map((page) => {
                   const isActive = page.path === activePath
                   return (
@@ -61,8 +61,8 @@ export function DocsSidebar({ sections, activePath }: DocsSidebarProps) {
                       to={`/docs/${page.path}`}
                       className={`block px-3 py-1.5 text-xs transition-colors ${
                         isActive
-                          ? 'text-[#ff6b6b] bg-[#1a1a1a] border-l-2 border-[#ff6b6b] -ml-px'
-                          : 'text-[#888] hover:text-white hover:bg-[#0d0d0d]'
+                          ? 'text-[var(--accent)] bg-[var(--bg-elevated)] border-l-2 border-[var(--accent)] -ml-px'
+                          : 'text-[var(--text-tertiary)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-secondary)]'
                       }`}
                     >
                       {page.title}
