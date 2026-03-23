@@ -116,6 +116,8 @@ export default function Home() {
         <div className="flex items-center justify-center gap-8 text-xs text-[var(--text-tertiary)] mb-2">
           <a href="/docs" className="hover:text-[var(--accent)] transition-colors">Documentation</a>
           <a href="https://github.com/nanosandboxai" className="hover:text-[var(--accent)] transition-colors" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://www.linkedin.com/in/nanosandbox-ai-2954283b9/" className="hover:text-[var(--accent)] transition-colors" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a href="https://x.com/nanosandboxai" className="hover:text-[var(--accent)] transition-colors" target="_blank" rel="noopener noreferrer">X</a>
           <a href="/agents" className="hover:text-[var(--accent)] transition-colors">Agents</a>
           <a href="/mcp" className="hover:text-[var(--accent)] transition-colors">MCP</a>
         </div>

@@ -2832,6 +2832,14 @@
     "repositoryUrl": "https://github.com/azmartone67/dchub-backend"
   },
   {
+    "name": "cloud.factry.portal/historian-mcp-server",
+    "title": "Factry Historian MCP",
+    "description": "MCP server for querying Factry Historian.",
+    "version": "0.0.1",
+    "websiteUrl": null,
+    "repositoryUrl": null
+  },
+  {
     "name": "cloud.prince/prince",
     "title": "Prince Cloud",
     "description": "Convert Markdown, HTML, and web pages to high-quality PDF with Prince.",
@@ -4576,6 +4584,14 @@
     "repositoryUrl": null
   },
   {
+    "name": "com.qualequest/governance",
+    "title": "QualeQuest — AI Agent Governance Platform",
+    "description": "84-tool governance for multi-agent systems: tasks, compliance, decisions, ML predictions.",
+    "version": "1.0.0",
+    "websiteUrl": "https://gaas.qualequest.com",
+    "repositoryUrl": null
+  },
+  {
     "name": "com.qualityclouds/mcp-server-qualityclouds",
     "title": "LiveCheck AI",
     "description": "Secure MCP runtime server for scanning and autofixing code issues",
@@ -5190,6 +5206,14 @@
     "version": "0.9.9",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/AgentModule/mcp"
+  },
+  {
+    "name": "dev.agentsim/mcp",
+    "title": "AgentSIM",
+    "description": "Real SIM-backed phone numbers for AI agents — autonomous OTP capture, no VoIP, no human steps.",
+    "version": "0.2.5",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/Fato07/agentsim"
   },
   {
     "name": "dev.anotherai/anotherai",
@@ -16555,7 +16579,7 @@
     "name": "io.github.crisnahine/rails-ai-context",
     "title": "Rails AI Context",
     "description": "Auto-expose Rails app structure to AI via MCP. Zero config, 14 read-only tools.",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/crisnahine/rails-ai-context"
   },
@@ -20419,7 +20443,7 @@
     "name": "io.github.j0hanz/fetch-url-mcp",
     "title": "Fetch URL MCP Server",
     "description": "A web content fetcher MCP server that converts HTML to clean, AI and human readable markdown.",
-    "version": "1.10.16",
+    "version": "1.10.17",
     "websiteUrl": "https://github.com/j0hanz/fetch-url-mcp#readme",
     "repositoryUrl": "https://github.com/j0hanz/fetch-url-mcp"
   },
@@ -21486,6 +21510,14 @@
     "version": "0.10.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/kael-bit/engram-rs"
+  },
+  {
+    "name": "io.github.kagan-sh/kagan",
+    "title": "Kagan",
+    "description": "AI-powered Kanban TUI for autonomous development workflows with agent orchestration",
+    "version": "0.11.2",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/kagan-sh/kagan"
   },
   {
     "name": "io.github.kailayerhq/kai",
@@ -26216,6 +26248,46 @@
     "repositoryUrl": "https://github.com/piers-fawkes/fodda-mcp"
   },
   {
+    "name": "io.github.pijusz/mcp-gads",
+    "title": "io.github.pijusz/mcp-gads",
+    "description": "Google Ads MCP server — query campaigns, keywords, assets & more via natural language",
+    "version": "0.5.4",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/pijusz/mcp-gads"
+  },
+  {
+    "name": "io.github.pijusz/mcp-gsc",
+    "title": "io.github.pijusz/mcp-gsc",
+    "description": "Google Search Console MCP server — query performance, sitemaps, indexing & more",
+    "version": "0.1.7",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/pijusz/mcp-gsc"
+  },
+  {
+    "name": "io.github.pijusz/mcp-mailtrap",
+    "title": "io.github.pijusz/mcp-mailtrap",
+    "description": "MCP server for the Mailtrap email platform — analytics, sending, contacts, sandbox",
+    "version": "0.1.4",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/pijusz/mcp-mailtrap"
+  },
+  {
+    "name": "io.github.pijusz/mcp-redtrack",
+    "title": "io.github.pijusz/mcp-redtrack",
+    "description": "MCP server for RedTrack affiliate tracking API",
+    "version": "0.1.4",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/pijusz/mcp-redtrack"
+  },
+  {
+    "name": "io.github.pijusz/mcp-sanity-images",
+    "title": "io.github.pijusz/mcp-sanity-images",
+    "description": "MCP server for uploading local images to Sanity CMS",
+    "version": "0.3.7",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/pijusz/mcp-sanity-images"
+  },
+  {
     "name": "io.github.pilat/mcp-datalink",
     "title": "DataLink",
     "description": "MCP server for secure database access (PostgreSQL, MySQL, SQLite)",
@@ -26814,6 +26886,14 @@
     "version": "0.1.2",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/raisiqueira/django-telescope"
+  },
+  {
+    "name": "io.github.rajanrengasamy/vidlens-mcp",
+    "title": "io.github.rajanrengasamy/vidlens-mcp",
+    "description": "YouTube intelligence layer for AI agents. 41 tools, 10 modules, zero config.",
+    "version": "1.2.2",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/rajanrengasamy/vidlens-mcp"
   },
   {
     "name": "io.github.ralfbecher/orionbelt-analytics",
