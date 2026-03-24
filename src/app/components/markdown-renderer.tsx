@@ -68,7 +68,7 @@ interface MarkdownRendererProps {
 function createComponents(basePath?: string): Components {
   return {
     h1: ({ children }) => (
-      <h1 className="text-2xl font-bold text-[var(--accent)] mb-4 font-mono">{children}</h1>
+      <h1 className="text-xl md:text-2xl font-bold text-[var(--accent)] mb-4 font-mono">{children}</h1>
     ),
     h2: ({ children }) => {
       const id =
@@ -76,7 +76,7 @@ function createComponents(basePath?: string): Components {
           ? children.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')
           : undefined
       return (
-        <h2 id={id} className="text-xl font-bold text-[var(--text-heading)] mt-8 mb-3 font-mono border-b border-[var(--border-secondary)] pb-2">
+        <h2 id={id} className="text-lg md:text-xl font-bold text-[var(--text-heading)] mt-8 mb-3 font-mono border-b border-[var(--border-secondary)] pb-2">
           <a href={`#${id}`} className="hover:text-[var(--accent)] transition-colors">
             {children}
           </a>
@@ -158,7 +158,7 @@ function createComponents(basePath?: string): Components {
             </div>
             <CopyButton text={codeText} />
           </div>
-          <pre className="p-4 font-mono text-sm text-[var(--text-primary)] overflow-x-auto">{children}</pre>
+          <pre className="p-2 md:p-4 font-mono text-xs md:text-sm text-[var(--text-primary)] overflow-x-auto">{children}</pre>
         </div>
       )
     },
@@ -168,8 +168,8 @@ function createComponents(basePath?: string): Components {
       </div>
     ),
     thead: ({ children }) => <thead className="bg-[var(--bg-elevated)] border-b border-[var(--border-secondary)]">{children}</thead>,
-    th: ({ children }) => <th className="px-3 py-2 text-left text-[var(--accent)] font-bold text-xs">{children}</th>,
-    td: ({ children }) => <td className="px-3 py-2 text-[var(--text-secondary)] text-xs border-t border-[var(--border-tertiary)]">{children}</td>,
+    th: ({ children }) => <th className="px-2 md:px-3 py-2 text-left text-[var(--accent)] font-bold text-xs">{children}</th>,
+    td: ({ children }) => <td className="px-2 md:px-3 py-2 text-[var(--text-secondary)] text-xs border-t border-[var(--border-tertiary)]">{children}</td>,
   }
 }
 

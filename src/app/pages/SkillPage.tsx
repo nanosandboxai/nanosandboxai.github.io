@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react'
+import { MobileDetailPanel } from '../components/mobile-detail-panel'
 import publicSkillsData from '@/data/skills-public.json'
 import localSkillsData from '@/data/skills-local.json'
 
@@ -168,7 +169,7 @@ export default function SkillPage() {
         </div>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex flex-col md:flex-row gap-4">
         {/* Skills grid */}
         <div className="flex-1 min-w-0">
           <div className="grid gap-2">
@@ -213,82 +214,80 @@ export default function SkillPage() {
           )}
         </div>
 
-        {/* Floating right panel — always visible */}
-        <div className="w-80 flex-shrink-0">
-          <div className="sticky top-4">
-            <div className="border border-[var(--accent)] bg-[var(--bg-secondary)] p-4 font-mono">
-              {selected ? (
-                <>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-[var(--accent)] text-lg font-bold truncate">{selected.name}</h3>
-                  </div>
-
-                  <p className="text-[var(--text-secondary)] text-sm mb-3 leading-relaxed">{selected.description}</p>
-
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className={`text-xs px-1.5 py-0.5 border ${
-                      selected.source === 'registry'
-                        ? 'text-[#ff6b6b] border-[#ff6b6b]/30 bg-[#ff6b6b]/5'
-                        : 'text-[var(--text-muted)] border-[var(--border-secondary)] bg-[var(--bg-elevated)]'
-                    }`}>
-                      {selected.source}
-                    </span>
-                    {selected.category && (
-                      <span className="text-[var(--text-muted)] text-xs">{selected.category}</span>
-                    )}
-                    {selected.sourceUrl && (
-                      <a href={selected.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] text-xs hover:underline">
-                        source
-                      </a>
-                    )}
-                    {selected.owner && (
-                      <span className="text-[var(--text-muted)] text-xs">@{selected.owner}</span>
-                    )}
-                  </div>
-
-                  {selected.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {selected.tags.map((tag) => (
-                        <span key={tag} className="px-1.5 py-0.5 bg-[var(--bg-elevated)] border border-[var(--border-secondary)] text-[var(--text-muted)] text-xs">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* How to configure in nanosandbox */}
-                  <div className="border-t border-[var(--border-secondary)] pt-4">
-                    <h4 className="text-[var(--text-heading)] text-sm font-bold mb-3">$ Configure in Nanosandbox</h4>
-
-                    <div className="space-y-3">
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <p className="text-[var(--text-tertiary)] text-xs"># Add to sandbox.yml</p>
-                          <CopyButton text={yamlConfig} />
-                        </div>
-                        <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-3 text-xs">
-                          <pre className="text-[var(--text-primary)] whitespace-pre-wrap">{yamlConfig}</pre>
-                        </div>
-                      </div>
-
-                      <div>
-                        <p className="text-[var(--text-tertiary)] text-xs mb-1"># Or via the TUI</p>
-                        <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-3 text-xs space-y-1">
-                          <div className="text-[var(--text-primary)]">nanosb</div>
-                          <div className="text-[var(--text-primary)]">/skills add {selected.name}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="text-[var(--text-muted)] text-sm text-center py-8">
-                  Select a skill to see configuration
+        {/* Right panel */}
+        <MobileDetailPanel triggerLabel="view config" hasContent={!!selected}>
+          <div className="border border-[var(--accent)] bg-[var(--bg-secondary)] p-4 font-mono">
+            {selected ? (
+              <>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-[var(--accent)] text-lg font-bold truncate">{selected.name}</h3>
                 </div>
-              )}
-            </div>
+
+                <p className="text-[var(--text-secondary)] text-sm mb-3 leading-relaxed">{selected.description}</p>
+
+                <div className="flex items-center gap-2 mb-4">
+                  <span className={`text-xs px-1.5 py-0.5 border ${
+                    selected.source === 'registry'
+                      ? 'text-[#ff6b6b] border-[#ff6b6b]/30 bg-[#ff6b6b]/5'
+                      : 'text-[var(--text-muted)] border-[var(--border-secondary)] bg-[var(--bg-elevated)]'
+                  }`}>
+                    {selected.source}
+                  </span>
+                  {selected.category && (
+                    <span className="text-[var(--text-muted)] text-xs">{selected.category}</span>
+                  )}
+                  {selected.sourceUrl && (
+                    <a href={selected.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] text-xs hover:underline">
+                      source
+                    </a>
+                  )}
+                  {selected.owner && (
+                    <span className="text-[var(--text-muted)] text-xs">@{selected.owner}</span>
+                  )}
+                </div>
+
+                {selected.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-4">
+                    {selected.tags.map((tag) => (
+                      <span key={tag} className="px-1.5 py-0.5 bg-[var(--bg-elevated)] border border-[var(--border-secondary)] text-[var(--text-muted)] text-xs">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* How to configure in nanosandbox */}
+                <div className="border-t border-[var(--border-secondary)] pt-4">
+                  <h4 className="text-[var(--text-heading)] text-sm font-bold mb-3">$ Configure in Nanosandbox</h4>
+
+                  <div className="space-y-3">
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-[var(--text-tertiary)] text-xs"># Add to sandbox.yml</p>
+                        <CopyButton text={yamlConfig} />
+                      </div>
+                      <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-3 text-xs">
+                        <pre className="text-[var(--text-primary)] whitespace-pre-wrap">{yamlConfig}</pre>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-[var(--text-tertiary)] text-xs mb-1"># Or via the TUI</p>
+                      <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-3 text-xs space-y-1">
+                        <div className="text-[var(--text-primary)]">nanosb</div>
+                        <div className="text-[var(--text-primary)]">/skills add {selected.name}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="text-[var(--text-muted)] text-sm text-center py-8">
+                Select a skill to see configuration
+              </div>
+            )}
           </div>
-        </div>
+        </MobileDetailPanel>
       </div>
     </div>
   )

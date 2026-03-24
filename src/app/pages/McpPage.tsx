@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react'
+import { MobileDetailPanel } from '../components/mobile-detail-panel'
 import mcpData from '@/data/mcp-registry.json'
 
 interface McpServer {
@@ -91,7 +92,7 @@ export default function McpPage() {
         </div>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex flex-col md:flex-row gap-4">
         {/* Server list */}
         <div className="flex-1 min-w-0">
           <div className="grid gap-2">
@@ -123,65 +124,63 @@ export default function McpPage() {
           )}
         </div>
 
-        {/* Floating right panel — always visible */}
-        <div className="w-80 flex-shrink-0">
-          <div className="sticky top-4">
-            <div className="border border-[var(--accent)] bg-[var(--bg-secondary)] p-4 font-mono">
-              {selected ? (
-                <>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-[var(--accent)] text-lg font-bold truncate">{selected.title || selected.name}</h3>
-                  </div>
+        {/* Right panel */}
+        <MobileDetailPanel triggerLabel="view config" hasContent={!!selected}>
+          <div className="border border-[var(--accent)] bg-[var(--bg-secondary)] p-4 font-mono">
+            {selected ? (
+              <>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-[var(--accent)] text-lg font-bold truncate">{selected.title || selected.name}</h3>
+                </div>
 
-                  <p className="text-[var(--text-secondary)] text-sm mb-4 leading-relaxed">{selected.description}</p>
+                <p className="text-[var(--text-secondary)] text-sm mb-4 leading-relaxed">{selected.description}</p>
 
-                  {/* Links */}
-                  <div className="flex gap-3 mb-4">
-                    {selected.repositoryUrl && (
-                      <a href={selected.repositoryUrl} target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] text-xs hover:underline">
-                        repo
-                      </a>
-                    )}
-                    {selected.websiteUrl && (
-                      <a href={selected.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] text-xs hover:underline">
-                        website
-                      </a>
-                    )}
-                  </div>
+                {/* Links */}
+                <div className="flex gap-3 mb-4">
+                  {selected.repositoryUrl && (
+                    <a href={selected.repositoryUrl} target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] text-xs hover:underline">
+                      repo
+                    </a>
+                  )}
+                  {selected.websiteUrl && (
+                    <a href={selected.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] text-xs hover:underline">
+                      website
+                    </a>
+                  )}
+                </div>
 
-                  {/* How to run in nanosandbox */}
-                  <div className="border-t border-[var(--border-secondary)] pt-4">
-                    <h4 className="text-[var(--text-heading)] text-sm font-bold mb-3">$ Run in Nanosandbox</h4>
+                {/* How to run in nanosandbox */}
+                <div className="border-t border-[var(--border-secondary)] pt-4">
+                  <h4 className="text-[var(--text-heading)] text-sm font-bold mb-3">$ Run in Nanosandbox</h4>
 
-                    <div className="space-y-3">
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <p className="text-[var(--text-tertiary)] text-xs"># Add to sandbox.yml</p>
-                          <CopyButton text={yamlConfig} />
-                        </div>
-                        <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-3 text-xs">
-                          <pre className="text-[var(--text-primary)] whitespace-pre-wrap">{yamlConfig}</pre>
-                        </div>
+                  <div className="space-y-3">
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-[var(--text-tertiary)] text-xs"># Add to sandbox.yml</p>
+                        <CopyButton text={yamlConfig} />
                       </div>
+                      <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-3 text-xs">
+                        <pre className="text-[var(--text-primary)] whitespace-pre-wrap">{yamlConfig}</pre>
+                      </div>
+                    </div>
 
-                      <div>
-                        <p className="text-[var(--text-tertiary)] text-xs mb-1"># Or use the TUI</p>
-                        <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-3 text-xs space-y-1">
-                          <div className="text-[var(--text-primary)]">nanosb</div>
-                          <div className="text-[var(--text-primary)]">/mcp add {selected.name} npx -y {selected.name}</div>
-                        </div>
+                    <div>
+                      <p className="text-[var(--text-tertiary)] text-xs mb-1"># Or use the TUI</p>
+                      <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-3 text-xs space-y-1">
+                        <div className="text-[var(--text-primary)]">nanosb</div>
+                        <div className="text-[var(--text-primary)]">/mcp add {selected.name} npx -y {selected.name}</div>
                       </div>
                     </div>
                   </div>
-                </>
-              ) : (
-                <div className="text-[var(--text-muted)] text-sm text-center py-8">
-                  Select a server to see configuration
                 </div>
-              )}
-            </div>
+              </>
+            ) : (
+              <div className="text-[var(--text-muted)] text-sm text-center py-8">
+                Select a server to see configuration
+              </div>
+            )}
           </div>
-        </div>
+        </MobileDetailPanel>
       </div>
     </div>
   )

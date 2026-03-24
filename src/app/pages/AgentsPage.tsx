@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react'
+import { MobileDetailPanel } from '../components/mobile-detail-panel'
 import agentsRegistry from '@/data/agents-registry.json'
 import mcpData from '@/data/mcp-registry.json'
 import localSkillsData from '@/data/skills-local.json'
@@ -188,7 +189,7 @@ export default function AgentsPage() {
   const configCount = (selectedAgent ? 1 : 0) + (selectedModel ? 1 : 0) + selectedMcps.size + selectedSkills.size
 
   return (
-    <div className="flex gap-4">
+    <div className="flex flex-col md:flex-row gap-4">
       {/* Left: configurator */}
       <div className="flex-1 min-w-0">
         <div className="mb-6 font-mono">
@@ -335,9 +336,9 @@ export default function AgentsPage() {
               )}
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-1.5 max-h-56 overflow-y-auto">
-                {filteredSkills.map((skill) => (
+                {filteredSkills.map((skill, idx) => (
                   <button
-                    key={`${skill.source}-${skill.name}`}
+                    key={`${skill.source}-${skill.name}-${idx}`}
                     onClick={() => toggleSkill(skill.name)}
                     className={`border p-2 text-left text-xs transition-colors ${
                       selectedSkills.has(skill.name)
@@ -364,54 +365,39 @@ export default function AgentsPage() {
         )}
       </div>
 
-      {/* Right: YAML panel — always visible */}
-      <div className="w-80 flex-shrink-0">
-        <div className="sticky top-4">
-          <div className="border border-[var(--accent)] bg-[var(--bg-secondary)] p-4 font-mono">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-[var(--accent)] text-lg font-bold">sandbox.yml</h3>
-              {generatedYaml && <CopyButton text={generatedYaml} />}
-            </div>
-
-            {generatedYaml ? (
-              <>
-                <pre className="text-[var(--text-primary)] text-xs leading-relaxed whitespace-pre-wrap mb-4">{generatedYaml}</pre>
-
-                <div className="border-t border-[var(--border-secondary)] pt-3">
-                  <p className="text-[var(--text-tertiary)] text-xs mb-2"># Save as sandbox.yml and launch:</p>
-                  <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-2 text-xs space-y-1">
-                    <div className="text-[var(--text-primary)]">nanosb</div>
-                  </div>
-                </div>
-
-                <div className="border-t border-[var(--border-secondary)] pt-3 mt-3">
-                  <p className="text-[var(--text-tertiary)] text-xs mb-2"># Or run a single sandbox:</p>
-                  <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-2 text-xs space-y-1">
-                    <div className="text-[var(--text-primary)]">nanosb --sandbox {selectedAgent}</div>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="text-[var(--text-muted)] text-sm text-center py-12">
-                Select an agent to generate<br />sandbox.yml configuration
-              </div>
-            )}
+      {/* Right: YAML panel */}
+      <MobileDetailPanel triggerLabel="sandbox.yml" hasContent={!!generatedYaml}>
+        <div className="border border-[var(--accent)] bg-[var(--bg-secondary)] p-4 font-mono">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-[var(--accent)] text-lg font-bold">sandbox.yml</h3>
+            {generatedYaml && <CopyButton text={generatedYaml} />}
           </div>
-        </div>
-      </div>
 
-      {/* Floating generate button - scrolls to top to see YAML */}
-      {/* {selectedAgent && (
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-12 right-6 z-50 px-5 py-3 bg-[var(--accent)] text-black font-mono text-sm font-bold hover:bg-[var(--accent-hover)] transition-colors shadow-lg shadow-[#ff6b6b]/20"
-        >
-          $ generate sandbox.yml
-          {configCount > 0 && (
-            <span className="ml-2 px-1.5 py-0.5 bg-black/20 text-xs">{configCount}</span>
+          {generatedYaml ? (
+            <>
+              <pre className="text-[var(--text-primary)] text-xs leading-relaxed whitespace-pre-wrap mb-4">{generatedYaml}</pre>
+
+              <div className="border-t border-[var(--border-secondary)] pt-3">
+                <p className="text-[var(--text-tertiary)] text-xs mb-2"># Save as sandbox.yml and launch:</p>
+                <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-2 text-xs space-y-1">
+                  <div className="text-[var(--text-primary)]">nanosb</div>
+                </div>
+              </div>
+
+              <div className="border-t border-[var(--border-secondary)] pt-3 mt-3">
+                <p className="text-[var(--text-tertiary)] text-xs mb-2"># Or run a single sandbox:</p>
+                <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-2 text-xs space-y-1">
+                  <div className="text-[var(--text-primary)]">nanosb --sandbox {selectedAgent}</div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="text-[var(--text-muted)] text-sm text-center py-12">
+              Select an agent to generate<br />sandbox.yml configuration
+            </div>
           )}
-        </button>
-      )} */}
+        </div>
+      </MobileDetailPanel>
     </div>
   )
 }
