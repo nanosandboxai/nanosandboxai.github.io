@@ -491,7 +491,7 @@
     "name": "ai.perplexity/mcp-server",
     "title": "Perplexity API Platform",
     "description": "Real-time web search, reasoning, and research through Perplexity's API",
-    "version": "0.8.4",
+    "version": "0.9.0",
     "websiteUrl": null,
     "repositoryUrl": null
   },
@@ -2337,10 +2337,10 @@
   },
   {
     "name": "ai.thinkneo/control-plane",
-    "title": "ai.thinkneo/control-plane",
+    "title": "ThinkNEO Control Plane",
     "description": "Enterprise AI governance: spend, guardrails, policy, budgets, compliance, and provider health.",
-    "version": "1.0.0",
-    "websiteUrl": null,
+    "version": "1.0.2",
+    "websiteUrl": "https://thinkneo.ai",
     "repositoryUrl": "https://github.com/thinkneo-ai/mcp-server"
   },
   {
@@ -2832,6 +2832,14 @@
     "repositoryUrl": "https://github.com/azmartone67/dchub-backend"
   },
   {
+    "name": "cloud.factry.portal/historian-mcp-server",
+    "title": "Factry Historian MCP",
+    "description": "MCP server for querying Factry Historian.",
+    "version": "0.0.1",
+    "websiteUrl": null,
+    "repositoryUrl": null
+  },
+  {
     "name": "cloud.prince/prince",
     "title": "Prince Cloud",
     "description": "Convert Markdown, HTML, and web pages to high-quality PDF with Prince.",
@@ -2915,7 +2923,7 @@
     "name": "co.pipeboard/meta-ads-mcp",
     "title": "co.pipeboard/meta-ads-mcp",
     "description": "Facebook / Meta Ads automation with AI: analyze performance, test creatives, optimize spend.",
-    "version": "1.0.60",
+    "version": "1.0.63",
     "websiteUrl": null,
     "repositoryUrl": null
   },
@@ -3067,7 +3075,7 @@
     "name": "com.apify/apify-mcp-server",
     "title": "com.apify/apify-mcp-server",
     "description": "Extract data from any website with thousands of scrapers, crawlers, and automations on Apify Store ⚡",
-    "version": "0.9.12",
+    "version": "0.9.13",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/apify/apify-mcp-server"
   },
@@ -3102,6 +3110,14 @@
     "version": "26.4.1-SNAPSHOT",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/ArcadeData/arcadedb"
+  },
+  {
+    "name": "com.arcjet/mcp",
+    "title": "Arcjet",
+    "description": "An MCP server for Arcjet - the runtime security platform that ships with your AI code.",
+    "version": "1.0.0",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/arcjet/mcp"
   },
   {
     "name": "com.arcself/arc-security",
@@ -3776,6 +3792,14 @@
     "repositoryUrl": "https://github.com/VictoryInTech/TokenOracle-MCP"
   },
   {
+    "name": "com.guruwalk/affiliates-mcp",
+    "title": "GuruWalk Affiliates",
+    "description": "GuruWalk affiliate program for AI agents. Free walking tours in 100+ countries. Earn per booking.",
+    "version": "1.0.0",
+    "websiteUrl": "https://www.guruwalk.com/afiliados",
+    "repositoryUrl": "https://github.com/guruwalk/affiliates-mcp"
+  },
+  {
     "name": "com.hapticpaper/mcp",
     "title": "Haptic Paper",
     "description": "Connect your AI to human workers. Get paid to help AI.",
@@ -3849,9 +3873,9 @@
   },
   {
     "name": "com.ivisa.www/mcp",
-    "title": "iVisa MCP Server",
+    "title": "com.ivisa.www/mcp",
     "description": "Check visa requirements and travel documents for international travel destinations.",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "websiteUrl": null,
     "repositoryUrl": null
   },
@@ -3995,7 +4019,7 @@
     "name": "com.linkbreakers/mcp",
     "title": "Linkbreakers MCP",
     "description": "QR-driven customer-journey platform for tracked QR codes, short links, and analytics.",
-    "version": "1.40.0",
+    "version": "1.41.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/linkbreakers-com/api"
   },
@@ -4344,6 +4368,14 @@
     "repositoryUrl": null
   },
   {
+    "name": "com.nitrosend/nitrosend",
+    "title": "com.nitrosend/nitrosend",
+    "description": "AI-native email marketing. Campaigns, automations, transactional, contacts, analytics via MCP.",
+    "version": "0.6.2",
+    "websiteUrl": null,
+    "repositoryUrl": null
+  },
+  {
     "name": "com.nivelrisk/mcp-server",
     "title": "com.nivelrisk/mcp-server",
     "description": "Commercial auto insurance MCP server for NYC TLC for-hire vehicles. 33 tools, submission to bind.",
@@ -4576,6 +4608,14 @@
     "repositoryUrl": null
   },
   {
+    "name": "com.qualequest/governance",
+    "title": "QualeQuest — AI Agent Governance Platform",
+    "description": "84-tool governance for multi-agent systems: tasks, compliance, decisions, ML predictions.",
+    "version": "1.0.0",
+    "websiteUrl": "https://gaas.qualequest.com",
+    "repositoryUrl": null
+  },
+  {
     "name": "com.qualityclouds/mcp-server-qualityclouds",
     "title": "LiveCheck AI",
     "description": "Secure MCP runtime server for scanning and autofixing code issues",
@@ -4723,7 +4763,7 @@
     "name": "com.senzing/mcp",
     "title": "Senzing",
     "description": "Entity resolution — data mapping, SDK code generation, docs search, and error troubleshooting",
-    "version": "0.24.2",
+    "version": "0.25.3",
     "websiteUrl": "https://senzing.com",
     "repositoryUrl": null
   },
@@ -5190,6 +5230,14 @@
     "version": "0.9.9",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/AgentModule/mcp"
+  },
+  {
+    "name": "dev.agentsim/mcp",
+    "title": "AgentSIM",
+    "description": "Real SIM-backed phone numbers for AI agents — autonomous OTP capture, no VoIP, no human steps.",
+    "version": "0.3.1",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/Fato07/agentsim"
   },
   {
     "name": "dev.anotherai/anotherai",
@@ -6520,6 +6568,14 @@
     "repositoryUrl": "https://github.com/0xSoftBoi/suwappubot"
   },
   {
+    "name": "io.github.0xbrainkid/agentfolio",
+    "title": "io.github.0xbrainkid/agentfolio",
+    "description": "Query AI agent profiles, trust scores, verifications, and marketplace jobs on AgentFolio.",
+    "version": "1.1.1",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/0xbrainkid/agentfolio-mcp-server"
+  },
+  {
     "name": "io.github.0xdirectping/escrow",
     "title": "io.github.0xdirectping/escrow",
     "description": "Agent-to-agent escrow on Base. Post quests with ETH/USDC bounties and settle on-chain.",
@@ -6824,6 +6880,14 @@
     "repositoryUrl": "https://github.com/AgentAnycast/agentanycast-node"
   },
   {
+    "name": "io.github.Agentled/mcp-server",
+    "title": "io.github.Agentled/mcp-server",
+    "description": "AI workflow orchestration with 100+ integrations, knowledge graph, and unified credits.",
+    "version": "0.5.2",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/Agentled/mcp-server"
+  },
+  {
     "name": "io.github.AgiMaulana/google-play-mcp",
     "title": "Google Play Console MCP",
     "description": "Google Play release lifecycle: tracks, testers, rollout, and Android Vitals.",
@@ -6899,7 +6963,7 @@
     "name": "io.github.Alfanous-team/alfanous",
     "title": "Alfanous - Quranic Search Engine",
     "description": "Search and explore the Holy Qur'an with Arabic text, transliteration, and advanced search support.",
-    "version": "1.8.6",
+    "version": "1.8.9",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/Alfanous-team/alfanous"
   },
@@ -7403,7 +7467,7 @@
     "name": "io.github.BrowseAI-HQ/browseai-dev",
     "title": "BrowseAI Dev",
     "description": "Evidence-backed web research for AI agents with citations and confidence scores.",
-    "version": "0.2.1",
+    "version": "0.2.5",
     "websiteUrl": "https://browseai.dev",
     "repositoryUrl": "https://github.com/BrowseAI-HQ/BrowseAI-Dev"
   },
@@ -7937,9 +8001,9 @@
   },
   {
     "name": "io.github.Damien829/aipaygen",
-    "title": "AiPayGen — 148 AI Tools for Agents",
-    "description": "148 AI tools: research, write, code, translate, scrape, agent memory.",
-    "version": "1.7.1",
+    "title": "AiPayGen — 250 AI tools for Agents",
+    "description": "250+ AI tools: research, write, code, translate, analyze, scrape, memory, and more.",
+    "version": "1.9.4",
     "websiteUrl": "https://aipaygen.com",
     "repositoryUrl": "https://github.com/Damien829/aipaygen"
   },
@@ -8427,7 +8491,7 @@
     "name": "io.github.DollhouseMCP/mcp-server",
     "title": "DollhouseMCP",
     "description": "OSS to create Personas, Skills, Templates, Agents, and Memories to customize your AI experience.",
-    "version": "1.9.27",
+    "version": "2.0.0-rc.4",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/DollhouseMCP/mcp-server"
   },
@@ -8446,6 +8510,14 @@
     "version": "3.0.2",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/DownAtTheBottomOfTheMoleHole/megalinter-mcp"
+  },
+  {
+    "name": "io.github.DynamicDeals/gunsnation",
+    "title": "io.github.DynamicDeals/gunsnation",
+    "description": "MCP server for real-time access to the Gunsnation firearms catalog and specifications.",
+    "version": "1.0.0",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/DynamicDeals/mcp-server-gunsnation"
   },
   {
     "name": "io.github.EDKarlsson/locus",
@@ -8694,6 +8766,14 @@
     "version": "0.4.2",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/Fato07/log-analyzer-mcp"
+  },
+  {
+    "name": "io.github.Fibery-inc/mcp",
+    "title": "Fibery",
+    "description": "Connect AI Assistant to Fibery — operating system for orgs run by nerds.",
+    "version": "1.0.0",
+    "websiteUrl": null,
+    "repositoryUrl": null
   },
   {
     "name": "io.github.Finanzgoblin/spectra-mcp-server",
@@ -8984,6 +9064,14 @@
     "repositoryUrl": "https://github.com/Happygallo/apple-ads-mcp"
   },
   {
+    "name": "io.github.HariharRengan/lock-in-study-planner",
+    "title": "io.github.HariharRengan/lock-in-study-planner",
+    "description": "Study planner for high school students. Manage tasks, deadlines, and schedules.",
+    "version": "1.0.0",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/lockinplanner/lock-in"
+  },
+  {
     "name": "io.github.HatmanStack/ragstack",
     "title": "io.github.HatmanStack/ragstack",
     "description": "Search, chat, upload, and scrape a serverless RAGStack knowledge base on AWS.",
@@ -9067,7 +9155,7 @@
     "name": "io.github.I4cTime/q-ring",
     "title": "io.github.I4cTime/q-ring",
     "description": "Quantum-inspired keyring for AI coding agents with superposition, entanglement, and tunneling.",
-    "version": "0.4.0",
+    "version": "0.9.1",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/I4cTime/quantum_ring"
   },
@@ -10027,7 +10115,7 @@
     "name": "io.github.MattStellisoft/stellify-mcp",
     "title": "io.github.MattStellisoft/stellify-mcp",
     "description": "Build Laravel apps through conversation. Code stored as structured JSON for surgical AI edits.",
-    "version": "0.1.30",
+    "version": "0.1.31",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/Stellify-Software-Ltd/stellify-mcp"
   },
@@ -10059,7 +10147,7 @@
     "name": "io.github.Maxim-Mazurok/teams-api",
     "title": "Microsoft Teams API",
     "description": "AI-native Microsoft Teams integration — read chats, send messages, search people",
-    "version": "0.3.2",
+    "version": "0.5.2",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/Maxim-Mazurok/teams-api"
   },
@@ -10394,8 +10482,8 @@
   {
     "name": "io.github.Octid-io/osmp",
     "title": "io.github.Octid-io/osmp",
-    "description": "Agentic AI instruction encoding. 60%+ compression over JSON. Inference-free decode. Any channel.",
-    "version": "1.0.8",
+    "description": "Agentic AI instruction encoding. 86.8% vs JSON. Inference-free decode. Any channel.",
+    "version": "1.0.18",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/octid-io/cloudless-sky"
   },
@@ -11104,646 +11192,6 @@
     "repositoryUrl": "https://github.com/Rul1an/assay"
   },
   {
-    "name": "io.github.Ryan-Clinton/academic-commercialization-pipeline-mcp",
-    "title": "Academic Commercialization Pipeline",
-    "description": "Track research breakthroughs, patent-publication crossover, and funding flows for commercializati...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/academic-institution-talent-mcp",
-    "title": "Academic Institution Talent",
-    "description": "Discover research hotspots, profile labs, assess commercialization readiness, and generate tech s...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/adversarial-corporate-opacity-mcp",
-    "title": "Adversarial Corporate Opacity",
-    "description": "Detect corporate opacity, shell company structures, and hidden beneficial ownership through adver...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/adversarial-geopolitical-equilibrium-mcp",
-    "title": "Adversarial Geopolitical Equilibrium",
-    "description": "Analyze geopolitical equilibrium disruptions, state actor strategies, and international power dyn...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/adversarial-regulatory-arbitrage-mcp",
-    "title": "Adversarial Regulatory Arbitrage",
-    "description": "Detect regulatory arbitrage strategies across jurisdictions, identifying gaps in compliance frame...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/agricultural-commodity-climate-mcp",
-    "title": "Agricultural Commodity Climate",
-    "description": "Assess crop region weather risk, pest emergence, trade dependency, price shocks, and food securit...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/ai-model-governance-mcp",
-    "title": "AI Model Governance",
-    "description": "Map AI regulatory landscape, track legislation, classify risk tiers, monitor bias research, and a...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/ai-training-data-quality-mcp",
-    "title": "AI Training Data Quality",
-    "description": "Assess AI training data quality, detect bias patterns, evaluate dataset provenance, and analyze d...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/autonomous-cyber-red-team-mcp",
-    "title": "Autonomous Cyber Red Team",
-    "description": "Automated red team reconnaissance combining attack surface mapping, vulnerability scanning, threa...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/aviation-safety-risk-mcp",
-    "title": "Aviation Safety Risk",
-    "description": "Assess airline safety, maintenance compliance, route weather risk, sanctions screening, and airwo...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/brand-narrative-intelligence-mcp",
-    "title": "Brand Narrative Intelligence",
-    "description": "Detect brand threats, impersonation domains, fake reviews, social sentiment shifts, and content m...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/cannabis-regulatory-intelligence-mcp",
-    "title": "Cannabis Regulatory Intelligence",
-    "description": "Assess state cannabis regulatory risk, track federal policy, verify entities, and score MSO portf...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/climate-economic-nexus-mcp",
-    "title": "Climate Economic Nexus",
-    "description": "Analyze climate-economy interdependencies including carbon exposure, transition risk, physical cl...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/cognitive-warfare-psyops-mcp",
-    "title": "Cognitive Warfare & PsyOps Analysis",
-    "description": "Detect and analyze cognitive warfare campaigns, information operations, narrative manipulation, a...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/commonwealth-corporate-registry-mcp",
-    "title": "Commonwealth Corporate Registry",
-    "description": "Search and analyze corporate registries across Commonwealth nations including Companies House UK,...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/competitive-digital-intelligence-mcp",
-    "title": "Competitive Digital Intelligence",
-    "description": "Full competitive digital audit: tech stack, SEO rankings, e-commerce, reputation monitoring, and ...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/construction-project-risk-mcp",
-    "title": "Construction Project Risk",
-    "description": "Assess contractor risk via OSHA violations, EPA compliance, site hazards, and project underwritin...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/corporate-deep-research-mcp",
-    "title": "Corporate Deep Research",
-    "description": "Corporate deep research with multi-source intelligence — SEC filings, stock data, LEI verificatio...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/corporate-political-exposure-mcp",
-    "title": "Corporate Political Exposure",
-    "description": "Map corporate political exposure: lobbying, campaign finance, congressional trades, foreign influ...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/counterparty-due-diligence-mcp",
-    "title": "Counterparty Due Diligence",
-    "description": "Comprehensive counterparty risk assessment combining corporate registry checks, sanctions screeni...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/critical-minerals-dependency-mcp",
-    "title": "Critical Minerals Dependency",
-    "description": "Analyze critical mineral supply concentration, geopolitical risk, sanctions exposure, and substit...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/crypto-compliance-intelligence-mcp",
-    "title": "Crypto Compliance Intelligence",
-    "description": "Screen crypto entities for sanctions, corporate structure, regulatory tracking, and enforcement m...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/cybersecurity-intelligence-mcp",
-    "title": "Cybersecurity Intelligence",
-    "description": "Cybersecurity intelligence aggregating NVD CVE data, CISA KEV alerts, Censys exposure, certificat...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/data-center-siting-intelligence-mcp",
-    "title": "Data Center Siting Intelligence",
-    "description": "Assess data center site viability: power grid, natural hazards, climate cooling, flood and seismi...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/digital-infrastructure-exposure-mcp",
-    "title": "Digital Infrastructure Exposure",
-    "description": "Audit digital exposure: subdomains, DNS security, SSL health, tech stack CVEs, and hosting geogra...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/drone-uas-regulatory-intelligence-mcp",
-    "title": "Drone UAS Regulatory Intelligence",
-    "description": "Check UAS airspace compliance, weather flight safety, regulatory changes, insurance risk, and res...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/elder-care-facility-intelligence-mcp",
-    "title": "Elder Care Facility Intelligence",
-    "description": "Assess elder care facility safety: violations, complaints, ownership structure, quality ratings, ...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/energy-transition-intelligence-mcp",
-    "title": "Energy Transition Intelligence",
-    "description": "Assess energy transition readiness: renewable share, grid stress, stranded assets, EV gaps, carbo...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/energy-transition-resilience-mcp",
-    "title": "Energy Transition Resilience",
-    "description": "Analyze energy transition pathways, grid resilience, renewable adoption rates, fossil fuel strand...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/entity-attack-surface-mcp",
-    "title": "Entity Attack Surface",
-    "description": "Corporate cyber exposure mapping with tech stack vulnerability analysis, CISA KEV checks, and inf...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/esg-supply-chain-risk-mcp",
-    "title": "ESG Supply Chain Risk",
-    "description": "ESG due diligence with environmental compliance, labor rights, governance, and EU CSRD/CSDDD gap ...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/export-control-screening-mcp",
-    "title": "Export Control Screening",
-    "description": "Screen transaction parties for export compliance: sanctions, technology classification, diversion...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/financial-crime-screening-mcp",
-    "title": "Financial Crime Screening",
-    "description": "AML/CFT composite screening with sanctions, watchlists, PEP detection, shell company analysis, an...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/food-safety-supply-chain-mcp",
-    "title": "Food Safety Supply Chain",
-    "description": "Search food recalls, analyze adverse events, assess supplier hygiene, trace ingredient risk, dete...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/franchise-due-diligence-mcp",
-    "title": "Franchise Due Diligence",
-    "description": "Evaluate franchisor health, complaint trends, market saturation, corporate structure, and territo...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/government-contract-intelligence-mcp",
-    "title": "Government Contract Intelligence",
-    "description": "Federal procurement intelligence with contract pipeline forecasting, incumbent analysis, and poli...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/healthcare-credentialing-intelligence-mcp",
-    "title": "Healthcare Credentialing Intelligence",
-    "description": "Screen healthcare providers for sanctions, exclusions, malpractice patterns, license and credenti...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/higher-education-risk-mcp",
-    "title": "Higher Education Risk",
-    "description": "Assess institution risk: accreditation, research integrity, federal funding dependency, complaint...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/influencer-brand-safety-intelligence-mcp",
-    "title": "Influencer Brand Safety Intelligence",
-    "description": "Screen creators for brand safety risks, audience authenticity, controversy history, and platform ...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/infrastructure-location-risk-mcp",
-    "title": "Infrastructure Location Risk",
-    "description": "Assess physical location risk: natural disasters, environmental contamination, infrastructure qua...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/insurance-underwriting-intelligence-mcp",
-    "title": "Insurance Underwriting Intelligence",
-    "description": "Multi-peril location risk: disasters, seismic, flood, environmental liability, crime, and climate...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/investment-alternative-data-mcp",
-    "title": "Investment Alternative Data",
-    "description": "Hedge fund alternative data intelligence with smart money tracking, congressional alpha, and macr...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/ip-patent-trademark-mcp",
-    "title": "IP, Patent & Trademark Intelligence",
-    "description": "Intellectual property intelligence covering patent searches, trademark monitoring, IP portfolio a...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/knowledge-graph-causal-discovery-mcp",
-    "title": "Knowledge Graph & Causal Discovery",
-    "description": "Build knowledge graphs and discover causal relationships from multi-source data, enabling entity ...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/law-enforcement-intelligence-mcp",
-    "title": "Law Enforcement Intelligence",
-    "description": "Law enforcement and public safety intelligence aggregating court records, criminal databases, reg...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/litigation-intelligence-mcp",
-    "title": "Litigation Intelligence",
-    "description": "Assess litigation probability via CFPB complaints, EPA violations, SEC filings, enforcement, and ...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/logistics-freight-intelligence-mcp",
-    "title": "Logistics Freight Intelligence",
-    "description": "Forecast route disruptions, screen trade compliance, assess carrier risk, and predict border delays",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/m-and-a-target-intelligence-mcp",
-    "title": "M&A Target Intelligence",
-    "description": "Pre-acquisition screening with IP portfolio analysis, workforce stability, technology assessment,...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/maritime-resource-compliance-mcp",
-    "title": "Maritime Resource Compliance",
-    "description": "Maritime shipping intelligence including vessel tracking, port compliance, sanctions screening, I...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/maritime-shipping-intelligence-mcp",
-    "title": "Maritime Shipping Intelligence",
-    "description": "Screen vessels for sanctions, forecast port disruptions, verify cargo origin, assess flag state a...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/market-microstructure-manipulation-mcp",
-    "title": "Market Microstructure & Manipulation Detection",
-    "description": "Detect market manipulation patterns including wash trading, spoofing, layering, and unusual order...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/municipal-fiscal-intelligence-mcp",
-    "title": "Municipal Fiscal Intelligence",
-    "description": "Assess municipal fiscal health: federal spending dependency, economic base, disaster exposure, le...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/nonprofit-grant-intelligence-mcp",
-    "title": "Nonprofit Grant Intelligence",
-    "description": "Assess nonprofit health from IRS 990 data, verify grant compliance, screen integrity, search oppo...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/nuclear-regulatory-intelligence-mcp",
-    "title": "Nuclear Regulatory Intelligence",
-    "description": "Assess nuclear plant risk: seismic vulnerability, regulatory compliance, decommissioning, contami...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/open-source-software-supply-chain-mcp",
-    "title": "Open Source Software Supply Chain",
-    "description": "Assess OSS dependency risk: bus factor, vulnerabilities, license compliance, community health, SB...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/open-source-supply-chain-risk-mcp",
-    "title": "Open Source Supply Chain Risk",
-    "description": "Assess open source software supply chain risk including dependency vulnerabilities, maintainer tr...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/pandemic-biosurveillance-mcp",
-    "title": "Pandemic Biosurveillance",
-    "description": "Biosurveillance intelligence aggregating disease outbreak data, pathogen tracking, epidemiologica...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/pandemic-supply-chain-cascade-mcp",
-    "title": "Pandemic Supply Chain Cascade",
-    "description": "Model pandemic-driven supply chain cascade failures, production disruptions, logistics bottleneck...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/pharma-pipeline-intelligence-mcp",
-    "title": "Pharma Pipeline Intelligence",
-    "description": "Search drug pipelines, analyze competitive landscape, detect adverse signals, track patents and r...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/political-influence-network-mcp",
-    "title": "Political Influence Network",
-    "description": "Map political influence networks including lobbying connections, campaign finance flows, revolvin...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/product-safety-consumer-risk-mcp",
-    "title": "Product Safety Consumer Risk",
-    "description": "Search active recalls across CPSC/NHTSA/FDA, detect pre-recall signals, and track enforcement mom...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/regulatory-arbitrage-detection-mcp",
-    "title": "Regulatory Arbitrage Detection",
-    "description": "Detect regulatory arbitrage opportunities and risks across financial jurisdictions, identifying c...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/regulatory-change-intelligence-mcp",
-    "title": "Regulatory Change Intelligence",
-    "description": "Compliance forecasting with regulatory pipeline monitoring, bill impact assessment, and enforceme...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/research-integrity-screening-mcp",
-    "title": "Research Integrity Screening",
-    "description": "Screen researcher integrity: retraction flags, citation anomalies, publication velocity, journal ...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/sanctions-evasion-network-mcp",
-    "title": "Sanctions Evasion Network",
-    "description": "Deep entity screening across OFAC, OpenSanctions, Interpol, and corporate registries with ownersh...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/scientific-fraud-detection-mcp",
-    "title": "Scientific Fraud Detection",
-    "description": "Detect scientific fraud indicators including image manipulation, statistical anomalies, citation ...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/sovereign-debt-contagion-geopolitical-mcp",
-    "title": "Sovereign Debt Contagion & Geopolitical Risk",
-    "description": "Analyze sovereign debt contagion pathways, geopolitical risk spillovers, and cross-country financ...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/sovereign-debt-contagion-mcp",
-    "title": "Sovereign Debt Contagion",
-    "description": "Assess sovereign fiscal stress, contagion networks, currency crisis probability, and disaster vul...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/sovereign-debt-crisis-mcp",
-    "title": "Sovereign Debt Crisis",
-    "description": "Monitor sovereign debt crisis indicators including fiscal sustainability, debt-to-GDP trajectorie...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/space-industry-intelligence-mcp",
-    "title": "Space Industry Intelligence",
-    "description": "Assess launch risk, orbital debris, spectrum interference, regulatory approvals, and satellite sa...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/startup-ecosystem-intelligence-mcp",
-    "title": "Startup Ecosystem Intelligence",
-    "description": "Discover startups, assess innovation velocity, decode hiring signals, analyze moats, and generate...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/supply-chain-digital-twin-mcp",
-    "title": "Supply Chain Digital Twin",
-    "description": "Create digital twins of supply chains for disruption simulation, bottleneck identification, alter...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/systemic-risk-contagion-mcp",
-    "title": "Systemic Risk Contagion",
-    "description": "Model systemic risk contagion across financial networks, identifying too-big-to-fail nodes, count...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/tech-ecosystem-analysis-mcp",
-    "title": "Tech Ecosystem Analysis",
-    "description": "Analyze technology ecosystem dynamics including platform competition, API dependency mapping, dev...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/trade-based-money-laundering-mcp",
-    "title": "Trade-Based Money Laundering Detection",
-    "description": "Detect trade-based money laundering through trade mispricing analysis, anomalous shipping pattern...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/travel-risk-intelligence-mcp",
-    "title": "Travel Risk Intelligence",
-    "description": "Assess destination risk: weather, disasters, health, security, multi-stop scoring, and travel win...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/uk-business-compliance-mcp",
-    "title": "UK Business Compliance",
-    "description": "UK-specific business compliance intelligence covering Companies House filings, FCA regulatory dat...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/uk-regulatory-ecosystem-mcp",
-    "title": "UK Regulatory Ecosystem",
-    "description": "Comprehensive UK regulatory ecosystem analysis covering FCA, PRA, CMA, ICO, and other UK regulato...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/water-utility-risk-intelligence-mcp",
-    "title": "Water Utility Risk Intelligence",
-    "description": "Assess water system risk: contamination, infrastructure age, drought forecast, affordability, com...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
-    "name": "io.github.Ryan-Clinton/workforce-competitive-intelligence-mcp",
-    "title": "Workforce Competitive Intelligence",
-    "description": "Analyze hiring signals, inventor movement, researcher attrition, executive transitions, and human...",
-    "version": "1.0.1",
-    "websiteUrl": null,
-    "repositoryUrl": null
-  },
-  {
     "name": "io.github.S2TConsulting/accelerators",
     "title": "io.github.S2TConsulting/accelerators",
     "description": "36 tools for AWS infrastructure, security compliance, AI workflows, and ACI governance.",
@@ -11939,7 +11387,7 @@
     "name": "io.github.SecurityRonin/alaya-mcp",
     "title": "io.github.SecurityRonin/alaya-mcp",
     "description": "Local memory engine for AI agents with knowledge graphs, forgetting, and semantic recall",
-    "version": "0.3.0",
+    "version": "0.4.5",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/SecurityRonin/alaya"
   },
@@ -11971,7 +11419,7 @@
     "name": "io.github.SepineTam/stata-mcp",
     "title": "io.github.SepineTam/stata-mcp",
     "description": "Let LLM help you achieve your regression analysis with Stata",
-    "version": "1.14.0",
+    "version": "1.14.1",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/SepineTam/stata-mcp"
   },
@@ -12912,6 +12360,14 @@
     "repositoryUrl": "https://github.com/VIKAS9793/androjack-mcp"
   },
   {
+    "name": "io.github.VIKAS9793/context-fabric",
+    "title": "Context Fabric",
+    "description": "Project continuity infrastructure. Detects context drift and routes token-budgeted AI briefings.",
+    "version": "1.0.3",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/VIKAS9793/context-fabric"
+  },
+  {
     "name": "io.github.VectifyAI/pageindex-mcp",
     "title": "io.github.VectifyAI/pageindex-mcp",
     "description": "Reasoning-based RAG system for chatting with long PDFs. Supports local and online files.",
@@ -13024,6 +12480,14 @@
     "repositoryUrl": "https://github.com/VikrantSingh01/adaptive-cards-mcp"
   },
   {
+    "name": "io.github.Vist233/firstdata",
+    "title": "io.github.Vist233/firstdata",
+    "description": "Hosted MCP server for finding authoritative primary data sources and official portals.",
+    "version": "0.1.0",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/MLT-OSS/FirstData"
+  },
+  {
     "name": "io.github.Vitexus/abraflexi",
     "title": "AbraFlexi",
     "description": "MCP server for AbraFlexi ERP — invoices, contacts, products, bank transactions.",
@@ -13054,6 +12518,14 @@
     "version": "1.8.0",
     "websiteUrl": "https://github.com/Vortiago/mcp-outline",
     "repositoryUrl": "https://github.com/Vortiago/mcp-outline"
+  },
+  {
+    "name": "io.github.Vortiago/mcp-tekna",
+    "title": "Tekna Events & News",
+    "description": "MCP server for Tekna events and news",
+    "version": "0.2.0",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/Vortiago/mcp-tekna"
   },
   {
     "name": "io.github.VouchlyAI/pincer",
@@ -13731,7 +13203,7 @@
     "name": "io.github.ai-dashboad/flutter-skill",
     "title": "io.github.ai-dashboad/flutter-skill",
     "description": "AI-powered E2E testing for 10 platforms. 253 MCP tools. Zero test code needed.",
-    "version": "0.9.33",
+    "version": "0.9.34",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/ai-dashboad/flutter-skill"
   },
@@ -13835,7 +13307,7 @@
     "name": "io.github.airweave-ai/search",
     "title": "Airweave Search",
     "description": "MCP server for searching Airweave collections with natural language queries.",
-    "version": "0.9.47",
+    "version": "0.9.51",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/airweave-ai/airweave"
   },
@@ -14070,6 +13542,14 @@
     "version": "0.1.3",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/writio/mcp-server"
+  },
+  {
+    "name": "io.github.aliceappai/mcp-server-alice",
+    "title": "io.github.aliceappai/mcp-server-alice",
+    "description": "Secure audio transcription meets AI. Connect Alice recordings to Claude, ChatGPT, Gemini, and more.",
+    "version": "1.0.0",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/aliceappai/mcp-server-alice"
   },
   {
     "name": "io.github.alifanov/scopegate",
@@ -14320,6 +13800,14 @@
     "repositoryUrl": "https://github.com/annibale-x/mcp-memento"
   },
   {
+    "name": "io.github.annibale-x/mcp-webgate",
+    "title": "io.github.annibale-x/mcp-webgate",
+    "description": "Web search that doesn't wreck your AI's memory.",
+    "version": "0.1.31",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/annibale-x/mcp-webgate"
+  },
+  {
     "name": "io.github.antbotlab/mac-use-mcp",
     "title": "io.github.antbotlab/mac-use-mcp",
     "description": "Zero-dependency macOS desktop automation for AI agents. 18 tools via MCP. macOS 13+.",
@@ -14491,7 +13979,7 @@
     "name": "io.github.apollographql/apollo-mcp-server",
     "title": "Apollo MCP Server",
     "description": "MCP server that exposes GraphQL operations as tools for AI models.",
-    "version": "1.10.0",
+    "version": "1.11.0",
     "websiteUrl": "https://www.apollographql.com/docs/apollo-mcp-server/",
     "repositoryUrl": "https://github.com/apollographql/apollo-mcp-server"
   },
@@ -14507,7 +13995,7 @@
     "name": "io.github.appium/appium-mcp",
     "title": "MCP Appium - Mobile Development and Automation Server",
     "description": "MCP server for Appium mobile automation on iOS and Android devices with test creation tools.",
-    "version": "1.34.4",
+    "version": "1.35.0",
     "websiteUrl": null,
     "repositoryUrl": null
   },
@@ -14558,6 +14046,22 @@
     "version": "1.2.0",
     "websiteUrl": null,
     "repositoryUrl": null
+  },
+  {
+    "name": "io.github.archetypal-ai/archetypal-ai",
+    "title": "io.github.archetypal-ai/archetypal-ai",
+    "description": "Persistent memory for AI agents. recall, remember, checkpoint — soul preservation.",
+    "version": "1.0.5",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/archetypal-ai/archetypal-ai"
+  },
+  {
+    "name": "io.github.architectds/mathgraphs-mcp",
+    "title": "io.github.architectds/mathgraphs-mcp",
+    "description": "Math & statistics graphing, computation, visualization, and validation engine",
+    "version": "1.0.0",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/architectds/mathgraphs-mcp"
   },
   {
     "name": "io.github.arianlopezc/trabuco",
@@ -14995,7 +14499,7 @@
     "name": "io.github.awslabs/mcp-server-for-oscal",
     "title": "MCP Server for OSCAL",
     "description": "AI agent tools for Open Security Controls Assessment Language (OSCAL)",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/awslabs/mcp-server-for-oscal"
   },
@@ -15019,7 +14523,7 @@
     "name": "io.github.b1ff/atlassian-dc-mcp-bitbucket",
     "title": "io.github.b1ff/atlassian-dc-mcp-bitbucket",
     "description": "MCP server for Atlassian Bitbucket Data Center - interact with repositories and code",
-    "version": "0.13.0",
+    "version": "0.14.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/b1ff/atlassian-dc-mcp"
   },
@@ -15027,7 +14531,7 @@
     "name": "io.github.b1ff/atlassian-dc-mcp-confluence",
     "title": "io.github.b1ff/atlassian-dc-mcp-confluence",
     "description": "MCP server for Atlassian Confluence Data Center - access and manage content",
-    "version": "0.13.0",
+    "version": "0.14.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/b1ff/atlassian-dc-mcp"
   },
@@ -15035,7 +14539,7 @@
     "name": "io.github.b1ff/atlassian-dc-mcp-jira",
     "title": "io.github.b1ff/atlassian-dc-mcp-jira",
     "description": "MCP server for Atlassian Jira Data Center - search, view, and create issues",
-    "version": "0.13.0",
+    "version": "0.14.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/b1ff/atlassian-dc-mcp"
   },
@@ -16083,7 +15587,7 @@
     "name": "io.github.chrismcdermut/proletariat-cli",
     "title": "io.github.chrismcdermut/proletariat-cli",
     "description": "Agent orchestration platform - multi-agent spawning, tickets, boards, and workflows",
-    "version": "0.3.89",
+    "version": "0.3.93",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/chrismcdermut/proletariat"
   },
@@ -16200,6 +15704,14 @@
     "repositoryUrl": "https://github.com/clouatre-labs/math-mcp-learning-server"
   },
   {
+    "name": "io.github.cloudinary/asset-management-mcp",
+    "title": "Cloudinary Asset Management",
+    "description": "Upload, organize, search, and transform images, videos, and files with AI-powered tools.",
+    "version": "0.8.1",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/cloudinary/asset-management-mcp"
+  },
+  {
     "name": "io.github.cloudquery/mcp",
     "title": "io.github.cloudquery/mcp",
     "description": "CloudQuery MCP server for asset inventory data. Supports CLI, PostgreSQL, and Platform modes.",
@@ -16230,6 +15742,14 @@
     "version": "1.4.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/cmpxchg16/mcp-ethical-hacking"
+  },
+  {
+    "name": "io.github.cnghockey/sats4ai",
+    "title": "Sats4AI - Bitcoin-Powered AI Tools",
+    "description": "25+ AI tools paid via Lightning Network. No signup, no KYC, pay-per-call.",
+    "version": "1.0.2",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/cnghockey/sats4ai-mcp-server"
   },
   {
     "name": "io.github.cocaxcode/ai-context-inspector",
@@ -16480,6 +16000,14 @@
     "repositoryUrl": null
   },
   {
+    "name": "io.github.costajohnt/oss-autopilot",
+    "title": "io.github.costajohnt/oss-autopilot",
+    "description": "Open source contribution manager with PR tracking, issue discovery, and CI diagnosis",
+    "version": "2.0.1",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/costajohnt/oss-autopilot"
+  },
+  {
     "name": "io.github.cphoskins/cronometer",
     "title": "io.github.cphoskins/cronometer",
     "description": "MCP server for Cronometer — food logs, macros, fasting, biometrics, and recurring foods",
@@ -16555,7 +16083,7 @@
     "name": "io.github.crisnahine/rails-ai-context",
     "title": "Rails AI Context",
     "description": "Auto-expose Rails app structure to AI via MCP. Zero config, 14 read-only tools.",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/crisnahine/rails-ai-context"
   },
@@ -16664,6 +16192,14 @@
     "repositoryUrl": "https://github.com/csjoblom/musclesworked-mcp"
   },
   {
+    "name": "io.github.cthulhutoo/agentry",
+    "title": "Agentry — The Trust Layer for the Agent Economy",
+    "description": "Agent registry with Nostr identity, reputation, escrow, observability, and Lightning payments.",
+    "version": "0.4.0",
+    "websiteUrl": "https://agentry.com",
+    "repositoryUrl": "https://github.com/cthulhutoo/agentry-mcp"
+  },
+  {
     "name": "io.github.cvrt-jh/clickup-mcp",
     "title": "io.github.cvrt-jh/clickup-mcp",
     "description": "Lightweight ClickUp MCP server - 37 tools, token-optimized (95% smaller responses)",
@@ -16683,7 +16219,7 @@
     "name": "io.github.cyanheads/clinicaltrialsgov-mcp-server",
     "title": "io.github.cyanheads/clinicaltrialsgov-mcp-server",
     "description": "MCP server for ClinicalTrials.gov v2 API. Search, retrieve, compare, and analyze trials.",
-    "version": "1.9.2",
+    "version": "1.9.3",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/cyanheads/clinicaltrialsgov-mcp-server"
   },
@@ -16699,7 +16235,7 @@
     "name": "io.github.cyanheads/hn-mcp-server",
     "title": "io.github.cyanheads/hn-mcp-server",
     "description": "MCP server for Hacker News — feeds, threads, users, and search via Firebase and Algolia APIs",
-    "version": "0.1.2",
+    "version": "0.1.5",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/cyanheads/hn-mcp-server"
   },
@@ -16707,7 +16243,7 @@
     "name": "io.github.cyanheads/mcp-ts-core",
     "title": "io.github.cyanheads/mcp-ts-core",
     "description": "Agent-native TypeScript framework for building MCP servers with declarative definitions.",
-    "version": "0.1.23",
+    "version": "0.1.28",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/cyanheads/mcp-ts-core"
   },
@@ -16731,17 +16267,25 @@
     "name": "io.github.cyanheads/pubchem-mcp-server",
     "title": "io.github.cyanheads/pubchem-mcp-server",
     "description": "MCP server for PubChem. Search compounds, properties, safety, bioactivity, xrefs, and summaries.",
-    "version": "0.1.6",
+    "version": "0.1.8",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/cyanheads/pubchem-mcp-server"
   },
   {
     "name": "io.github.cyanheads/pubmed-mcp-server",
     "title": "io.github.cyanheads/pubmed-mcp-server",
-    "description": "MCP server for PubMed/NCBI E-utilities. Search, fetch, cite, and explore biomedical literature.",
-    "version": "2.1.6",
+    "description": "Search PubMed, fetch articles and full text, generate citations, and explore MeSH terms via NCBI.",
+    "version": "2.2.1",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/cyanheads/pubmed-mcp-server"
+  },
+  {
+    "name": "io.github.cyanheads/shift-mcp-server",
+    "title": "io.github.cyanheads/shift-mcp-server",
+    "description": "Lightweight coordination layer for multiple AI agents working on the same codebase simultaneously.",
+    "version": "0.1.5",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/cyanheads/shift-mcp-server"
   },
   {
     "name": "io.github.cyanheads/survey-mcp-server",
@@ -16806,6 +16350,14 @@
     "version": "0.1.10",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/cyntrisec/cyntrisec-cli"
+  },
+  {
+    "name": "io.github.daedalus/mcp-rfc-editor",
+    "title": "io.github.daedalus/mcp-rfc-editor",
+    "description": "An MCP server that provides rfc editing capabilities",
+    "version": "0.1.0.5",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/daedalus/mcp-rfc-editor"
   },
   {
     "name": "io.github.dalisecurity/fray",
@@ -16998,6 +16550,54 @@
     "version": "1.0.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/dba-i/mssql-dba"
+  },
+  {
+    "name": "io.github.dbsectrainer/mcp-agent-trace-inspector",
+    "title": "io.github.dbsectrainer/mcp-agent-trace-inspector",
+    "description": "Step-by-step observability for MCP agent workflows",
+    "version": "1.0.0",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/dbsectrainer/mcp-agent-trace-inspector"
+  },
+  {
+    "name": "io.github.dbsectrainer/mcp-cost-tracker-router",
+    "title": "io.github.dbsectrainer/mcp-cost-tracker-router",
+    "description": "Real-time cost awareness for MCP agent workflows",
+    "version": "1.0.0",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/dbsectrainer/mcp-cost-tracker-router"
+  },
+  {
+    "name": "io.github.dbsectrainer/mcp-data-pipeline-connector",
+    "title": "io.github.dbsectrainer/mcp-data-pipeline-connector",
+    "description": "Universal data connector for CSV, Postgres, and REST APIs via DuckDB",
+    "version": "1.0.0",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/dbsectrainer/mcp-data-pipeline-connector"
+  },
+  {
+    "name": "io.github.dbsectrainer/mcp-eval-runner",
+    "title": "io.github.dbsectrainer/mcp-eval-runner",
+    "description": "A standardized testing harness for MCP servers and agent workflows",
+    "version": "1.0.0",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/dbsectrainer/mcp-eval-runner"
+  },
+  {
+    "name": "io.github.dbsectrainer/mcp-legal-doc-analyzer",
+    "title": "io.github.dbsectrainer/mcp-legal-doc-analyzer",
+    "description": "Domain-specific MCP tooling for legal document workflows",
+    "version": "1.0.0",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/dbsectrainer/mcp-legal-doc-analyzer"
+  },
+  {
+    "name": "io.github.dbsectrainer/mcp-server-health-monitor",
+    "title": "io.github.dbsectrainer/mcp-server-health-monitor",
+    "description": "Health monitoring for all your MCP servers",
+    "version": "1.0.0",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/dbsectrainer/mcp-server-health-monitor"
   },
   {
     "name": "io.github.dbwls99706/deadends-dev",
@@ -17222,6 +16822,14 @@
     "version": "1.0.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/dinesh-nalla-se/playwright-mcp"
+  },
+  {
+    "name": "io.github.dinosaur24/mockhero",
+    "title": "io.github.dinosaur24/mockhero",
+    "description": "Generate realistic relational test data. 156 field types, 22 locales, JSON/CSV/SQL.",
+    "version": "0.1.3",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/dinosaur24/mockhero"
   },
   {
     "name": "io.github.dinwind/cokodo-agent",
@@ -17715,7 +17323,7 @@
     "name": "io.github.dynatrace-oss/Dynatrace-mcp",
     "title": "io.github.dynatrace-oss/Dynatrace-mcp",
     "description": "Access Dynatrace observability data: logs, metrics, problems, vulnerabilities via DQL and Davis AI",
-    "version": "1.7.1",
+    "version": "1.7.3",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/dynatrace-oss/Dynatrace-mcp"
   },
@@ -17771,7 +17379,7 @@
     "name": "io.github.easytocloud/mac-letterhead",
     "title": "Mac-letterhead",
     "description": "Professional letterhead PDF generator for macOS with Markdown support and smart margin detection",
-    "version": "0.15.7",
+    "version": "0.15.8",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/easytocloud/Mac-letterhead"
   },
@@ -17790,6 +17398,14 @@
     "version": "0.9.2",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/sidearmDRM/mcp-server"
+  },
+  {
+    "name": "io.github.ebenezer-isaac/llmconveyors",
+    "title": "io.github.ebenezer-isaac/llmconveyors",
+    "description": "53 tools for LLM Conveyors: job hunting, B2B sales, ATS scoring, resume tools.",
+    "version": "0.2.1",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/ebenezer-isaac/llmconveyors-mcp"
   },
   {
     "name": "io.github.ebrunet001/mcp-server-espn",
@@ -18123,7 +17739,7 @@
     "name": "io.github.esaio/esa",
     "title": "esa",
     "description": "Official MCP server for esa.io - a documentation sharing service for teams",
-    "version": "0.6.0",
+    "version": "0.6.1",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/esaio/esa-mcp-server"
   },
@@ -18131,7 +17747,7 @@
     "name": "io.github.esaio/pplog",
     "title": "pplog",
     "description": "Official MCP server for pplog - a poem sharing service",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/esaio/pplog-mcp-server"
   },
@@ -18171,7 +17787,7 @@
     "name": "io.github.eugenregehr/geo-seo-analyzer-octoboost",
     "title": "io.github.eugenregehr/geo-seo-analyzer-octoboost",
     "description": "Analyze multiple URLs with categorized SEO / GEO checks and scored results.",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/eugenregehr/octoboost-mcp-server"
   },
@@ -18355,7 +17971,7 @@
     "name": "io.github.felixgeelhaar/scout",
     "title": "Scout",
     "description": "Browser automation MCP server with 66 tools. Pure CDP, DOM diffing, vision hybrid.",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/felixgeelhaar/scout"
   },
@@ -18486,6 +18102,14 @@
     "version": "3.7.4",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/firecrawl/firecrawl-mcp-server.git"
+  },
+  {
+    "name": "io.github.fisnik/kongen-mcp",
+    "title": "Kongen Labs — Pattern Intelligence",
+    "description": "LLM reasoning regime detection, cross-domain pattern transfer, and model routing.",
+    "version": "1.0.2",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/kongenlabs/kongen-mcp"
   },
   {
     "name": "io.github.fjnunezp75/gpu-bridge",
@@ -18763,7 +18387,7 @@
     "name": "io.github.gateio-dev/gate-mcp",
     "title": "io.github.gateio-dev/gate-mcp",
     "description": "Gate API v4 MCP server — spot, futures, options, wallet, and more.",
-    "version": "0.15.5",
+    "version": "0.17.1",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/gate/gate-local-mcp"
   },
@@ -19050,8 +18674,8 @@
   {
     "name": "io.github.gosodax/builders-mcp",
     "title": "SODAX Builders MCP",
-    "description": "Live cross-network DeFi API data and auto-updating SDK docs for 17+ networks.",
-    "version": "1.0.2",
+    "description": "Cross-network DeFi API data, AMM analytics, and SDK docs for 17+ networks.",
+    "version": "1.1.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/gosodax/builders-sodax-mcp-server"
   },
@@ -19067,7 +18691,7 @@
     "name": "io.github.gradion-ai/ipybox",
     "title": "io.github.gradion-ai/ipybox",
     "description": "Unified execution environment for Python code, shell commands, and programmatic MCP tool calls",
-    "version": "0.9.0",
+    "version": "0.9.1",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/gradion-ai/ipybox"
   },
@@ -19987,7 +19611,7 @@
     "name": "io.github.imatza-rh/mcp-zuul",
     "title": "io.github.imatza-rh/mcp-zuul",
     "description": "Zuul CI — build failure analysis, log search, pipeline status, and job configuration",
-    "version": "0.3.3",
+    "version": "0.3.4",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/imatza-rh/mcp-zuul"
   },
@@ -20258,8 +19882,8 @@
   {
     "name": "io.github.iris-eval/mcp-server",
     "title": "io.github.iris-eval/mcp-server",
-    "description": "MCP-native agent evaluation and observability server for AI agents",
-    "version": "0.1.4",
+    "description": "The agent eval standard for MCP. Score every agent output for quality, safety, and cost.",
+    "version": "0.1.6",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/iris-eval/mcp-server"
   },
@@ -20419,7 +20043,7 @@
     "name": "io.github.j0hanz/fetch-url-mcp",
     "title": "Fetch URL MCP Server",
     "description": "A web content fetcher MCP server that converts HTML to clean, AI and human readable markdown.",
-    "version": "1.10.16",
+    "version": "1.11.0",
     "websiteUrl": "https://github.com/j0hanz/fetch-url-mcp#readme",
     "repositoryUrl": "https://github.com/j0hanz/fetch-url-mcp"
   },
@@ -20819,7 +20443,7 @@
     "name": "io.github.jghiringhelli/codeseeker",
     "title": "io.github.jghiringhelli/codeseeker",
     "description": "Graph-powered code intelligence with semantic search and knowledge graph for AI assistants",
-    "version": "1.11.2",
+    "version": "2.0.1",
     "websiteUrl": "https://github.com/jghiringhelli/codeseeker",
     "repositoryUrl": "https://github.com/jghiringhelli/codeseeker"
   },
@@ -20936,6 +20560,14 @@
     "repositoryUrl": "https://github.com/jmsaavedra/rendermark"
   },
   {
+    "name": "io.github.jnMetaCode/shellward",
+    "title": "io.github.jnMetaCode/shellward",
+    "description": "AI agent security: 7 MCP tools for injection detection, PII scanning, command safety, DLP.",
+    "version": "0.5.11",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/jnMetaCode/shellward"
+  },
+  {
     "name": "io.github.joansongjr/clawaimail",
     "title": "io.github.joansongjr/clawaimail",
     "description": "Email infrastructure for AI agents. Create inboxes, send/receive email, and search messages.",
@@ -20970,10 +20602,10 @@
   {
     "name": "io.github.joepangallo/agent-pay",
     "title": "io.github.joepangallo/agent-pay",
-    "description": "Payment gateway for AI agents. Discover, provision, and pay for tool APIs.",
-    "version": "1.1.1",
+    "description": "Payment gateway for AI agents with tool discovery, provisioning, metering, and reliability tools.",
+    "version": "1.1.2",
     "websiteUrl": null,
-    "repositoryUrl": "https://github.com/joepangallo/mcp-server-agentpay"
+    "repositoryUrl": "https://github.com/joepangallo/agent-pay"
   },
   {
     "name": "io.github.joepangallo/cloud-agent",
@@ -20987,7 +20619,7 @@
     "name": "io.github.joepangallo/mcp-audit-server",
     "title": "io.github.joepangallo/mcp-audit-server",
     "description": "Thin MCP and CLI proxy for AI agent and MCP security auditing via a hosted backend",
-    "version": "2.0.3",
+    "version": "2.0.4",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/joepangallo/mcp-audit-server"
   },
@@ -21488,6 +21120,14 @@
     "repositoryUrl": "https://github.com/kael-bit/engram-rs"
   },
   {
+    "name": "io.github.kagan-sh/kagan",
+    "title": "Kagan",
+    "description": "AI-powered Kanban TUI for autonomous development workflows with agent orchestration",
+    "version": "0.11.2",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/kagan-sh/kagan"
+  },
+  {
     "name": "io.github.kailayerhq/kai",
     "title": "io.github.kailayerhq/kai",
     "description": "Semantic code intelligence — call graphs, dependencies, impact analysis, and test coverage.",
@@ -21851,7 +21491,7 @@
     "name": "io.github.kitao/pyxel-mcp",
     "title": "Pyxel MCP",
     "description": "MCP server for Pyxel, a retro game engine for Python",
-    "version": "0.7.7",
+    "version": "0.8.3",
     "websiteUrl": "https://github.com/kitao/pyxel-mcp",
     "repositoryUrl": "https://github.com/kitao/pyxel-mcp"
   },
@@ -21979,7 +21619,7 @@
     "name": "io.github.kpanuragh/xdebug",
     "title": "io.github.kpanuragh/xdebug",
     "description": "MCP server for PHP Xdebug debugging with breakpoints, stepping, and variable inspection",
-    "version": "1.0.3",
+    "version": "1.2.1",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/kpanuragh/xdebug-mcp"
   },
@@ -22146,8 +21786,8 @@
   {
     "name": "io.github.laibniz/scholarfetch",
     "title": "ScholarFetch",
-    "description": "Multi-engine scholarly search MCP server with hosted Streamable HTTP endpoint.",
-    "version": "0.2.0",
+    "description": "Multi-engine scholarly research server for search, traversal, full text, and reading lists.",
+    "version": "0.2.1",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/laibniz/scholarfetch"
   },
@@ -22248,6 +21888,14 @@
     "repositoryUrl": null
   },
   {
+    "name": "io.github.leochong/visus-mcp",
+    "title": "io.github.leochong/visus-mcp",
+    "description": "Security-first web access for Claude. Sanitizes pages, blocks injection, redacts PII.",
+    "version": "0.6.1",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/visus-mcp/visus-mcp"
+  },
+  {
     "name": "io.github.leshchenko1979/fast-mcp-telegram",
     "title": "io.github.leshchenko1979/fast-mcp-telegram",
     "description": "Telegram MCP server with search and messaging capabilities",
@@ -22286,6 +21934,30 @@
     "version": "1.0.1",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/levelsofself/mcp-server"
+  },
+  {
+    "name": "io.github.levnikolaevich/hex-graph-mcp",
+    "title": "Hex Graph",
+    "description": "Code graph MCP server. SQLite + tree-sitter AST for architecture, clones, references, and flows.",
+    "version": "0.4.0",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/levnikolaevich/claude-code-skills"
+  },
+  {
+    "name": "io.github.levnikolaevich/hex-line-mcp",
+    "title": "Hex Line",
+    "description": "Hash-verified file editing MCP server with token efficiency hook. 11 tools for AI coding agents.",
+    "version": "1.4.0",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/levnikolaevich/claude-code-skills"
+  },
+  {
+    "name": "io.github.levnikolaevich/hex-ssh-mcp",
+    "title": "Hex SSH",
+    "description": "Token-efficient SSH MCP server with hash-verified remote file operations. 6 tools.",
+    "version": "1.1.6",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/levnikolaevich/claude-code-skills"
   },
   {
     "name": "io.github.lexsocket/mcp-eurlex",
@@ -22363,7 +22035,7 @@
     "name": "io.github.linxule/lotus-wisdom",
     "title": "Lotus Wisdom",
     "description": "Contemplative reasoning with Lotus Sutra wisdom framework and ext-apps visualization.",
-    "version": "0.6.1",
+    "version": "0.7.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/linxule/lotus-wisdom-mcp"
   },
@@ -22371,7 +22043,7 @@
     "name": "io.github.linxule/mcp-music-studio",
     "title": "Music Studio",
     "description": "Music studio: ABC notation composition and Strudel live coding with ext-apps UI.",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/linxule/mcp-music-studio"
   },
@@ -22411,7 +22083,7 @@
     "name": "io.github.littlebearapps/outlook-assistant",
     "title": "io.github.littlebearapps/outlook-assistant",
     "description": "Microsoft Outlook MCP server — 21 tools for email, calendar, contacts, and mailbox management.",
-    "version": "3.5.1",
+    "version": "3.5.2",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/littlebearapps/outlook-assistant"
   },
@@ -23603,15 +23275,15 @@
     "name": "io.github.mctx-ai/bible-study",
     "title": "Bible Study",
     "description": "Study the Bible in its original languages, trace themes across both testaments, and compare five tra",
-    "version": "1.11.0",
+    "version": "1.11.1",
     "websiteUrl": "https://bible-study.mctx.ai",
     "repositoryUrl": "https://github.com/mctx-ai/bible-mcp-server"
   },
   {
     "name": "io.github.mctx-ai/example-mcp-server",
     "title": "Example MCP Server",
-    "description": "Build complete MCP servers with our framework — study or fork this reference implementation. Covers ",
-    "version": "1.3.0",
+    "description": "Build complete Apps with our framework — study or fork this reference implementation. Covers all @mc",
+    "version": "1.3.1",
     "websiteUrl": "https://example-mcp-server.mctx.ai",
     "repositoryUrl": "https://github.com/mctx-ai/example-mcp-server"
   },
@@ -23619,7 +23291,7 @@
     "name": "io.github.mctx-ai/help",
     "title": "Help",
     "description": "Get accurate answers about mctx and MCP servers from live docs, not outdated training data. Look up ",
-    "version": "1.0.28",
+    "version": "1.0.33",
     "websiteUrl": "https://help.mctx.ai",
     "repositoryUrl": null
   },
@@ -23627,7 +23299,7 @@
     "name": "io.github.mctx-ai/notes",
     "title": "Notes",
     "description": "One centralized note store across every AI client — Claude, ChatGPT, Cursor, Codex, Windsurf. Save a",
-    "version": "1.4.4",
+    "version": "1.4.5",
     "websiteUrl": "https://notes.mctx.ai",
     "repositoryUrl": null
   },
@@ -23642,8 +23314,8 @@
   {
     "name": "io.github.mctx-ai/todos",
     "title": "Todos",
-    "description": "Personal todo list that persists across sessions and MCP clients. Create, update, complete, reorder,",
-    "version": "2.0.4",
+    "description": "Personal todo list that persists across sessions. Create, update, complete, reorder, and delete todo",
+    "version": "2.0.5",
     "websiteUrl": "https://todos.mctx.ai",
     "repositoryUrl": null
   },
@@ -23963,7 +23635,7 @@
     "name": "io.github.microsoft/awesome-copilot",
     "title": "Awesome Copilot MCP Server",
     "description": "An MCP server that stores Copilot customizations from the Awesome Copilot repository",
-    "version": "1.0.2026032304",
+    "version": "1.0.2026032405",
     "websiteUrl": "https://aka.ms/awesome-copilot/mcp",
     "repositoryUrl": "https://github.com/microsoft/mcp-dotnet-samples"
   },
@@ -24086,6 +23758,14 @@
     "version": "1.2.1",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/mikusnuz/npm-mcp"
+  },
+  {
+    "name": "io.github.mikusnuz/pexbot-mcp",
+    "title": "io.github.mikusnuz/pexbot-mcp",
+    "description": "AI simulated crypto trading with real-time Upbit prices — 11 tools, 5 resources, 5 prompts",
+    "version": "2.1.1",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/mikusnuz/pexbot-mcp"
   },
   {
     "name": "io.github.mikusnuz/umami",
@@ -24339,7 +24019,7 @@
     "name": "io.github.morebetterclaw/forge-swap",
     "title": "io.github.morebetterclaw/forge-swap",
     "description": "FORGE Swap — cross-chain swaps via THORChain. Quote and execute BTC, ETH, RUNE, USDC swaps.",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/morebetterclaw/forge"
   },
@@ -24366,6 +24046,14 @@
     "version": "1.0.3",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/motherduckdb/mcp-server-motherduck"
+  },
+  {
+    "name": "io.github.motiveflowllc/agentvault",
+    "title": "AgentVault",
+    "description": "Discover, verify, and connect to AI agents with E2E encrypted messaging and trust scoring.",
+    "version": "0.2.1",
+    "websiteUrl": "https://agentvault.chat",
+    "repositoryUrl": "https://github.com/motiveflowllc/agentvault-gen2.git"
   },
   {
     "name": "io.github.mountainmystic/hedera-hcs-mcp-server",
@@ -24451,7 +24139,7 @@
     "name": "io.github.msaad00/agent-bom",
     "title": "agent-bom",
     "description": "Security scanner for AI infrastructure — blast radius mapping, AI BOM, runtime proxy, compliance",
-    "version": "0.75.0",
+    "version": "0.75.3",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/msaad00/agent-bom"
   },
@@ -24467,7 +24155,7 @@
     "name": "io.github.msjsc001/omniclip-rag-mcp",
     "title": "OmniClip RAG",
     "description": "Read-only local-first MCP server for private Markdown, PDF, and Tika-backed search on Windows.",
-    "version": "0.4.2",
+    "version": "0.4.3",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/msjsc001/OmniClip-RAG"
   },
@@ -24587,7 +24275,7 @@
     "name": "io.github.n24q02m/better-code-review-graph",
     "title": "io.github.n24q02m/better-code-review-graph",
     "description": "Knowledge graph for token-efficient code reviews with fixed search and configurable embeddings",
-    "version": "1.0.3",
+    "version": "3.0.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/n24q02m/better-code-review-graph.git"
   },
@@ -24595,7 +24283,7 @@
     "name": "io.github.n24q02m/better-email-mcp",
     "title": "io.github.n24q02m/better-email-mcp",
     "description": "IMAP/SMTP MCP server for Email with composite tools. Multi-account, auto-discovery.",
-    "version": "1.13.0",
+    "version": "1.14.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/n24q02m/better-email-mcp.git"
   },
@@ -24603,7 +24291,7 @@
     "name": "io.github.n24q02m/better-godot-mcp",
     "title": "io.github.n24q02m/better-godot-mcp",
     "description": "MCP server for Godot Engine 4.x with 18 tools for scenes, scripts, and shaders.",
-    "version": "1.6.2",
+    "version": "1.7.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/n24q02m/better-godot-mcp.git"
   },
@@ -24611,7 +24299,7 @@
     "name": "io.github.n24q02m/better-notion-mcp",
     "title": "io.github.n24q02m/better-notion-mcp",
     "description": "Markdown-first MCP server for Notion API with 9 composite tools and 39+ actions.",
-    "version": "2.19.2",
+    "version": "2.20.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/n24q02m/better-notion-mcp.git"
   },
@@ -24619,7 +24307,7 @@
     "name": "io.github.n24q02m/better-telegram-mcp",
     "title": "io.github.n24q02m/better-telegram-mcp",
     "description": "Telegram MCP server — dual-mode Bot API + MTProto, 6 composite tools.",
-    "version": "3.1.2",
+    "version": "3.2.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/n24q02m/better-telegram-mcp.git"
   },
@@ -24627,7 +24315,7 @@
     "name": "io.github.n24q02m/mnemo-mcp",
     "title": "io.github.n24q02m/mnemo-mcp",
     "description": "Persistent AI memory with hybrid search (FTS5 + semantic) and cross-machine sync.",
-    "version": "1.9.1",
+    "version": "1.10.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/n24q02m/mnemo-mcp.git"
   },
@@ -24635,7 +24323,7 @@
     "name": "io.github.n24q02m/wet-mcp",
     "title": "io.github.n24q02m/wet-mcp",
     "description": "MCP server for web search, content extraction, academic research, and library docs.",
-    "version": "2.14.2",
+    "version": "2.15.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/n24q02m/wet-mcp.git"
   },
@@ -24891,7 +24579,7 @@
     "name": "io.github.nicholasglazer/gnosis",
     "title": "Gnosis MCP",
     "description": "Zero-config MCP server for searchable documentation. SQLite or PostgreSQL.",
-    "version": "0.7.3",
+    "version": "0.10.7",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/nicholasglazer/gnosis-mcp"
   },
@@ -25408,6 +25096,14 @@
     "repositoryUrl": "https://github.com/oabolade/figma_mcp_server_actor"
   },
   {
+    "name": "io.github.oborchers/tablestakes",
+    "title": "io.github.oborchers/tablestakes",
+    "description": "Read and edit HTML/Markdown tables in GitBook-synced documents via MCP tools.",
+    "version": "0.1.2",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/oborchers/tablestakes"
+  },
+  {
     "name": "io.github.octoco-ltd/sheetsdata-mcp",
     "title": "io.github.octoco-ltd/sheetsdata-mcp",
     "description": "Electronic component datasheets for AI agents — specs, pinouts, package data on demand.",
@@ -25579,7 +25275,7 @@
     "name": "io.github.olgasafonova/miro-mcp-server",
     "title": "Miro",
     "description": "Control Miro whiteboards with AI. 77 tools for boards, diagrams, mindmaps.",
-    "version": "1.15.2",
+    "version": "1.16.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/olgasafonova/miro-mcp-server"
   },
@@ -25630,6 +25326,14 @@
     "version": "1.3.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/omega-memory/omega-memory"
+  },
+  {
+    "name": "io.github.omiiyamu/hiveclaw",
+    "title": "io.github.omiiyamu/hiveclaw",
+    "description": "Connect AI assistants to HiveClaw — manage projects, talk to AI agents, and more.",
+    "version": "0.1.1",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/HiveClaw-AI/hiveclaw"
   },
   {
     "name": "io.github.omoshola-o/xap",
@@ -26128,6 +25832,14 @@
     "repositoryUrl": null
   },
   {
+    "name": "io.github.peter120525-cmd/lawmadi-os",
+    "title": "법마디(Lawmadi) OS — Korean Legal AI",
+    "description": "Korean Legal AI — 60 agents, real-time statute verification via law.go.kr. Free 2/day.",
+    "version": "60.0.1",
+    "websiteUrl": null,
+    "repositoryUrl": null
+  },
+  {
     "name": "io.github.peturgeorgievv-factory/postfast-mcp",
     "title": "io.github.peturgeorgievv-factory/postfast-mcp",
     "description": "MCP server for the PostFast API — schedule and manage social media posts via AI tools",
@@ -26214,6 +25926,46 @@
     "version": "1.3.2",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/piers-fawkes/fodda-mcp"
+  },
+  {
+    "name": "io.github.pijusz/mcp-gads",
+    "title": "io.github.pijusz/mcp-gads",
+    "description": "Google Ads MCP server — query campaigns, keywords, assets & more via natural language",
+    "version": "0.5.4",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/pijusz/mcp-gads"
+  },
+  {
+    "name": "io.github.pijusz/mcp-gsc",
+    "title": "io.github.pijusz/mcp-gsc",
+    "description": "Google Search Console MCP server — query performance, sitemaps, indexing & more",
+    "version": "0.1.7",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/pijusz/mcp-gsc"
+  },
+  {
+    "name": "io.github.pijusz/mcp-mailtrap",
+    "title": "io.github.pijusz/mcp-mailtrap",
+    "description": "MCP server for the Mailtrap email platform — analytics, sending, contacts, sandbox",
+    "version": "0.1.4",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/pijusz/mcp-mailtrap"
+  },
+  {
+    "name": "io.github.pijusz/mcp-redtrack",
+    "title": "io.github.pijusz/mcp-redtrack",
+    "description": "MCP server for RedTrack affiliate tracking API",
+    "version": "0.1.4",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/pijusz/mcp-redtrack"
+  },
+  {
+    "name": "io.github.pijusz/mcp-sanity-images",
+    "title": "io.github.pijusz/mcp-sanity-images",
+    "description": "MCP server for uploading local images to Sanity CMS",
+    "version": "0.3.7",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/pijusz/mcp-sanity-images"
   },
   {
     "name": "io.github.pilat/mcp-datalink",
@@ -26339,7 +26091,7 @@
     "name": "io.github.pouria3/bstorms",
     "title": "bstorms.ai — Agent Playbook Marketplace",
     "description": "Agent playbook marketplace. Share proven execution knowledge, earn USDC on Base.",
-    "version": "1.0.8",
+    "version": "3.0.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/pouria3/bstorms-skill"
   },
@@ -26419,7 +26171,7 @@
     "name": "io.github.pretorin-ai/pretorin",
     "title": "Pretorin Compliance",
     "description": "Access Pretorin compliance systems, controls, evidence, and narratives from your AI tools.",
-    "version": "0.8.4",
+    "version": "0.9.4",
     "websiteUrl": "https://pretorin.com",
     "repositoryUrl": "https://github.com/pretorin-ai/pretorin-cli.git"
   },
@@ -26558,6 +26310,14 @@
     "version": "0.0.3",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/putput-io/mcp"
+  },
+  {
+    "name": "io.github.pvliesdonk/image-generation-mcp",
+    "title": "Image Generation MCP Server",
+    "description": "MCP server for AI image generation via OpenAI, Stable Diffusion (SD WebUI), or placeholders.",
+    "version": "1.3.0",
+    "websiteUrl": "https://pvliesdonk.github.io/image-generation-mcp/",
+    "repositoryUrl": "https://github.com/pvliesdonk/image-generation-mcp"
   },
   {
     "name": "io.github.pvliesdonk/markdown-vault-mcp",
@@ -26728,6 +26488,14 @@
     "repositoryUrl": "https://github.com/r-huijts/strava-mcp"
   },
   {
+    "name": "io.github.r3352/redact-mcp",
+    "title": "Redact MCP",
+    "description": "Auto-detects and obfuscates PII (IPs, emails, API keys, names) so Claude never sees real client data",
+    "version": "2.0.4",
+    "websiteUrl": "https://github.com/r3352/redact-mcp",
+    "repositoryUrl": "https://github.com/r3352/redact-mcp"
+  },
+  {
     "name": "io.github.rabyavalla/bonsai-health",
     "title": "B.O.N.S.A.I. Health Intelligence API",
     "description": "Lifestyle medicine health intelligence via x402 micropayments. 637+ peer-reviewed references.",
@@ -26816,6 +26584,14 @@
     "repositoryUrl": "https://github.com/raisiqueira/django-telescope"
   },
   {
+    "name": "io.github.rajanrengasamy/vidlens-mcp",
+    "title": "io.github.rajanrengasamy/vidlens-mcp",
+    "description": "YouTube intelligence layer for AI agents. 41 tools, 10 modules, zero config.",
+    "version": "1.2.6",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/rajanrengasamy/vidlens-mcp"
+  },
+  {
     "name": "io.github.ralfbecher/orionbelt-analytics",
     "title": "io.github.ralfbecher/orionbelt-analytics",
     "description": "Ontology-based MCP server for database schema analysis and RDF/OWL ontology generation",
@@ -26854,6 +26630,14 @@
     "version": "0.1.8",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/TheSuperColony/supercolony-mcp"
+  },
+  {
+    "name": "io.github.raphasouthall/neurostack",
+    "title": "io.github.raphasouthall/neurostack",
+    "description": "Token-efficient MCP memory for Markdown vaults. Tiered retrieval, hybrid search, GraphRAG.",
+    "version": "0.9.3",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/raphasouthall/neurostack"
   },
   {
     "name": "io.github.raskolnikovdd/adaptive-memory-graph",
@@ -27664,6 +27448,14 @@
     "repositoryUrl": "https://github.com/roomi-fields/rtfm"
   },
   {
+    "name": "io.github.roomza-inc/roomza",
+    "title": "Roomza Hotel Intelligence",
+    "description": "Hotel and room intelligence from Roomza: scores, reviews, and room details.",
+    "version": "1.0.1",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/roomza-inc/Roomza"
+  },
+  {
     "name": "io.github.rosch100/mcp-encrypted-sqlite",
     "title": "io.github.rosch100/mcp-encrypted-sqlite",
     "description": "MCP server for encrypted SQLite databases (SQLCipher 4) - Works with MoneyMoney, KeePass and more",
@@ -28275,7 +28067,7 @@
     "name": "io.github.sachitrafa/cognitive-ai-memory",
     "title": "io.github.sachitrafa/cognitive-ai-memory",
     "description": "Ebbinghaus-based persistent memory for Claude. Memories decay with time, strengthen on recall.",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/sachitrafa/cognitive-ai-memory"
   },
@@ -28291,7 +28083,7 @@
     "name": "io.github.sacravenger/nanmesh-mcp",
     "title": "io.github.sacravenger/nanmesh-mcp",
     "description": "29 tools for the AI trust network. Search, vote, register agents, and query trust scores.",
-    "version": "3.1.1",
+    "version": "3.3.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/NaNMesh/nanmesh-mcp"
   },
@@ -28299,7 +28091,7 @@
     "name": "io.github.safedep/vet-mcp",
     "title": "SafeDep Vet MCP",
     "description": "Protect your AI agents and IDEs from malicious open-source packages.",
-    "version": "1.15.0",
+    "version": "1.16.0",
     "websiteUrl": "https://safedep.io",
     "repositoryUrl": "https://github.com/safedep/vet"
   },
@@ -28406,6 +28198,14 @@
     "version": "1.0.1",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/sarahpark/google-search-console-mcp"
+  },
+  {
+    "name": "io.github.saranshbamania/mobile-device-mcp",
+    "title": "io.github.saranshbamania/mobile-device-mcp",
+    "description": "AI control of Android/iOS devices. Screenshots, UI tree, AI vision, Flutter, video. 49 tools.",
+    "version": "0.2.9",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/saranshbamania/mobile-device-mcp"
   },
   {
     "name": "io.github.sarath-451/tomcat",
@@ -29155,7 +28955,7 @@
     "name": "io.github.smart-mcp-proxy/mcpproxy-go",
     "title": "io.github.smart-mcp-proxy/mcpproxy-go",
     "description": "Smart MCP proxy with BM25 tool discovery, quarantine security, and ~99% token savings",
-    "version": "0.21.3",
+    "version": "0.22.0",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/smart-mcp-proxy/mcpproxy-go"
   },
@@ -29542,6 +29342,14 @@
     "version": "0.1.5",
     "websiteUrl": null,
     "repositoryUrl": null
+  },
+  {
+    "name": "io.github.stepankaiser/ccphoto",
+    "title": "CCPhoto — Phone Camera Bridge",
+    "description": "Phone camera bridge for Claude Code — photos, live video, voice, and generative UI",
+    "version": "0.3.1",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/stepankaiser/ccphoto"
   },
   {
     "name": "io.github.stepbot/stockfish-mcp",
@@ -30230,6 +30038,14 @@
     "version": "1.0.1",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/therealtimex/un-datacommons-mcp"
+  },
+  {
+    "name": "io.github.thijssmudde/agentreacher",
+    "title": "io.github.thijssmudde/agentreacher",
+    "description": "Connect your AI to social media. Create, schedule, and publish posts to 9+ platforms.",
+    "version": "0.9.0",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/thijssmudde/agentreacher"
   },
   {
     "name": "io.github.thomasblc/skillsindex",
@@ -30984,6 +30800,14 @@
     "repositoryUrl": "https://github.com/vemonet/openroute-mcp"
   },
   {
+    "name": "io.github.venomseven/nslookup",
+    "title": "io.github.venomseven/nslookup",
+    "description": "DNS lookups, SSL certificates, security scanning, and propagation checks via nslookup.io",
+    "version": "1.1.4",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/NsLookup-io/nslookup-mcp"
+  },
+  {
     "name": "io.github.verbart/tradernet-mcp",
     "title": "io.github.verbart/tradernet-mcp",
     "description": "MCP server for Tradernet/Freedom24 trading API — portfolio, orders, quotes, and more",
@@ -31536,6 +31360,14 @@
     "repositoryUrl": null
   },
   {
+    "name": "io.github.with-geun/alive-analysis",
+    "title": "io.github.with-geun/alive-analysis",
+    "description": "Query alive-analysis history from any AI client. Tools: list, get, search, dashboard export.",
+    "version": "1.3.2",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/with-geun/alive-analysis"
+  },
+  {
     "name": "io.github.withinfocus/statbotics",
     "title": "Statbotics",
     "description": "Statbotics MCP Server",
@@ -31674,8 +31506,8 @@
   {
     "name": "io.github.woyaxnini/max-messenger",
     "title": "io.github.woyaxnini/max-messenger",
-    "description": "MCP server for MAX Messenger — Russian national messenger by VK.",
-    "version": "1.0.1",
+    "description": "MCP server for MAX Messenger by VK. 21 tools: messages, media, buttons, members, events.",
+    "version": "1.2.1",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/woyaxnini/mcp-max-messenger"
   },
@@ -31738,10 +31570,10 @@
   {
     "name": "io.github.wyattbenno777/icme-preflight",
     "title": "io.github.wyattbenno777/icme-preflight",
-    "description": "Cryptographic guardrails for AI agents. Verify actions with formal logic and zero-knowledge proofs.",
-    "version": "1.0.0",
+    "description": "Jailbreak-proof AI guardrails. Automated Reasoning SMT solver, not an LLM. ZK proofs included.",
+    "version": "1.0.1",
     "websiteUrl": null,
-    "repositoryUrl": "https://github.com/ICME-Lab/jolt-atlas"
+    "repositoryUrl": "https://github.com/ICME-Lab/smt-ar-base"
   },
   {
     "name": "io.github.wywy-llc/gas-library-hub",
@@ -32467,7 +32299,7 @@
     "name": "io.nestr/mcp",
     "title": "io.nestr/mcp",
     "description": "Connect AI to Nestr for Holacracy, Sociocracy, and self-organizing teams.",
-    "version": "0.1.49",
+    "version": "0.1.50",
     "websiteUrl": null,
     "repositoryUrl": "https://github.com/nestr-dev/nestr-mcp"
   },
@@ -32930,6 +32762,14 @@
   {
     "name": "live.alpic.staging.alpic-poc-frontend-c68d130f/alpic-poc-frontend",
     "title": "My MCP Serv",
+    "description": "Description of my MCP server",
+    "version": "0.0.1",
+    "websiteUrl": null,
+    "repositoryUrl": null
+  },
+  {
+    "name": "live.alpic.staging.demo-81c8a122/demo",
+    "title": "My MCP Server",
     "description": "Description of my MCP server",
     "version": "0.0.1",
     "websiteUrl": null,
@@ -33496,6 +33336,14 @@
     "repositoryUrl": "https://github.com/lightpaperorg/lightpaper"
   },
   {
+    "name": "org.onekash/icloud-calendar-mcp",
+    "title": "org.onekash/icloud-calendar-mcp",
+    "description": "MCP server for iCloud (Apple) Calendar access via CalDAV",
+    "version": "2.0.1",
+    "websiteUrl": null,
+    "repositoryUrl": "https://github.com/icloud-calendar-mcp/icloud-calendar-mcp"
+  },
+  {
     "name": "org.virtualflybrain/vfb3-mcp",
     "title": "VirtualFlyBrain",
     "description": "MCP server for Drosophila neuroscience data from VirtualFlyBrain",
@@ -33571,7 +33419,7 @@
     "name": "so.pharaoh/pharaoh",
     "title": "Pharaoh",
     "description": "Codebase knowledge graph — architectural awareness for AI coding agents via MCP",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "websiteUrl": "https://pharaoh.so",
     "repositoryUrl": null
   },

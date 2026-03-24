@@ -148,7 +148,7 @@ export default function TerminalDemo({ demos }: TerminalDemoProps = {}) {
           <span className="w-2.5 h-2.5 rounded-full bg-[var(--terminal-yellow)]" />
           <span className="w-2.5 h-2.5 rounded-full bg-[var(--terminal-green)]" />
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-1 overflow-x-auto">
           {allDemos.map((d, i) => (
             <button
               key={d.title}
@@ -167,7 +167,7 @@ export default function TerminalDemo({ demos }: TerminalDemoProps = {}) {
       </div>
 
       {/* Terminal body — fixed height */}
-      <div className="p-4 h-[420px] overflow-hidden">
+      <div className="p-2 md:p-4 h-[300px] md:h-[420px] overflow-hidden">
         {demo.lines.slice(0, visibleLines + 1).map((line, i) => {
           const isCurrentLine = i === visibleLines
           const isCommandTyping = isCurrentLine && line.type === 'command' && typedChars < line.text.length

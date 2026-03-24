@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router'
-import { useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { DocsSidebar } from '../components/docs-sidebar'
 import { MarkdownRenderer } from '../components/markdown-renderer'
 import { DocPageActions, getDocsIssueUrl } from '../components/doc-page-actions'
@@ -15,9 +15,82 @@ const manifest = docsManifest as Array<{
 
 const content = docsContent as Record<string, string>
 
+function DraggableDocsNav({ children, isOpen, onToggle }: { children: React.ReactNode; isOpen: boolean; onToggle: () => void }) {
+  const btnRef = useRef<HTMLButtonElement>(null)
+  const [pos, setPos] = useState({ x: 16, y: -1 })
+  const dragging = useRef(false)
+  const dragStart = useRef({ x: 0, y: 0, btnX: 0, btnY: 0 })
+  const moved = useRef(false)
+
+  // Set initial Y after mount (bottom-right above status bar)
+  useEffect(() => {
+    if (pos.y === -1) {
+      setPos({ x: 16, y: window.innerHeight - 100 })
+    }
+  }, [pos.y])
+
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    dragging.current = true
+    moved.current = false
+    dragStart.current = { x: e.clientX, y: e.clientY, btnX: pos.x, btnY: pos.y }
+    btnRef.current?.setPointerCapture(e.pointerId)
+  }, [pos])
+
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!dragging.current) return
+    const dx = e.clientX - dragStart.current.x
+    const dy = e.clientY - dragStart.current.y
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved.current = true
+    const newX = Math.max(0, Math.min(window.innerWidth - 48, dragStart.current.btnX + dx))
+    const newY = Math.max(0, Math.min(window.innerHeight - 48, dragStart.current.btnY + dy))
+    setPos({ x: newX, y: newY })
+  }, [])
+
+  const handlePointerUp = useCallback((e: React.PointerEvent) => {
+    dragging.current = false
+    btnRef.current?.releasePointerCapture(e.pointerId)
+    if (!moved.current) onToggle()
+  }, [onToggle])
+
+  if (pos.y === -1) return null
+
+  return (
+    <>
+      {/* Draggable floating button */}
+      <button
+        ref={btnRef}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        className="md:hidden fixed z-40 px-3 py-2 bg-[var(--accent)] text-black font-mono text-xs font-bold border border-[var(--accent)] shadow-lg touch-none select-none"
+        style={{ left: pos.x, top: pos.y }}
+      >
+        $ docs
+      </button>
+
+      {/* Overlay panel */}
+      {isOpen && (
+        <div className="md:hidden fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/60" onClick={onToggle} />
+          <div className="absolute bottom-0 left-0 right-0 max-h-[70vh] overflow-y-auto bg-[var(--bg-primary)] border-t border-[var(--accent)]">
+            <div className="sticky top-0 flex items-center justify-between px-4 py-2 bg-[var(--bg-inverse)] border-b border-[var(--border-secondary)] font-mono text-xs">
+              <span className="text-[var(--accent)]">$ docs navigation</span>
+              <button onClick={onToggle} className="text-[var(--text-tertiary)] hover:text-[var(--text-heading)] px-2 py-1">[close]</button>
+            </div>
+            <div className="p-4">
+              {children}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
 export default function DocsPage() {
   const params = useParams()
   const navigate = useNavigate()
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
   // Build the path from URL params: /docs/section/page
   const docPath = useMemo(() => {
@@ -53,29 +126,40 @@ export default function DocsPage() {
 
   const pageContent = content[docPath]
 
+  // Close mobile sidebar on navigation
+  useEffect(() => {
+    setMobileSidebarOpen(false)
+  }, [docPath])
+
   if (!docPath) {
     return null // Will redirect
   }
 
   return (
-    <div className="flex gap-6 min-h-[calc(100vh-12rem)]">
-      {/* Sidebar */}
-      <aside className="w-56 flex-shrink-0 border-r border-[var(--border-secondary)] pr-4 hidden md:block">
+    <div>
+      {/* Mobile/tablet: draggable floating docs nav */}
+      <DraggableDocsNav isOpen={mobileSidebarOpen} onToggle={() => setMobileSidebarOpen(!mobileSidebarOpen)}>
         <DocsSidebar sections={manifest} activePath={docPath} />
-      </aside>
+      </DraggableDocsNav>
 
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        {/* Breadcrumbs */}
-        {currentSection && currentPage && (
-          <div className="flex items-center gap-2 mb-4 font-mono text-xs text-[var(--text-muted)]">
-            <span className="text-[var(--accent)]">docs</span>
-            <span>/</span>
-            <span>{currentSection.label}</span>
-            <span>/</span>
-            <span className="text-[var(--text-heading)]">{currentPage.title}</span>
-          </div>
-        )}
+      <div className="flex gap-6 min-h-[calc(100vh-12rem)]">
+        {/* Sidebar — desktop only */}
+        <aside className="w-56 flex-shrink-0 border-r border-[var(--border-secondary)] pr-4 hidden md:block">
+          <DocsSidebar sections={manifest} activePath={docPath} />
+        </aside>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          {/* Breadcrumbs */}
+          {currentSection && currentPage && (
+            <div className="flex items-center gap-2 mb-4 font-mono text-xs text-[var(--text-muted)]">
+              <span className="text-[var(--accent)]">docs</span>
+              <span>/</span>
+              <span>{currentSection.label}</span>
+              <span>/</span>
+              <span className="text-[var(--text-heading)]">{currentPage.title}</span>
+            </div>
+          )}
 
         {pageContent ? (
           <>
@@ -88,6 +172,7 @@ export default function DocsPage() {
             <p className="text-[var(--text-tertiary)] text-sm">Page not found: {docPath}</p>
           </div>
         )}
+      </div>
       </div>
     </div>
   )

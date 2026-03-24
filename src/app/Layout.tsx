@@ -108,33 +108,81 @@ function TypewriterNav() {
 }
 
 export default function Layout() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const location = useLocation()
+
+  // Close mobile menu on navigation
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [location.pathname])
+
+  const isActive = (path: string) => {
+    if (path === '/') return location.pathname === '/'
+    return location.pathname.startsWith(path)
+  }
+
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-heading)]">
       {/* Single-line header: prompt + nav tabs + stats */}
       <header className="border-b border-[var(--border-primary)] bg-[var(--bg-inverse)]">
-        <div className="container mx-auto px-4 max-w-7xl flex items-center font-mono text-sm overflow-x-auto">
+        <div className="container mx-auto px-4 max-w-7xl flex items-center font-mono text-sm">
           {/* Terminal prompt */}
           <div className="flex items-center gap-1.5 pr-3 py-2 border-r border-[var(--border-secondary)] flex-shrink-0">
             <span className="text-[var(--accent)]">nanosandbox</span>
-            <span className="text-[var(--text-tertiary)]">@terminal</span>
+            <span className="text-[var(--text-tertiary)] hidden sm:inline">@terminal</span>
             <span className="text-[var(--text-heading)]">:~</span>
             <span className="text-[var(--text-tertiary)] animate-pulse">_</span>
           </div>
 
-          {/* Nav items typed in on the same line */}
-          <TypewriterNav />
+          {/* Nav items — hidden on mobile */}
+          <div className="hidden md:contents">
+            <TypewriterNav />
+          </div>
 
           {/* Push stats to the right */}
           <div className="flex-1" />
           <div className="py-2 pl-3 flex-shrink-0 flex items-center gap-3">
-            <SystemStats />
-            <div className="h-4 w-px bg-[var(--border-secondary)]" />
+            <div className="hidden sm:block">
+              <SystemStats />
+            </div>
+            <div className="hidden sm:block h-4 w-px bg-[var(--border-secondary)]" />
             <ThemeToggle />
+            {/* Hamburger button — mobile only */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden flex flex-col gap-1 px-1 py-1"
+              aria-label="Toggle menu"
+            >
+              <span className={`w-4 h-0.5 bg-[var(--text-tertiary)] transition-transform ${mobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`} />
+              <span className={`w-4 h-0.5 bg-[var(--text-tertiary)] transition-opacity ${mobileMenuOpen ? 'opacity-0' : ''}`} />
+              <span className={`w-4 h-0.5 bg-[var(--text-tertiary)] transition-transform ${mobileMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`} />
+            </button>
           </div>
         </div>
+
+        {/* Mobile dropdown menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-[var(--border-secondary)] bg-[var(--bg-inverse)]">
+            <nav className="container mx-auto px-4 py-2 font-mono text-sm">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`block px-3 py-2 transition-colors ${
+                    isActive(item.path)
+                      ? 'text-[var(--accent)] bg-[var(--bg-elevated)]'
+                      : 'text-[var(--text-tertiary)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-tertiary)]'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        )}
       </header>
 
-      <main className="container mx-auto px-4 py-6 max-w-7xl pb-16">
+      <main className="container mx-auto px-4 py-4 md:py-6 max-w-7xl pb-16">
         <Outlet />
       </main>
 
@@ -144,9 +192,9 @@ export default function Layout() {
           <span className="text-[var(--accent)]">$</span>
           <span className="text-[var(--text-tertiary)]">nanosb --help</span>
           <div className="flex-1" />
-          <span className="text-[var(--text-tertiary)]">[Ctrl+C] Exit</span>
-          <span className="text-[var(--text-tertiary)]">[^] Navigate</span>
-          <span className="text-[var(--text-tertiary)]">[Enter] Select</span>
+          <span className="text-[var(--text-tertiary)] hidden md:inline">[Ctrl+C] Exit</span>
+          <span className="text-[var(--text-tertiary)] hidden md:inline">[^] Navigate</span>
+          <span className="text-[var(--text-heading)] hidden md:inline">[Enter] Select</span>
         </div>
       </div>
     </div>

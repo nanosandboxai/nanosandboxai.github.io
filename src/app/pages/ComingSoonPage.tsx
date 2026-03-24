@@ -28,13 +28,13 @@ export default function ComingSoonPage() {
       ) : (
         <div className="relative">
           {/* Timeline line */}
-          <div className="absolute left-4 top-0 bottom-0 w-px bg-[var(--border-secondary)]" />
+          <div className="absolute left-2 md:left-4 top-0 bottom-0 w-px bg-[var(--border-secondary)]" />
 
           <div className="space-y-8">
             {posts.map((post, i) => (
-              <div key={post.slug} className="relative pl-12">
+              <div key={post.slug} className="relative pl-8 md:pl-12">
                 {/* Timeline dot */}
-                <div className={`absolute left-2.5 top-1 w-3 h-3 rounded-full border-2 ${
+                <div className={`absolute left-0.5 md:left-2.5 top-1 w-3 h-3 rounded-full border-2 ${
                   i === 0 ? 'bg-[var(--accent)] border-[var(--accent)]' : 'bg-[var(--bg-primary)] border-[var(--text-muted)]'
                 }`} />
 

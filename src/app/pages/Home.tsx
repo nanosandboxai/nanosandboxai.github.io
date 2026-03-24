@@ -25,11 +25,11 @@ export default function Home() {
     <>
       {/* Hero Section */}
       <div className="mb-6 border border-[var(--border-primary)] bg-[var(--bg-inverse)] p-6 font-mono">
-        <div className="flex items-center gap-5 mb-4">
-          <img src="/logo.svg" alt="Nanosandbox" className="w-18 h-18 flex-shrink-0" />
+        <div className="flex items-center gap-3 md:gap-5 mb-4">
+          <img src="/logo.svg" alt="Nanosandbox" className="w-12 h-12 md:w-18 md:h-18 flex-shrink-0" />
           <div>
-            <h1 className="text-3xl font-bold text-[var(--accent)] mb-1">NANOSANDBOX</h1>
-            <p className="text-[var(--text-heading)] text-lg">VM-Isolated Sandboxes for AI Code Agents</p>
+            <h1 className="text-xl md:text-3xl font-bold text-[var(--accent)] mb-1">NANOSANDBOX</h1>
+            <p className="text-[var(--text-heading)] text-sm md:text-lg">VM-Isolated Sandboxes for AI Code Agents</p>
           </div>
         </div>
         <p className="text-[var(--text-tertiary)] text-sm leading-relaxed">
@@ -49,8 +49,8 @@ export default function Home() {
             <p className="text-[var(--text-tertiary)] text-xs"># Install nanosb</p>
             <CopyButton text="curl -fsSL https://github.com/nanosandboxai/cli/releases/latest/download/install.sh | bash" />
           </div>
-          <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-3">
-            <code className="text-[var(--text-primary)]">
+          <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-3 overflow-x-auto">
+            <code className="text-[var(--text-primary)] text-xs md:text-sm whitespace-nowrap">
               curl -fsSL https://github.com/nanosandboxai/cli/releases/latest/download/install.sh | bash
             </code>
           </div>
@@ -102,10 +102,10 @@ export default function Home() {
             { cmd: 'nanosb doctor', desc: 'Check runtime prerequisites' },
             { cmd: 'nanosb cleanup', desc: 'Clean up stale project clones' },
           ].map((c) => (
-            <div key={c.cmd} className="flex items-center gap-2 group">
-              <span className="text-[var(--text-heading)] w-48 flex-shrink-0">{c.cmd}</span>
+            <div key={c.cmd} className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2 group">
+              <span className="text-[var(--text-heading)] sm:w-48 sm:flex-shrink-0">{c.cmd}</span>
               <span className="text-[var(--text-tertiary)] flex-1">{c.desc}</span>
-              <CopyButton text={c.cmd} className="opacity-0 group-hover:opacity-100" />
+              <CopyButton text={c.cmd} className="hidden sm:inline opacity-0 group-hover:opacity-100" />
             </div>
           ))}
         </div>
@@ -113,7 +113,7 @@ export default function Home() {
 
       {/* Footer */}
       <div className="border border-[var(--border-primary)] bg-[var(--bg-inverse)] p-4 font-mono text-center">
-        <div className="flex items-center justify-center gap-8 text-xs text-[var(--text-tertiary)] mb-2">
+        <div className="flex items-center justify-center flex-wrap gap-3 md:gap-8 text-xs text-[var(--text-tertiary)] mb-2">
           <a href="/docs" className="hover:text-[var(--accent)] transition-colors">Documentation</a>
           <a href="https://github.com/nanosandboxai" className="hover:text-[var(--accent)] transition-colors" target="_blank" rel="noopener noreferrer">GitHub</a>
           <a href="/agents" className="hover:text-[var(--accent)] transition-colors">Agents</a>
