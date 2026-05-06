@@ -15,7 +15,6 @@ defaults:
   cpus: 2
   memory: 4096
   timeout: 600
-  workdir: /workspace
   skills:
     - git-workflow
     - tdd
@@ -64,7 +63,6 @@ The `defaults` section sets baseline values applied to every sandbox unless over
 | `cpus` | integer | CPU cores allocated (runtime default: 1) |
 | `memory` | integer | Memory in MB (runtime default: 512) |
 | `timeout` | integer | Maximum runtime in seconds (runtime default: 300) |
-| `workdir` | string | Working directory inside the sandbox (default: `/workspace`) |
 | `env` | map | Environment variables injected into every sandbox |
 | `env_file` | string | Path to a file containing `KEY=VALUE` environment variables |
 | `network` | object | Network configuration (see [network](#network)) |
@@ -94,7 +92,6 @@ sandboxes:
     cpus: <n>
     memory: <mb>
     timeout: <secs>
-    workdir: <path>
     agent: <agent-name>
     skills: [<skill>, ...]
     auto_mode: <bool>

@@ -8,7 +8,21 @@ order: 2
 
 The Model Context Protocol (MCP) is an open standard for connecting AI agents to external tools and data sources. MCP servers expose capabilities (tools, resources, prompts) over a standardized JSON-RPC transport. Agents that support MCP can discover and invoke these capabilities at runtime.
 
-In Nanosandbox, MCP servers run inside the sandbox alongside the agent, providing secure access to tools without exposing the host system.
+In Nanosandbox, the agent-gateway manages MCP server configuration inside the sandbox. It generates the correct config format for each agent type so servers work consistently across Claude, Goose, Codex, and Cursor.
+
+## Config vs Commands
+
+> **sandbox.yml** and **TUI commands** are two ways to manage MCP servers. They behave differently:
+>
+> | | `sandbox.yml` | TUI `/mcp add` |
+> |---|---|---|
+> | **When applied** | Every time the sandbox starts (bootstrap) | Immediately, once |
+> | **Source tag** | `config` | `runtime` |
+> | **On sandbox restart** | Re-applied from config (always fresh) | Preserved — survives restarts |
+> | **On sandbox.yml change** | Old config servers replaced with new ones | Untouched — runtime servers kept |
+> | **Persisted where** | In your `sandbox.yml` file | In `~/.nanosandbox/state.json` inside the VM |
+>
+> **In short:** `sandbox.yml` is your declarative baseline. TUI commands are for ad-hoc additions that persist alongside the config without interfering with it. If a config server and a runtime server share the same name, the config version wins on next bootstrap.
 
 ## Configuring MCP Servers
 
@@ -19,6 +33,7 @@ MCP servers are configured in the `mcp` section of `sandbox.yml`. Each entry is 
 sandboxes:
   claude:
     image: claude
+    type: claude
     env:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     mcp:
@@ -41,7 +56,7 @@ Each named MCP server entry supports:
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `command` | `string` | Yes | The executable to run |
+| `command` | `string` | Yes | The executable to run (`npx`, `uvx`, or a binary) |
 | `args` | `string[]` | No | Arguments passed to the command |
 | `env` | `map` | No | Additional environment variables for this server |
 | `enabled` | `boolean` | No | Whether this server is enabled (default: `true`) |
@@ -68,7 +83,7 @@ sandboxes:
         args: ["-y", "@modelcontextprotocol/server-github"]
 ```
 
-In this example, the `claude` sandbox gets both the `memory` server (from defaults) and the `github` server (from its own config). If a sandbox defines a server with the same name as a default, the sandbox version takes precedence.
+In this example, the `claude` sandbox gets both the `memory` server (from defaults) and the `github` server (from its own config). If both define a server with the same name, the sandbox version takes precedence.
 
 ### Variable Substitution
 
@@ -156,27 +171,27 @@ mcp:
 
 **Exposed tools**: `query` (read-only SQL execution).
 
-## Agent-Gateway Integration
+## How MCP Config Is Generated
 
-When Nanosandbox launches an agent with MCP servers configured, it:
+The agent-gateway generates the correct MCP config format for each agent type. Each agent reads MCP config from a different location and in a different format:
 
-1. Starts each MCP server process inside the sandbox.
-2. Waits for each server to emit its capabilities on stdout (JSON-RPC initialization).
-3. Configures the agent's MCP client to connect to the running servers via stdio transport.
-4. The agent can then discover and invoke tools from all configured servers.
+| Agent | Config Format | Config Location |
+|---|---|---|
+| Claude Code | JSON (`mcpServers` in settings) | `~/.claude.json` |
+| Goose | YAML (`extensions:` with `cmd:`/`envs:`) | `~/.config/goose/config.yaml` |
+| Codex | TOML (`[mcp_servers.<name>]`) | `~/.codex/config.toml` |
+| Cursor | JSON (`mcpServers` in settings) | `~/.cursor/mcp.json` |
+
+### Cross-Agent Compatibility
+
+MCP servers defined with `npx` commands automatically get `uvx` equivalents generated for agents that use Python tooling (Goose). The gateway handles this transparently — you define the server once and it works across all agents.
 
 ```
-+-------------------------------------------------------+
-|                     Sandbox VM                         |
-|                                                        |
-|  +--------+    stdio    +-------------------+          |
-|  | Agent  | <---------> | MCP Server (GitHub)|         |
-|  |        |    stdio    +-------------------+          |
-|  |        | <---------> | MCP Server (Memory)|         |
-|  |        |    stdio    +-------------------+          |
-|  |        | <---------> | MCP Server (FS)    |         |
-|  +--------+             +-------------------+          |
-+-------------------------------------------------------+
+sandbox.yml:  command: npx, args: ["-y", "@modelcontextprotocol/server-github"]
+    ├── Claude:  npx -y @modelcontextprotocol/server-github
+    ├── Codex:   npx -y @modelcontextprotocol/server-github
+    ├── Cursor:  npx -y @modelcontextprotocol/server-github
+    └── Goose:   uvx mcp-server-github  (auto-generated override)
 ```
 
 ## Managing MCP in TUI
@@ -184,13 +199,34 @@ When Nanosandbox launches an agent with MCP servers configured, it:
 The TUI provides slash commands for managing MCP servers interactively:
 
 ```
-/mcp              Toggle the MCP sidebar
-/mcp list         List configured MCP servers
-/mcp add <name>   Add an MCP server
-/mcp remove <name> Remove an MCP server
-/mcp enable <name> Enable a disabled MCP server
-/mcp disable <name> Disable an MCP server
+/mcp                                      Toggle the MCP sidebar
+/mcp list                                 List configured MCP servers
+/mcp add <name> <command> [args...]       Add an MCP server to the focused sandbox
+/mcp add --all <name> <command> [args...] Add an MCP server to all sandboxes
+/mcp add --sandbox <name> <server> ...    Add an MCP server to a specific sandbox
+/mcp remove <name>                        Remove an MCP server
+/mcp remove --all <name>                  Remove from all sandboxes
+/mcp enable <name>                        Enable a disabled MCP server
+/mcp disable <name>                       Disable an MCP server
 ```
+
+### Example: Adding an MCP Server via TUI
+
+```
+/mcp add memory npx -y @modelcontextprotocol/server-memory
+# Added MCP server: memory
+
+/mcp add --all github npx -y @modelcontextprotocol/server-github
+# Added MCP server 'github' to all sandboxes
+```
+
+MCP servers added via TUI are tagged as **runtime-sourced** and persist across sandbox restarts, even if they are not in `sandbox.yml`.
+
+After adding or removing an MCP server, the TUI prompts you to reconnect (`/reconnect`) so the agent picks up the updated MCP configuration.
+
+## State Persistence
+
+MCP server definitions (along with skills) are persisted to `~/.nanosandbox/state.json` inside the VM. This file is saved on every mutation and reloaded on startup. The `~/.nanosandbox/` directory is symlinked to `/workspace/.nanosb-state/.nanosandbox/`, so it survives VM restarts via virtio-fs.
 
 ## Troubleshooting
 
