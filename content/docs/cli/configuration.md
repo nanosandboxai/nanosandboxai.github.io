@@ -183,6 +183,8 @@ env:
   DATABASE_URL: ${DATABASE_URL}
 ```
 
+All environment variables are encrypted before entering the VM. See [Secrets Management](/docs/security/secrets) for details.
+
 If a referenced host variable is not set, sandbox creation **fails with an error**.
 
 Environment variables can also be injected at runtime via the `-e` flag or `--env-file` flag, which take precedence over values defined in `sandbox.yml`.
@@ -201,29 +203,6 @@ Path to a file containing `KEY=VALUE` pairs, one per line. Lines starting with `
 ```yaml
 env_file: secrets.env
 ```
-
-### secrets
-
-Additional secret sources beyond `env:`. All environment variables (both `env:` and `secrets:`) are encrypted before entering the VM.
-
-```yaml
-secrets:
-  keys:
-    - DATABASE_URL
-    - STRIPE_SECRET_KEY
-  file: secrets.enc.yaml
-  intercept_patterns:
-    - ".env"
-    - "credentials.json"
-```
-
-| Key | Type | Description |
-|---|---|---|
-| `keys` | list | Host environment variable names to look up and inject |
-| `file` | string | Path to a SOPS-encrypted YAML file |
-| `intercept_patterns` | list | File glob patterns to intercept from project mount |
-
-See [Secrets Management](/docs/security/secrets) for details.
 
 ### network
 
