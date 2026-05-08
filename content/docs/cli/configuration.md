@@ -204,26 +204,26 @@ env_file: secrets.env
 
 ### secrets
 
-Declare secrets that should be encrypted before transmission to the VM. This is more secure than plain `env:` for sensitive values like API keys and database credentials. Secrets are encrypted on the host using X25519 ECDH + AES-256-GCM and decrypted inside the VM, where they are injected into the agent process via `execve` environment variables.
+Additional secret sources beyond `env:`. All environment variables (both `env:` and `secrets:`) are encrypted before entering the VM.
 
 ```yaml
 secrets:
-  env:
-    - ANTHROPIC_API_KEY
+  keys:
     - DATABASE_URL
-  sops_file: secrets.enc.yaml
-  intercept:
+    - STRIPE_SECRET_KEY
+  file: secrets.enc.yaml
+  intercept_patterns:
     - ".env"
     - "credentials.json"
 ```
 
 | Key | Type | Description |
 |---|---|---|
-| `env` | list | Host environment variable names to encrypt and inject |
-| `sops_file` | string | Path to a SOPS-encrypted YAML file |
-| `intercept` | list | File glob patterns to intercept from project mount |
+| `keys` | list | Host environment variable names to look up and inject |
+| `file` | string | Path to a SOPS-encrypted YAML file |
+| `intercept_patterns` | list | File glob patterns to intercept from project mount |
 
-Intercepted files are replaced inside the VM with tmpfs-backed copies (owner-read only, `0400` permissions). See [Secrets Management](/docs/security/secrets) for the full security model.
+See [Secrets Management](/docs/security/secrets) for details.
 
 ### network
 
