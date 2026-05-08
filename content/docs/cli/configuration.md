@@ -202,6 +202,29 @@ Path to a file containing `KEY=VALUE` pairs, one per line. Lines starting with `
 env_file: secrets.env
 ```
 
+### secrets
+
+Declare secrets that should be encrypted before transmission to the VM. This is more secure than plain `env:` for sensitive values like API keys and database credentials. Secrets are encrypted on the host using X25519 ECDH + AES-256-GCM and decrypted inside the VM, where they are injected into the agent process via `execve` environment variables.
+
+```yaml
+secrets:
+  env:
+    - ANTHROPIC_API_KEY
+    - DATABASE_URL
+  sops_file: secrets.enc.yaml
+  intercept:
+    - ".env"
+    - "credentials.json"
+```
+
+| Key | Type | Description |
+|---|---|---|
+| `env` | list | Host environment variable names to encrypt and inject |
+| `sops_file` | string | Path to a SOPS-encrypted YAML file |
+| `intercept` | list | File glob patterns to intercept from project mount |
+
+Intercepted files are replaced inside the VM with tmpfs-backed copies (owner-read only, `0400` permissions). See [Secrets Management](/docs/security/secrets) for the full security model.
+
 ### network
 
 Configure sandbox networking.

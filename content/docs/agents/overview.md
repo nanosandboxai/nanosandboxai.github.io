@@ -123,6 +123,8 @@ Each agent requires its own API key passed as an environment variable:
 
 API keys are injected into the sandbox as environment variables. They are never written to disk inside the guest.
 
+> **Recommended**: Use the `secrets:` configuration instead of plain `env:` for API keys. The secrets pipeline encrypts credentials before they enter the VM, providing end-to-end protection. See [Secrets Management](/docs/security/secrets) for details.
+
 You can also use an env file:
 
 ```bash
