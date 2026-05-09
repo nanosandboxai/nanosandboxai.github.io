@@ -216,6 +216,36 @@ nanosb cleanup
 nanosb cleanup --project ./my-repo
 ```
 
+## nanosb sessions
+
+List saved TUI sessions for a project.
+
+```bash
+nanosb sessions [--project PATH]
+```
+
+| Flag | Description |
+|---|---|
+| `--project <path>` | List sessions for a specific project directory (defaults to current directory) |
+
+Shows session id, last updated time, panel count, and summary.
+
+**Examples:**
+
+```bash
+# List sessions for current project
+nanosb sessions
+
+# List sessions for another project
+nanosb sessions --project ~/work/my-repo
+
+# Resume latest from listed sessions
+nanosb -r
+
+# Resume a specific session id
+nanosb --session 20260509121030-ab12cd34
+```
+
 ## nanosb cache prune
 
 Reclaim disk space by removing unused cached data.

@@ -20,6 +20,12 @@ The TUI auto-detects `sandbox.yml` in the current directory and starts all confi
 # Auto-detect sandbox.yml and start all sandboxes
 nanosb
 
+# Resume the latest saved session for this project
+nanosb -r
+
+# Resume a specific saved session id
+nanosb --session 20260509121030-ab12cd34
+
 # Use a specific config file
 nanosb --config my-config.yml
 
@@ -143,9 +149,28 @@ The TUI supports mouse interaction:
 
 ## Session Management
 
-Sessions persist across TUI restarts within the same project directory. When you exit the TUI, running sandboxes continue in the background. Re-launching `nanosb` in the same directory reattaches to the existing session.
+Sessions persist across TUI restarts within the same project directory. When you exit the TUI, running sandboxes continue in the background.
+
+Session startup is explicit:
+
+- `nanosb` starts a fresh session
+- `nanosb -r` resumes the latest saved session
+- `nanosb --session <id>` resumes a specific saved session id
+
+Use `nanosb sessions` to list saved sessions for the current project.
 
 To explicitly stop all sandboxes when exiting, use `/destroy` which removes all sandboxes and cleans up session state.
+
+```bash
+# List saved sessions for current project
+nanosb sessions
+
+# Resume the latest session
+nanosb -r
+
+# Resume a specific session id
+nanosb --session 20260509121030-ab12cd34
+```
 
 To stop individual sandboxes via the CLI:
 
