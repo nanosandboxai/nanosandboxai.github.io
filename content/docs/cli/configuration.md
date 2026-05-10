@@ -180,6 +180,8 @@ env:
   DATABASE_URL: ${DATABASE_URL}
 ```
 
+All environment variables are encrypted before entering the VM. See [Secrets Management](/docs/security/secrets) for details.
+
 If a referenced host variable is not set, sandbox creation **fails with an error**.
 
 Environment variables can also be injected at runtime via the `-e` flag or `--env-file` flag, which take precedence over values defined in `sandbox.yml`.
