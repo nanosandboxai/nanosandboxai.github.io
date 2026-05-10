@@ -83,8 +83,11 @@ The `/add` command supports these options:
 |---|---|
 | `/mcp` | Toggle the MCP sidebar |
 | `/mcp list` | List configured MCP servers |
-| `/mcp add <name> <command> [args...]` | Add an MCP server |
-| `/mcp remove <name>` | Remove an MCP server |
+| `/mcp add <name> <command> [args...]` | Add an MCP server to the focused sandbox |
+| `/mcp add --all <name> <command> [args...]` | Add an MCP server to all sandboxes |
+| `/mcp add --sandbox <name> <server> <cmd> [args...]` | Add to a specific sandbox |
+| `/mcp remove <name>` | Remove an MCP server from the focused sandbox |
+| `/mcp remove --all <name>` | Remove from all sandboxes |
 | `/mcp enable <name>` | Enable a disabled MCP server |
 | `/mcp disable <name>` | Disable an MCP server |
 
@@ -94,8 +97,11 @@ The `/add` command supports these options:
 |---|---|
 | `/skills` | Toggle the skills sidebar |
 | `/skills list` | List available skills |
-| `/skills add <name>` | Add a skill to the sandbox |
-| `/skills remove <name>` | Remove a skill from the sandbox |
+| `/skills add <name>` | Add a skill to the focused sandbox |
+| `/skills add --all <name>` | Add a skill to all sandboxes |
+| `/skills add --sandbox <name> <skill>` | Add to a specific sandbox |
+| `/skills remove <name>` | Remove a skill from the focused sandbox |
+| `/skills remove --all <name>` | Remove from all sandboxes |
 | `/skills show <name>` | Show the content of a skill |
 
 ### Git & Files

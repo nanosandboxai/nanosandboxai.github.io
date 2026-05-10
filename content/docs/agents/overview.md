@@ -8,23 +8,48 @@ order: 1
 
 Nanosandbox provides pre-built, sandboxed environments for popular AI coding agents. Each agent runs inside its own lightweight VM with full filesystem and network isolation.
 
-| Agent | CLI Name | Image | Size |
+| Agent | CLI Name | Image | Agent Type |
 |---|---|---|---|
-| Claude Code | `claude` | `ghcr.io/nanosandboxai/agents-registry/claude:latest` | ~190MB |
-| Goose | `goose` | `ghcr.io/nanosandboxai/agents-registry/goose:latest` | ~185MB |
-| Codex | `codex` | `ghcr.io/nanosandboxai/agents-registry/codex:latest` | ~195MB |
-| Cursor | `cursor` | `ghcr.io/nanosandboxai/agents-registry/cursor:latest` | ~200MB |
+| Claude Code | `claude` | `ghcr.io/nanosandboxai/agents-registry/claude:latest` | `claude` |
+| Goose | `goose` | `ghcr.io/nanosandboxai/agents-registry/goose:latest` | `goose` |
+| Codex | `codex` | `ghcr.io/nanosandboxai/agents-registry/codex:latest` | `codex` |
+| Cursor | `cursor` | `ghcr.io/nanosandboxai/agents-registry/cursor:latest` | `cursor` |
 
 ## Base Image
 
 All agent images are built on a common base:
 
-- **OS**: Alpine 3.20
-- **Runtime**: Node.js 22 (LTS)
-- **Base size**: ~150MB
+- **OS**: Debian (node:22-slim)
+- **Runtime**: Node.js 22 (LTS), Python 3 + uv/uvx
+- **Included tools**: git, curl, bash, sudo, openssh (dropbear)
 - **Registry**: `ghcr.io/nanosandboxai/agents-registry/`
 
-The base image includes common development tools: git, curl, openssh-client, and a POSIX shell.
+The base image includes the **agent-gateway** binary — an HTTP server (`:8080`) that manages skill files, MCP config generation, and state persistence inside the VM.
+
+## Architecture
+
+Each sandbox VM runs:
+
+```
++-----------------------------------------------------------+
+|                       Sandbox VM                          |
+|                                                           |
+|  nanosb-init.sh (PID 1)                                  |
+|    ├── agent-gateway :8080  (skills, MCP, state mgmt)    |
+|    ├── dropbear sshd :2222  (terminal access)            |
+|    └── agent process        (claude, goose, codex, etc.) |
+|                                                           |
+|  /workspace/          ← project mounted via virtio-fs    |
+|  /home/developer/     ← agent HOME (symlinked to state)  |
+|  .nanosb-state/       ← persisted state directory        |
++-----------------------------------------------------------+
+```
+
+The **agent-gateway** is the bridge between the CLI and the agent. It:
+- Receives skill and MCP definitions from the CLI via bootstrap
+- Generates agent-specific config files (each agent reads a different format)
+- Persists state to `~/.nanosandbox/state.json` so skills/MCPs survive VM restarts
+- Serves a REST API for runtime skill/MCP management from the TUI
 
 ## Pulling Agent Images
 
@@ -55,6 +80,10 @@ defaults:
 sandboxes:
   claude:
     image: claude
+    type: claude
+    skills:
+      - git-workflow
+      - tdd
     env:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     mcp:
@@ -135,7 +164,7 @@ Agents can share context through several mechanisms.
 
 ### Project Mount
 
-All agents mount the project directory at `/workspace` via virtio-fs. Use the `--project` flag to specify which directory to mount:
+All agents mount the project directory at `/workspace` via virtio-fs. This is the fixed mount point for all sandboxes. Use the `--project` flag to specify which directory to mount:
 
 ```bash
 nanosb run --project ./my-project claude
