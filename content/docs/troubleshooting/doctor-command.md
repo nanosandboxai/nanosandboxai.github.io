@@ -62,6 +62,7 @@ Sample failure with fix hint:
 | Check | What it verifies |
 | --- | --- |
 | `HCS Service` | `vmcompute` service is running (depends on Hyper-V) |
+| `Hyper-V Access` | The current user is in the `Hyper-V Administrators` group or running elevated |
 | `WSL Kernel` | `C:\Program Files\WSL\tools\kernel` is present |
 | `libkrunfw.dll` | Guest kernel firmware in `%USERPROFILE%\.nanosandbox\libs\` |
 | `busybox` | Static Linux ELF used as the guest init shell |
@@ -69,6 +70,14 @@ Sample failure with fix hint:
 | `fuse_mount` | Static Linux ELF that mounts the rootfs and workspace over FUSE |
 | `Disk` | SSD detected (warning only on HDD/unknown) |
 | `Memory` | At least a few GB of free RAM |
+
+> **About `Hyper-V Access`.** The Host Compute Service (HCS) APIs that boot the microVM require the caller to be a member of the local `Hyper-V Administrators` group or to be running elevated as `Administrator`. Without either, sandbox creation fails with confusing access-denied errors from `vmcompute`. The fastest fix is to add the user to the group once:
+>
+> ```powershell
+> # Run in an elevated PowerShell:
+> Add-LocalGroupMember -Group 'Hyper-V Administrators' -Member $env:USERNAME
+> # Then log out and back in for the group to take effect.
+> ```
 
 Sample failure with fix hint:
 
@@ -125,6 +134,7 @@ Cannot run sandboxes. Fix the errors above.
 Checking runtime prerequisites...
 
   [✓] HCS Service: running (vmcompute)
+  [✓] Hyper-V Access: user has Hyper-V access (admin or Hyper-V Administrators)
   [✓] WSL Kernel: found
   [✓] libkrunfw.dll: found
   [✓] busybox: found
@@ -133,7 +143,7 @@ Checking runtime prerequisites...
   [✓] Disk: SSD detected
   [✓] Memory: sufficient RAM available
 
-8 checks passed, 0 errors, 0 warnings
+9 checks passed, 0 errors, 0 warnings
 
 Ready to run sandboxes.
   Logs: C:\Users\you\.nanosandbox\logs

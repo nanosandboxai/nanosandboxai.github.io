@@ -82,7 +82,14 @@ Error: failed to create sandbox
 
 2. **Windows virtualization features are disabled.** Enable Hyper-V and WHPX in "Turn Windows features on or off", then reboot.
 
-3. **Missing runtime files.** Ensure these four files exist (they have no `.exe` extension because they run inside the Linux guest):
+3. **User is not allowed to talk to the Host Compute Service.** If `nanosb doctor` reports `[✗] Hyper-V Access`, add yourself to the `Hyper-V Administrators` group (or run nanosb from an elevated terminal):
+   ```powershell
+   # Elevated PowerShell:
+   Add-LocalGroupMember -Group 'Hyper-V Administrators' -Member $env:USERNAME
+   # Log out and back in for the group to take effect.
+   ```
+
+5. **Missing runtime files.** Ensure these four files exist (they have no `.exe` extension because they run inside the Linux guest):
    - `%USERPROFILE%\.nanosandbox\libs\libkrunfw.dll`
    - `%USERPROFILE%\.nanosandbox\libs\busybox`
    - `%USERPROFILE%\.nanosandbox\libs\vsock_proxy`
@@ -93,11 +100,11 @@ Error: failed to create sandbox
    irm https://github.com/nanosandboxai/cli/releases/latest/download/install.ps1 | iex
    ```
 
-4. **Quick check with the doctor command.**
+6. **Quick check with the doctor command.**
    ```powershell
    nanosb doctor
    ```
-   It reports each runtime file individually and prints the exact command to reinstall.
+   It reports each runtime file (and Hyper-V Access) individually and prints the exact command to reinstall.
 
 ## Timeout Errors
 
