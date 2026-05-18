@@ -66,7 +66,24 @@ The `/add` command supports these options:
 /add claude --model claude-sonnet-4-5-20250929  # Specify model
 /add claude --name my-sandbox        # Custom sandbox name
 /add claude --auto-mode -p "Fix tests"  # Headless autonomous mode
+/add claude --run-as-root            # Run the agent as root inside the guest
 ```
+
+Full option list:
+
+| Option | Description |
+|---|---|
+| `--tag <version>` | Pin a specific image tag |
+| `--model <model>` | Override the default model for the agent |
+| `--image <ref>` | Use a custom image reference instead of the agent default |
+| `--project <path>` | Mount a host directory as the workspace |
+| `--branch <name>` | Check out a git branch before starting |
+| `--name <name>` | Use a custom sandbox name |
+| `--auto-mode -p "<prompt>"` | Headless autonomous mode with the given prompt |
+| `--use-env <KEY>` | Import a specific env key from the nanosb startup env pool (repeatable) |
+| `--run-as-root` | Run agent commands as root inside the guest VM |
+
+> The `--run-as-root` flag is the same one available on `nanosb run`. By default the agent runs as a non-root user (some agents refuse to start as root). Pass `--run-as-root` only when a workflow needs root in the guest — most commonly system-level package installs on the Windows FUSE workspace path.
 
 ### Agent & Environment
 

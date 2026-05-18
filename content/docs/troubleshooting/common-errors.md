@@ -65,6 +65,47 @@ Error: failed to create sandbox
    nanosb run --memory 2048 claude
    ```
 
+## Windows Hypervisor Errors
+
+**Error:**
+```
+Error: failed to create sandbox
+  Caused by: WHPX not available
+```
+
+**Causes and fixes:**
+
+1. **Hypervisor launch is disabled.** Enable it and reboot:
+   ```powershell
+   bcdedit /set hypervisorlaunchtype auto
+   ```
+
+2. **Windows virtualization features are disabled.** Enable Hyper-V and WHPX in "Turn Windows features on or off", then reboot.
+
+3. **User is not allowed to talk to the Host Compute Service.** If `nanosb doctor` reports `[✗] Hyper-V Access`, add yourself to the `Hyper-V Administrators` group (or run nanosb from an elevated terminal):
+   ```powershell
+   # Elevated PowerShell:
+   Add-LocalGroupMember -Group 'Hyper-V Administrators' -Member $env:USERNAME
+   # Log out and back in for the group to take effect.
+   ```
+
+5. **Missing runtime files.** Ensure these four files exist (they have no `.exe` extension because they run inside the Linux guest):
+   - `%USERPROFILE%\.nanosandbox\libs\libkrunfw.dll`
+   - `%USERPROFILE%\.nanosandbox\libs\busybox`
+   - `%USERPROFILE%\.nanosandbox\libs\vsock_proxy`
+   - `%USERPROFILE%\.nanosandbox\libs\fuse_mount`
+
+   Re-run the installer if any of them is missing:
+   ```powershell
+   irm https://github.com/nanosandboxai/cli/releases/latest/download/install.ps1 | iex
+   ```
+
+6. **Quick check with the doctor command.**
+   ```powershell
+   nanosb doctor
+   ```
+   It reports each runtime file (and Hyper-V Access) individually and prints the exact command to reinstall.
+
 ## Timeout Errors
 
 **Error:**
@@ -120,6 +161,20 @@ ls -la ./project
 # Ensure the directory is writable
 chmod 755 ./project
 ```
+
+**Windows (FUSE workspace on NTFS):** NTFS does not track POSIX ownership the same way. If a guest tool needs to write outside the user-owned tree (system package installs, build scripts that touch `/etc`, etc.), retry with `--run-as-root`:
+
+```powershell
+nanosb run --run-as-root <image> "<command>"
+```
+
+Or inside the TUI:
+
+```
+/add <agent> --run-as-root
+```
+
+Keep the default off for normal development; some agents refuse to start as root.
 
 ## Network Errors
 
@@ -205,3 +260,7 @@ Error: failed to mount /workspace
    ```
 
 3. **Symlink issues.** If paths aren't resolving, check for symlinks in the project path.
+
+4. **Windows path edge cases.** On Windows, very long paths and mixed case can still cause confusing behavior in older tools. Use a shorter workspace path when possible and keep path casing consistent.
+
+   The previous "directory not empty" cleanup issue in common package-manager workflows is fixed in current builds.
