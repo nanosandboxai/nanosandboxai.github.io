@@ -78,6 +78,7 @@ Type a slash command in any active panel to control the TUI.
 | `--auto-mode` | Start in headless autonomous mode. |
 | `-p`, `--prompt <prompt>` | Prompt text for autonomous mode. Required with `--auto-mode`; it consumes the rest of the command line. |
 | `--use-env <KEY>` | Import one startup runtime env key into this panel. Repeat for multiple keys. |
+| `--run-as-root` | Run agent commands as root inside the guest VM. |
 
 Examples:
 
@@ -90,6 +91,7 @@ Examples:
 /add claude --env-file .env.local                # Per-panel env file
 /add codex --auto-mode -p "Fix tests and open a PR"  # Headless autonomous mode
 /add claude --use-env OPENAI_API_KEY --use-env GITHUB_TOKEN # Import startup env keys
+/add claude --run-as-root                        # Run as root inside guest VM
 /add myagent --image ghcr.io/myorg/agent:v1      # Start from custom image
 ```
 
@@ -101,6 +103,8 @@ Behavior notes:
 - `--project` must point to an existing directory.
 - `--use-env` imports keys from startup runtime env (for example values passed with `nanosb --env` or `--env-file`).
 - Env precedence for `/add` is documented in [Global Flags](/docs/cli/global-flags#env-precedence).
+
+> The `--run-as-root` flag is the same one available on `nanosb run`. By default the agent runs as a non-root user (some agents refuse to start as root). Pass `--run-as-root` only when a workflow needs root in the guest.
 
 ### Agent & Environment
 

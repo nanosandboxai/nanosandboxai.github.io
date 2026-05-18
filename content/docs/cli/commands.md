@@ -68,6 +68,7 @@ Creates a sandbox from the specified image and executes `cmd`. If `cmd` is omitt
 | `--timeout <secs>` | Maximum runtime in seconds (default: 600) |
 | `-e KEY=VALUE` | Inject environment variable (repeatable) |
 | `--env-file <path>` | Load env vars from file (single file; use the global `--env-file` flag for multiple files) |
+| `--run-as-root` | Run the agent command as root inside the guest (default: non-root user) |
 | `--buffered` | Buffer output instead of streaming (useful with `--format json`) |
 
 **Examples:**
@@ -84,7 +85,12 @@ nanosb run --cpus 4 --memory 8192 -e ANTHROPIC_API_KEY=sk-... claude
 
 # Name the sandbox
 nanosb run --name my-claude claude
+
+# Run as root inside the guest (Windows FUSE workspace, system package installs, etc.)
+nanosb run --run-as-root claude "apt-get install -y graphviz"
 ```
+
+> **About `--run-as-root`.** By default the agent runs as a non-root user inside the guest (typically `uid 1000`) because some agents — for example Claude Code — refuse to start as root. `--run-as-root` overrides that. It is most often useful on Windows, where the FUSE workspace is backed by NTFS and a few system-level package or build workflows need root in the guest to write outside the user-owned tree. Keep the default off unless a specific workflow requires it.
 
 ## nanosb exec
 
