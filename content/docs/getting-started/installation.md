@@ -46,18 +46,21 @@ Use the PowerShell installer. Run PowerShell as Administrator on a fresh machine
 irm https://github.com/nanosandboxai/cli/releases/latest/download/install.ps1 | iex
 ```
 
+> **Heads up: run elevated.** If you launch the installer from a non-elevated terminal **and** your user is not in the local `Hyper-V Administrators` group, the installer prints a clear warning explaining what will be skipped (feature enables, Defender exclusions) and asks before continuing. Sandbox creation will then fail with `access denied` from the Host Compute Service until you elevate or join the group.
+
 The installer:
 
-1. Enables Hyper-V, Windows Hypervisor Platform, Windows Subsystem for Linux, and Virtual Machine Platform if any are missing.
-2. Installs the Microsoft Visual C++ Redistributable inline (no reboot).
-3. If any Windows feature required a restart, prompts you once. After login the installer resumes automatically via a one-shot RunOnce entry.
-4. Downloads `nanosb.exe` to `%USERPROFILE%\.nanosandbox\`.
-5. Installs the four runtime files into `%USERPROFILE%\.nanosandbox\libs\`:
+1. Checks whether you are running as Administrator or are a member of `Hyper-V Administrators`. If neither, it asks before continuing.
+2. Enables Hyper-V, Windows Hypervisor Platform, Windows Subsystem for Linux, and Virtual Machine Platform if any are missing.
+3. Installs the Microsoft Visual C++ Redistributable inline (no reboot).
+4. If any Windows feature required a restart, prompts you once. After login the installer resumes automatically via a one-shot RunOnce entry.
+5. Downloads `nanosb.exe` to `%USERPROFILE%\.nanosandbox\`.
+6. Installs the four runtime files into `%USERPROFILE%\.nanosandbox\libs\`:
    - `libkrunfw.dll` — guest kernel firmware
    - `busybox` — Linux ELF used as guest init shell
    - `vsock_proxy` — Linux ELF that bridges HvSocket and AF_VSOCK
    - `fuse_mount` — Linux ELF that mounts the rootfs and workspace over FUSE
-6. Adds the install directory to your user `PATH`.
+7. Adds the install directory to your user `PATH`.
 
 After installation, verify everything is in place:
 
@@ -67,6 +70,7 @@ After installation, verify everything is in place:
 Checking runtime prerequisites...
 
   [✓] HCS Service: running (vmcompute)
+  [✓] Hyper-V Access: user has Hyper-V access (admin or Hyper-V Administrators)
   [✓] WSL Kernel: found
   [✓] libkrunfw.dll: found
   [✓] busybox: found
@@ -75,9 +79,15 @@ Checking runtime prerequisites...
   [✓] Disk: SSD detected
   [✓] Memory: sufficient RAM available
 
-8 checks passed, 0 errors, 0 warnings
+9 checks passed, 0 errors, 0 warnings
 
 Ready to run sandboxes.
+```
+
+If `nanosb doctor` reports `[✗] Hyper-V Access`, run this once in an elevated PowerShell, then log out and back in:
+
+```powershell
+Add-LocalGroupMember -Group 'Hyper-V Administrators' -Member $env:USERNAME
 ```
 
 If `nanosb doctor` reports a missing dependency, re-run the installer or follow the fix hint it prints.
