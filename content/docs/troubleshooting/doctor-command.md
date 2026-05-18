@@ -12,159 +12,73 @@ The `nanosb doctor` command checks that all runtime prerequisites are installed 
 nanosb doctor
 ```
 
+The command prints a colored checklist. Each line uses one of three markers:
+
+| Marker | Meaning |
+| --- | --- |
+| `[✓]` | Check passed |
+| `[!]` | Warning — not fatal, but worth knowing |
+| `[✗]` | Check failed — fix before running a sandbox |
+
+If anything fails, `nanosb doctor` exits with a non-zero status so it can be wired into CI.
+
 ## What It Checks
 
-### Platform Detection
+The exact checks depend on the host OS.
 
-Identifies the host OS, architecture, and available hypervisor.
+### macOS
 
-```
-[ok] Platform: macOS (Apple Silicon)
-[ok] Architecture: arm64
-```
+| Check | What it verifies |
+| --- | --- |
+| `Architecture` | Apple Silicon (aarch64) |
+| `libkrunfw Kernel Firmware` | `libkrunfw.5.dylib` is reachable from `~/.nanosandbox/libs`, Homebrew prefix, or `/usr/local/lib` |
+| `Hypervisor.framework` | macOS HVF is available |
+| `gvproxy` | Optional bridge-networking helper |
 
-On Linux, it checks the kernel version (requires 5.10+):
-
-```
-[ok] Platform: Linux
-[ok] Architecture: x86_64
-[ok] Kernel: 6.5.0-generic (>= 5.10 required)
-```
-
-### Hypervisor Availability
-
-Verifies the platform hypervisor is accessible.
-
-**macOS (HVF):**
-```
-[ok] Hypervisor: HVF available
-```
-
-If HVF is not available, the output indicates possible causes:
-```
-[FAIL] Hypervisor: HVF not available
-  -> Ensure you are running macOS 12.0 or later
-  -> Check that SIP (System Integrity Protection) is enabled
-```
-
-**Linux (KVM):**
-```
-[ok] Hypervisor: KVM available (/dev/kvm accessible)
-```
+Sample failure with fix hint:
 
 ```
-[FAIL] Hypervisor: /dev/kvm not accessible
-  -> Run: sudo usermod -aG kvm $USER
-  -> Then log out and back in
+  [✗] libkrunfw Kernel Firmware: libkrunfw.5.dylib not found in ~/.nanosandbox/libs/, /opt/homebrew/lib, or /usr/local/lib
+      Fix: brew install libkrunfw
 ```
 
-```
-[FAIL] Hypervisor: KVM module not loaded
-  -> Run: sudo modprobe kvm_intel   (Intel CPUs)
-  -> Run: sudo modprobe kvm_amd     (AMD CPUs)
-```
+### Linux
 
-**Windows (WHPX):**
-```
-[ok] Hypervisor: WHPX available
-```
+| Check | What it verifies |
+| --- | --- |
+| `libkrunfw Kernel Firmware` | `libkrunfw.so.5` is reachable via the dynamic linker |
+| `KVM Device` | `/dev/kvm` is accessible by the current user |
+| `gvproxy` | Optional bridge-networking helper |
 
-```
-[FAIL] Hypervisor: WHPX not available
-  -> Enable Hyper-V and Windows Hypervisor Platform
-  -> Run: bcdedit /set hypervisorlaunchtype auto
-  -> Reboot Windows
-```
-
-### libkrun
-
-Checks that libkrun is installed and the version is compatible.
+Sample failure with fix hint:
 
 ```
-[ok] libkrun: v1.9.2 (>= 1.7.0 required)
+  [✗] KVM Device: /dev/kvm not accessible
+      Fix: sudo usermod -aG kvm $USER && log out and back in
 ```
 
-```
-[FAIL] libkrun: not found
-  -> macOS:  brew install libkrun
-  -> Linux:  sudo apt install libkrun-dev
-  -> Or build from source: https://github.com/containers/libkrun
-```
+### Windows
+
+| Check | What it verifies |
+| --- | --- |
+| `HCS Service` | `vmcompute` service is running (depends on Hyper-V) |
+| `WSL Kernel` | `C:\Program Files\WSL\tools\kernel` is present |
+| `libkrunfw.dll` | Guest kernel firmware in `%USERPROFILE%\.nanosandbox\libs\` |
+| `busybox` | Static Linux ELF used as the guest init shell |
+| `vsock_proxy` | Static Linux ELF that bridges HvSocket and AF_VSOCK |
+| `fuse_mount` | Static Linux ELF that mounts the rootfs and workspace over FUSE |
+| `Disk` | SSD detected (warning only on HDD/unknown) |
+| `Memory` | At least a few GB of free RAM |
+
+Sample failure with fix hint:
 
 ```
-[WARN] libkrun: v1.5.0 (>= 1.7.0 required, some features may not work)
-  -> Upgrade: brew upgrade libkrun
+  [✗] fuse_mount: fuse_mount not found. Required for Windows VM boot path.
+      Fix: Install runtime deps:
+             irm https://github.com/nanosandboxai/install-deps/releases/latest/download/install.ps1 | iex
 ```
 
-### libkrunfw
-
-Checks the firmware library that bundles the guest kernel and initrd.
-
-```
-[ok] libkrunfw: v4.2.0
-```
-
-```
-[FAIL] libkrunfw: not found
-  -> macOS:  brew install libkrunfw
-  -> Linux:  sudo apt install libkrunfw
-```
-
-### Windows Runtime Files
-
-On Windows, `nanosb doctor` also checks the runtime files used by WHPX sessions:
-
-```
-[ok] libkrunfw.dll: found at C:\Users\you\.nanosandbox\libs\libkrunfw.dll
-[ok] vsock_proxy: found at C:\Users\you\.nanosandbox\libs\vsock_proxy.exe
-```
-
-```
-[FAIL] libkrunfw.dll: not found
-  -> Re-run installer: irm https://raw.githubusercontent.com/nanosandboxai/cli/v0.2.0/scripts/install.ps1 | iex
-```
-
-### Codesigning (macOS only)
-
-Verifies the nanosb binary has the hypervisor entitlement.
-
-```
-[ok] Codesigning: valid entitlements (com.apple.security.hypervisor)
-```
-
-```
-[FAIL] Codesigning: missing com.apple.security.hypervisor entitlement
-  -> Run: codesign --entitlements entitlements.plist --force -s - $(which nanosb)
-  -> See: /docs/getting-started/system-requirements
-```
-
-### gvproxy (optional)
-
-Checks for gvproxy, needed for bridge networking mode. This is a warning, not a failure, since TSI mode works without it.
-
-```
-[ok] gvproxy: found at /opt/homebrew/bin/gvproxy (v0.7.3)
-```
-
-```
-[WARN] gvproxy: not found
-  -> Bridge networking will not work
-  -> TSI mode (default) does not require gvproxy
-  -> Install: brew install gvproxy  (macOS)
-  -> Install: sudo apt install gvproxy  (Linux)
-```
-
-### Image Cache
-
-Checks the cache directory is accessible and reports usage.
-
-```
-[ok] Cache: /Users/you/.nanosandbox/cache (1.2 GB, 47 blobs)
-```
-
-```
-[WARN] Cache: directory not found, will be created on first pull
-```
+> The four Linux ELFs (`busybox`, `vsock_proxy`, `fuse_mount`, and the kernel firmware `libkrunfw.dll`) are installed automatically by the Windows installer. They live in `%USERPROFILE%\.nanosandbox\libs\` and have no `.exe` extension — they run inside the Linux guest.
 
 ## Full Output Example
 
@@ -173,61 +87,56 @@ Checks the cache directory is accessible and reports usage.
 ```bash
 $ nanosb doctor
 
-Nanosandbox Doctor
-==================
+Checking runtime prerequisites...
 
-[ok] Platform: macOS (Apple Silicon)
-[ok] Architecture: arm64
-[ok] Hypervisor: HVF available
-[ok] libkrun: v1.9.2
-[ok] libkrunfw: v4.2.0
-[ok] Codesigning: valid entitlements
-[ok] gvproxy: found at /opt/homebrew/bin/gvproxy (v0.7.3)
-[ok] Cache: /Users/you/.nanosandbox/cache (1.2 GB, 47 blobs)
+  [✓] Architecture: Apple Silicon (aarch64)
+  [✓] libkrunfw Kernel Firmware: found (libkrunfw.5.dylib)
+  [✓] Hypervisor.framework: available
+  [✓] gvproxy: available (full outbound networking)
 
-All checks passed. Nanosandbox is ready to use.
+4 checks passed, 0 errors, 0 warnings
+
+Ready to run sandboxes.
+  Logs: /Users/you/.nanosandbox/logs
 ```
 
-### Linux (some issues)
+### Linux (one failure)
 
 ```bash
 $ nanosb doctor
 
-Nanosandbox Doctor
-==================
+Checking runtime prerequisites...
 
-[ok] Platform: Linux
-[ok] Architecture: x86_64
-[ok] Kernel: 6.5.0-generic
-[FAIL] Hypervisor: /dev/kvm not accessible
-  -> Run: sudo usermod -aG kvm $USER
-  -> Then log out and back in
-[ok] libkrun: v1.9.0
-[ok] libkrunfw: v4.2.0
-[WARN] gvproxy: not found
-  -> Bridge networking will not work
-  -> Install: sudo apt install gvproxy
-[ok] Cache: /home/you/.nanosandbox/cache (830 MB, 31 blobs)
+  [✓] libkrunfw Kernel Firmware: found (libkrunfw.so.5)
+  [✗] KVM Device: /dev/kvm not accessible
+      Fix: sudo usermod -aG kvm $USER && log out and back in
+  [✓] gvproxy: available (full outbound networking)
 
-1 check failed, 1 warning. Fix the issues above and run 'nanosb doctor' again.
+2 checks passed, 1 errors, 0 warnings
+
+Cannot run sandboxes. Fix the errors above.
 ```
 
-### Windows (WHPX)
+### Windows (all passing)
 
 ```powershell
 > nanosb doctor
 
-Nanosandbox Doctor
-==================
+Checking runtime prerequisites...
 
-[ok] Platform: Windows
-[ok] Architecture: x86_64
-[ok] Hypervisor: WHPX available
-[ok] libkrunfw.dll: found at C:\Users\you\.nanosandbox\libs\libkrunfw.dll
-[ok] vsock_proxy: found at C:\Users\you\.nanosandbox\libs\vsock_proxy.exe
-[ok] Cache: C:\Users\you\.nanosandbox\cache (420 MB, 18 blobs)
+  [✓] HCS Service: running (vmcompute)
+  [✓] WSL Kernel: found
+  [✓] libkrunfw.dll: found
+  [✓] busybox: found
+  [✓] vsock_proxy: found
+  [✓] fuse_mount: found
+  [✓] Disk: SSD detected
+  [✓] Memory: sufficient RAM available
 
-All checks passed. Nanosandbox is ready to use.
+8 checks passed, 0 errors, 0 warnings
+
+Ready to run sandboxes.
+  Logs: C:\Users\you\.nanosandbox\logs
 ```
 
 ## Fixing Common Issues
@@ -311,17 +220,28 @@ nanosb doctor --format json
 
 ```json
 {
-  "checks": [
-    { "name": "platform", "status": "ok", "detail": "macOS (Apple Silicon)" },
-    { "name": "hypervisor", "status": "ok", "detail": "HVF available" },
-    { "name": "libkrun", "status": "ok", "detail": "v1.9.2" },
-    { "name": "libkrunfw", "status": "ok", "detail": "v4.2.0" },
-    { "name": "codesigning", "status": "ok", "detail": "valid entitlements" },
-    { "name": "gvproxy", "status": "ok", "detail": "/opt/homebrew/bin/gvproxy (v0.7.3)" },
-    { "name": "cache", "status": "ok", "detail": "1.2 GB, 47 blobs" }
+  "ok": true,
+  "platform": "windows",
+  "arch": "x86_64",
+  "errors": [],
+  "warnings": []
+}
+```
+
+When checks fail, each entry in `errors` includes a `check` name, a `message`, and an optional `fix_hint`:
+
+```json
+{
+  "ok": false,
+  "platform": "windows",
+  "arch": "x86_64",
+  "errors": [
+    {
+      "check": "fuse_mount",
+      "message": "fuse_mount not found. Required for Windows VM boot path.",
+      "fix_hint": "Install runtime deps:\n irm https://github.com/nanosandboxai/install-deps/releases/latest/download/install.ps1 | iex"
+    }
   ],
-  "passed": 7,
-  "failed": 0,
-  "warnings": 0
+  "warnings": []
 }
 ```

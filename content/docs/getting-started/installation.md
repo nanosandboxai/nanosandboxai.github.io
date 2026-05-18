@@ -40,22 +40,47 @@ nanosb --version
 
 ## Install on Windows
 
-Use the PowerShell installer:
+Use the PowerShell installer. Run PowerShell as Administrator on a fresh machine so the installer can enable Windows features in one step:
 
 ```powershell
-irm https://raw.githubusercontent.com/nanosandboxai/cli/v0.2.0/scripts/install.ps1 | iex
+irm https://github.com/nanosandboxai/cli/releases/latest/download/install.ps1 | iex
 ```
 
-On a fresh machine, the installer can enable Hyper-V and WHPX automatically. If Windows needs a reboot, the installer prompts you and then resumes after login.
+The installer:
 
-After installation, verify runtime dependencies:
+1. Enables Hyper-V, Windows Hypervisor Platform, Windows Subsystem for Linux, and Virtual Machine Platform if any are missing.
+2. Installs the Microsoft Visual C++ Redistributable inline (no reboot).
+3. If any Windows feature required a restart, prompts you once. After login the installer resumes automatically via a one-shot RunOnce entry.
+4. Downloads `nanosb.exe` to `%USERPROFILE%\.nanosandbox\`.
+5. Installs the four runtime files into `%USERPROFILE%\.nanosandbox\libs\`:
+   - `libkrunfw.dll` — guest kernel firmware
+   - `busybox` — Linux ELF used as guest init shell
+   - `vsock_proxy` — Linux ELF that bridges HvSocket and AF_VSOCK
+   - `fuse_mount` — Linux ELF that mounts the rootfs and workspace over FUSE
+6. Adds the install directory to your user `PATH`.
 
-```terminal
+After installation, verify everything is in place:
+
+```powershell
 > nanosb doctor
-  [ok] WHPX: Windows Hypervisor Platform available
-  [ok] libkrunfw.dll: found at C:\Users\you\.nanosandbox\libs\libkrunfw.dll
-  [ok] vsock_proxy: found
+
+Checking runtime prerequisites...
+
+  [✓] HCS Service: running (vmcompute)
+  [✓] WSL Kernel: found
+  [✓] libkrunfw.dll: found
+  [✓] busybox: found
+  [✓] vsock_proxy: found
+  [✓] fuse_mount: found
+  [✓] Disk: SSD detected
+  [✓] Memory: sufficient RAM available
+
+8 checks passed, 0 errors, 0 warnings
+
+Ready to run sandboxes.
 ```
+
+If `nanosb doctor` reports a missing dependency, re-run the installer or follow the fix hint it prints.
 
 ## Platform Support
 
