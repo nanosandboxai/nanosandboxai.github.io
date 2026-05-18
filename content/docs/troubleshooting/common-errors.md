@@ -82,14 +82,22 @@ Error: failed to create sandbox
 
 2. **Windows virtualization features are disabled.** Enable Hyper-V and WHPX in "Turn Windows features on or off", then reboot.
 
-3. **Missing runtime files.** Ensure these files exist:
-   - `%USERPROFILE%\\.nanosandbox\\libs\\libkrunfw.dll`
-   - `%USERPROFILE%\\.nanosandbox\\libs\\vsock_proxy.exe`
+3. **Missing runtime files.** Ensure these four files exist (they have no `.exe` extension because they run inside the Linux guest):
+   - `%USERPROFILE%\.nanosandbox\libs\libkrunfw.dll`
+   - `%USERPROFILE%\.nanosandbox\libs\busybox`
+   - `%USERPROFILE%\.nanosandbox\libs\vsock_proxy`
+   - `%USERPROFILE%\.nanosandbox\libs\fuse_mount`
 
-   Re-run the installer if they are missing:
+   Re-run the installer if any of them is missing:
    ```powershell
-   irm https://raw.githubusercontent.com/nanosandboxai/cli/v0.2.0/scripts/install.ps1 | iex
+   irm https://github.com/nanosandboxai/cli/releases/latest/download/install.ps1 | iex
    ```
+
+4. **Quick check with the doctor command.**
+   ```powershell
+   nanosb doctor
+   ```
+   It reports each runtime file individually and prints the exact command to reinstall.
 
 ## Timeout Errors
 

@@ -69,10 +69,20 @@ The installer can enable missing Windows features automatically and will prompt 
 
 ### Runtime Dependencies
 
-- `libkrunfw.dll` present in `%USERPROFILE%\\.nanosandbox\\libs\\`
-- `vsock_proxy` available in the same runtime folder
+The Windows installer places four files in `%USERPROFILE%\.nanosandbox\libs\`. They run inside the Linux guest, so they have no `.exe` extension:
 
-These dependencies are installed automatically by the [PowerShell installer](./installation.md).
+| File | Role |
+| --- | --- |
+| `libkrunfw.dll` | Guest Linux kernel firmware loaded by libkrun |
+| `busybox` | Static Linux ELF used as the guest init shell |
+| `vsock_proxy` | Static Linux ELF that bridges HvSocket and AF_VSOCK |
+| `fuse_mount` | Static Linux ELF that mounts the rootfs and workspace over FUSE-on-vsock |
+
+These dependencies are installed automatically by the [PowerShell installer](./installation.md). You can verify them at any time with:
+
+```powershell
+nanosb doctor
+```
 
 ## Environment Variables
 
