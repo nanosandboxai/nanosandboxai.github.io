@@ -9,6 +9,7 @@ order: 3
 | Platform                    | Hypervisor        | Status             |
 | --------------------------- | ----------------- | ------------------ |
 | macOS Apple Silicon (arm64) | HVF               | **Stable**         |
+| Windows 11 (x86_64)         | WHPX              | **Experimental**   |
 | Linux (x86_64 / arm64)     | KVM               | **In Development** |
 
 ## macOS Requirements
@@ -52,6 +53,26 @@ Linux support targets KVM-based virtualization. The following will be required o
 - libkrun built for your distribution
 
 Linux binaries are not yet published. Check the [releases page](https://github.com/nanosandboxai/cli/releases) for updates.
+
+## Windows Requirements
+
+### Hardware
+
+- 64-bit CPU with virtualization support enabled in BIOS/UEFI
+
+### Software
+
+- Windows 11 (22H2 or later)
+- Hyper-V and Windows Hypervisor Platform (WHPX)
+
+The installer can enable missing Windows features automatically and will prompt for a reboot if needed.
+
+### Runtime Dependencies
+
+- `libkrunfw.dll` present in `%USERPROFILE%\\.nanosandbox\\libs\\`
+- `vsock_proxy` available in the same runtime folder
+
+These dependencies are installed automatically by the [PowerShell installer](./installation.md).
 
 ## Environment Variables
 
