@@ -155,6 +155,20 @@ ls -la ./project
 chmod 755 ./project
 ```
 
+**Windows (FUSE workspace on NTFS):** NTFS does not track POSIX ownership the same way. If a guest tool needs to write outside the user-owned tree (system package installs, build scripts that touch `/etc`, etc.), retry with `--run-as-root`:
+
+```powershell
+nanosb run --run-as-root <image> "<command>"
+```
+
+Or inside the TUI:
+
+```
+/add <agent> --run-as-root
+```
+
+Keep the default off for normal development; some agents refuse to start as root.
+
 ## Network Errors
 
 **Error:**
