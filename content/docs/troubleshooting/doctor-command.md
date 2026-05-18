@@ -64,6 +64,18 @@ If HVF is not available, the output indicates possible causes:
   -> Run: sudo modprobe kvm_amd     (AMD CPUs)
 ```
 
+**Windows (WHPX):**
+```
+[ok] Hypervisor: WHPX available
+```
+
+```
+[FAIL] Hypervisor: WHPX not available
+  -> Enable Hyper-V and Windows Hypervisor Platform
+  -> Run: bcdedit /set hypervisorlaunchtype auto
+  -> Reboot Windows
+```
+
 ### libkrun
 
 Checks that libkrun is installed and the version is compatible.
@@ -96,6 +108,20 @@ Checks the firmware library that bundles the guest kernel and initrd.
 [FAIL] libkrunfw: not found
   -> macOS:  brew install libkrunfw
   -> Linux:  sudo apt install libkrunfw
+```
+
+### Windows Runtime Files
+
+On Windows, `nanosb doctor` also checks the runtime files used by WHPX sessions:
+
+```
+[ok] libkrunfw.dll: found at C:\Users\you\.nanosandbox\libs\libkrunfw.dll
+[ok] vsock_proxy: found at C:\Users\you\.nanosandbox\libs\vsock_proxy.exe
+```
+
+```
+[FAIL] libkrunfw.dll: not found
+  -> Re-run installer: irm https://raw.githubusercontent.com/nanosandboxai/cli/v0.2.0/scripts/install.ps1 | iex
 ```
 
 ### Codesigning (macOS only)
@@ -184,6 +210,24 @@ Nanosandbox Doctor
 [ok] Cache: /home/you/.nanosandbox/cache (830 MB, 31 blobs)
 
 1 check failed, 1 warning. Fix the issues above and run 'nanosb doctor' again.
+```
+
+### Windows (WHPX)
+
+```powershell
+> nanosb doctor
+
+Nanosandbox Doctor
+==================
+
+[ok] Platform: Windows
+[ok] Architecture: x86_64
+[ok] Hypervisor: WHPX available
+[ok] libkrunfw.dll: found at C:\Users\you\.nanosandbox\libs\libkrunfw.dll
+[ok] vsock_proxy: found at C:\Users\you\.nanosandbox\libs\vsock_proxy.exe
+[ok] Cache: C:\Users\you\.nanosandbox\cache (420 MB, 18 blobs)
+
+All checks passed. Nanosandbox is ready to use.
 ```
 
 ## Fixing Common Issues

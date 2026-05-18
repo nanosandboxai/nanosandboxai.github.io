@@ -65,6 +65,32 @@ Error: failed to create sandbox
    nanosb run --memory 2048 claude
    ```
 
+## Windows Hypervisor Errors
+
+**Error:**
+```
+Error: failed to create sandbox
+  Caused by: WHPX not available
+```
+
+**Causes and fixes:**
+
+1. **Hypervisor launch is disabled.** Enable it and reboot:
+   ```powershell
+   bcdedit /set hypervisorlaunchtype auto
+   ```
+
+2. **Windows virtualization features are disabled.** Enable Hyper-V and WHPX in "Turn Windows features on or off", then reboot.
+
+3. **Missing runtime files.** Ensure these files exist:
+   - `%USERPROFILE%\\.nanosandbox\\libs\\libkrunfw.dll`
+   - `%USERPROFILE%\\.nanosandbox\\libs\\vsock_proxy.exe`
+
+   Re-run the installer if they are missing:
+   ```powershell
+   irm https://raw.githubusercontent.com/nanosandboxai/cli/v0.2.0/scripts/install.ps1 | iex
+   ```
+
 ## Timeout Errors
 
 **Error:**
@@ -205,3 +231,7 @@ Error: failed to mount /workspace
    ```
 
 3. **Symlink issues.** If paths aren't resolving, check for symlinks in the project path.
+
+4. **Windows path edge cases.** On Windows, very long paths and mixed case can still cause confusing behavior in older tools. Use a shorter workspace path when possible and keep path casing consistent.
+
+   The previous "directory not empty" cleanup issue in common package-manager workflows is fixed in current builds.
