@@ -43,7 +43,7 @@ nanosb --version
 Use the PowerShell installer. Run PowerShell as Administrator on a fresh machine so the installer can enable Windows features in one step:
 
 ```powershell
-irm https://github.com/nanosandboxai/cli/releases/latest/download/install.ps1 | iex
+irm https://raw.githubusercontent.com/nanosandboxai/cli/v0.2.0/scripts/install.ps1 | iex
 ```
 
 > **Heads up: run elevated.** If you launch the installer from a non-elevated terminal **and** your user is not in the local `Hyper-V Administrators` group, the installer prints a clear warning explaining what will be skipped (feature enables, Defender exclusions) and asks before continuing. Sandbox creation will then fail with `access denied` from the Host Compute Service until you elevate or join the group.
