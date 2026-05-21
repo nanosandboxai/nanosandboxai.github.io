@@ -26,6 +26,8 @@ All values are encrypted before transmission to the VM. If a referenced host var
 
 Environment variables can also be injected at runtime via the `-e` flag or `--env-file` flag. These take precedence over values defined in `sandbox.yml`.
 
+In TUI mode, env values loaded from `./.env` and `/add --env-file` follow the same encrypted pipeline. See [Global Flags](/docs/cli/global-flags#env-precedence) for env source resolution order.
+
 ## Encryption Pipeline
 
 The encryption pipeline uses modern cryptographic primitives to protect secrets in transit between the host and the VM.

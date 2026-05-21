@@ -52,6 +52,19 @@ When the same setting is specified in multiple places, the following precedence 
 4. Auto-detected `./sandbox.yml`
 5. Built-in defaults
 
+## Env Precedence
+
+In TUI mode (`nanosb` with no subcommand), the CLI also auto-loads `./.env` from the current working directory when present. Those values seed a runtime env pool used for new `/add` panels.
+
+For `/add <agent>`, env resolution order is (lowest to highest):
+
+1. Startup runtime env pool (`./.env`, global `--env-file`, global `-e`)
+2. Per-panel `/add --env-file <path>`
+3. Auto-detected agent API keys (fills missing keys only)
+4. Explicit `/add --use-env <KEY>` picks
+
+All env values continue to use the encrypted host-to-guest transport described in [Secrets Management](/docs/security/secrets).
+
 ## Output Formats
 
 ### Text (default)

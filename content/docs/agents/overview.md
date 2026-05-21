@@ -152,7 +152,33 @@ Each agent requires its own API key passed as an environment variable:
 
 API keys are injected into the sandbox as environment variables. All environment variables are encrypted before entering the VM and are never written to disk inside the guest. See [Secrets Management](/docs/security/secrets) for details.
 
-You can also use an env file:
+### TUI-first env workflows (recommended)
+
+Start the TUI from your project directory and add panels with `/add`:
+
+```bash
+nanosb
+# then in the TUI input bar:
+/add claude
+```
+
+`nanosb` auto-loads `./.env` (when present) into a startup runtime env pool, so `/add` panels inherit those values automatically.
+
+For panel-specific overrides, use `/add --env-file`:
+
+```bash
+/add claude --env-file .env.local
+```
+
+To force an explicit key from startup runtime env, use `/add --use-env`:
+
+```bash
+/add claude --use-env OPENAI_API_KEY
+```
+
+See [TUI Mode](/docs/cli/tui-mode) and [Global Flags](/docs/cli/global-flags#env-precedence) for precedence details.
+
+You can also use env files with direct `nanosb run` commands:
 
 ```bash
 nanosb run --env-file .env claude
