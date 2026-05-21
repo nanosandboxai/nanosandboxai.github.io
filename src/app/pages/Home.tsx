@@ -20,21 +20,7 @@ function CopyButton({ text, className = '' }: { text: string; className?: string
   )
 }
 
-type InstallTab = 'unix' | 'windows'
-
-const INSTALL_COMMANDS: Record<InstallTab, string> = {
-  unix: 'curl -fsSL https://github.com/nanosandboxai/cli/releases/latest/download/install.sh | bash',
-  windows: 'irm https://raw.githubusercontent.com/nanosandboxai/cli/latest/scripts/install.ps1 | iex',
-}
-
-const INSTALL_TABS: { id: InstallTab; label: string }[] = [
-  { id: 'unix', label: '[macOS / Linux]' },
-  { id: 'windows', label: '[Windows]' },
-]
-
 export default function Home() {
-  const [installTab, setInstallTab] = useState<InstallTab>('unix')
-
   return (
     <>
       {/* Hero Section */}
@@ -58,32 +44,14 @@ export default function Home() {
       {/* Getting Started */}
       <div className="mb-6 border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 font-mono">
         <h2 className="text-lg font-bold text-[var(--accent)] mb-3">$ Getting Started</h2>
-        <div className="flex gap-3 mb-2 text-xs">
-          {INSTALL_TABS.map((tab) => {
-            const isActive = installTab === tab.id
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setInstallTab(tab.id)}
-                className={
-                  isActive
-                    ? 'text-[var(--accent)] border-b border-[var(--accent)] pb-0.5'
-                    : 'text-[var(--text-tertiary)] hover:text-[var(--text-heading)] transition-colors pb-0.5'
-                }
-              >
-                {tab.label}
-              </button>
-            )
-          })}
-        </div>
         <div className="text-sm">
           <div className="flex items-center justify-between mb-1">
             <p className="text-[var(--text-tertiary)] text-xs"># Install nanosb</p>
-            <CopyButton text={INSTALL_COMMANDS[installTab]} />
+            <CopyButton text="curl -fsSL https://github.com/nanosandboxai/cli/releases/latest/download/install.sh | bash" />
           </div>
           <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-3 overflow-x-auto">
             <code className="text-[var(--text-primary)] text-xs md:text-sm whitespace-nowrap">
-              {INSTALL_COMMANDS[installTab]}
+              curl -fsSL https://github.com/nanosandboxai/cli/releases/latest/download/install.sh | bash
             </code>
           </div>
         </div>
