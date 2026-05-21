@@ -24,7 +24,7 @@ type InstallTab = 'unix' | 'windows'
 
 const INSTALL_COMMANDS: Record<InstallTab, string> = {
   unix: 'curl -fsSL https://github.com/nanosandboxai/cli/releases/latest/download/install.sh | bash',
-  windows: 'irm https://raw.githubusercontent.com/nanosandboxai/cli/v0.2.0/scripts/install.ps1 | iex',
+  windows: 'irm https://raw.githubusercontent.com/nanosandboxai/cli/latest/scripts/install.ps1 | iex',
 }
 
 const INSTALL_TABS: { id: InstallTab; label: string }[] = [
