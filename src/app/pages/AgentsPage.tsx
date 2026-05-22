@@ -1,9 +1,9 @@
 import { useState, useMemo, useCallback } from 'react'
 import { MobileDetailPanel } from '../components/mobile-detail-panel'
-import agentsRegistry from '@/data/agents-registry.json'
-import mcpData from '@/data/mcp-registry.json'
-import localSkillsData from '@/data/skills-local.json'
-import publicSkillsData from '@/data/skills-public.json'
+import agentsRegistry from '@data/agents-registry.json'
+import mcpData from '@data/mcp-registry.json'
+import localSkillsData from '@data/skills-local.json'
+import publicSkillsData from '@data/skills-public.json'
 
 interface McpServer {
   name: string

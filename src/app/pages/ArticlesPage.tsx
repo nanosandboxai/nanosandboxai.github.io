@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router'
-import articlesData from '@/data/articles.json'
+import articlesData from '@data/articles.json'
 
 interface Article {
   slug: string

@@ -3,8 +3,8 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { DocsSidebar } from '../components/docs-sidebar'
 import { MarkdownRenderer } from '../components/markdown-renderer'
 import { DocPageActions, getDocsIssueUrl } from '../components/doc-page-actions'
-import docsManifest from '@/data/docs-manifest.json'
-import docsContent from '@/data/docs-content.json'
+import docsManifest from '@data/docs-manifest.json'
+import docsContent from '@data/docs-content.json'
 
 const manifest = docsManifest as Array<{
   slug: string

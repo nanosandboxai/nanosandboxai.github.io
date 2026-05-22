@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router'
 import { useMemo } from 'react'
 import { MarkdownRenderer } from '../components/markdown-renderer'
 import { DocPageActions, getArticleIssueUrl } from '../components/doc-page-actions'
-import comingSoonData from '@/data/coming-soon.json'
+import comingSoonData from '@data/coming-soon.json'
 
 interface ComingSoonPost {
   slug: string
