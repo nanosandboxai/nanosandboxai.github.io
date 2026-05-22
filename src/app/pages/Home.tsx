@@ -86,6 +86,11 @@ export default function Home() {
               {INSTALL_COMMANDS[installTab]}
             </code>
           </div>
+          {installTab === 'windows' && (
+            <p className="mt-2 text-xs text-[var(--text-tertiary)]">
+              <span className="text-[var(--accent)]">!</span> Windows support is experimental. Expect rough edges in some advanced file-system workflows.
+            </p>
+          )}
         </div>
       </div>
 
