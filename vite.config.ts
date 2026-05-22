@@ -50,6 +50,16 @@ async function ensureJsonFile(filePath: string, fallback: unknown): Promise<void
   await fs.writeFile(filePath, JSON.stringify(fallback, null, 2))
 }
 
+async function hasNonEmptyArray(filePath: string): Promise<boolean> {
+  try {
+    const raw = await fs.readFile(filePath, 'utf8')
+    const parsed: unknown = JSON.parse(raw)
+    return Array.isArray(parsed) && parsed.length > 0
+  } catch {
+    return false
+  }
+}
+
 async function fetchJsonWithTimeout(url: string, timeoutMs: number): Promise<Response> {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), timeoutMs)
@@ -102,9 +112,10 @@ function mcpRegistryPlugin(): Plugin {
     async buildStart() {
       try {
         await fs.mkdir(GENERATED_DATA_DIR, { recursive: true })
-        await ensureJsonFile(MCP_REGISTRY_OUTPUT, [])
+        const hasCache = await fileExists(MCP_REGISTRY_OUTPUT)
+        const hasUsableCache = hasCache && (await hasNonEmptyArray(MCP_REGISTRY_OUTPUT))
 
-        if (await isFresh(MCP_REGISTRY_OUTPUT, CACHE_MAX_AGE_MS)) {
+        if (hasUsableCache && (await isFresh(MCP_REGISTRY_OUTPUT, CACHE_MAX_AGE_MS))) {
           console.log('[mcp-registry] Using cached data')
           return
         }
@@ -167,12 +178,14 @@ function mcpRegistryPlugin(): Plugin {
         const result = Array.from(seen.values())
         if (result.length > 0) {
           await fs.writeFile(MCP_REGISTRY_OUTPUT, JSON.stringify(result, null, 2))
-          console.log(`[mcp-registry] Fetched ${result.length} servers from official registry`) 
+          console.log(`[mcp-registry] Fetched ${result.length} servers from official registry`)
         } else {
           console.warn('[mcp-registry] No fresh data fetched, keeping cached file')
         }
       } catch (err) {
         console.warn('[mcp-registry] Failed to fetch registry, build continues with cached data:', err)
+      } finally {
+        await ensureJsonFile(MCP_REGISTRY_OUTPUT, [])
       }
     },
   }
@@ -184,10 +197,10 @@ function skillsRegistryPlugin(): Plugin {
     async buildStart() {
       try {
         await fs.mkdir(GENERATED_DATA_DIR, { recursive: true })
-        await ensureJsonFile(PUBLIC_SKILLS_OUTPUT, [])
-        await ensureJsonFile(LOCAL_SKILLS_OUTPUT, [])
+        const hasPublicCache = await fileExists(PUBLIC_SKILLS_OUTPUT)
+        const hasUsablePublicCache = hasPublicCache && (await hasNonEmptyArray(PUBLIC_SKILLS_OUTPUT))
 
-        if (await isFresh(PUBLIC_SKILLS_OUTPUT, CACHE_MAX_AGE_MS)) {
+        if (hasUsablePublicCache && (await isFresh(PUBLIC_SKILLS_OUTPUT, CACHE_MAX_AGE_MS))) {
           console.log('[skills-registry] Using cached public skills')
         } else {
           const publicRes = await fetchJsonWithTimeout(PUBLIC_SKILLS_API, FETCH_TIMEOUT_MS)
@@ -211,6 +224,8 @@ function skillsRegistryPlugin(): Plugin {
         }
       } catch (err) {
         console.warn('[skills-registry] Failed to fetch public skills, build continues with cached data:', err)
+      } finally {
+        await ensureJsonFile(PUBLIC_SKILLS_OUTPUT, [])
       }
 
       try {
@@ -227,6 +242,8 @@ function skillsRegistryPlugin(): Plugin {
         console.log(`[skills-registry] Loaded ${localSkills.length} local skills`)
       } catch (err) {
         console.warn('[skills-registry] Failed to load local skills, build continues with cached data:', err)
+      } finally {
+        await ensureJsonFile(LOCAL_SKILLS_OUTPUT, [])
       }
     },
   }
