@@ -44,6 +44,19 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
 
+      - name: Compute cache date key
+        id: cache-date
+        run: date +"date=%Y-%m-%d" >> "$GITHUB_OUTPUT"
+
+      - name: Restore generated data cache
+        uses: actions/cache@v4
+        with:
+          path: web/.generated/data
+          key: ${{ runner.os }}-generated-data-${{ steps.cache-date.outputs.date }}-${{ hashFiles('web/vite.config.ts', 'web/content/docs/**', 'articles/**', 'agents-registry/**') }}
+          restore-keys: |
+            ${{ runner.os }}-generated-data-${{ steps.cache-date.outputs.date }}-
+            ${{ runner.os }}-generated-data-
+
       - name: Install dependencies
         run: npm ci
         working-directory: web
@@ -51,6 +64,10 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: web
+        env:
+          DATA_FETCH_TIMEOUT_MS: 8000
+          MCP_MAX_PAGES: 20
+          DATA_CACHE_MAX_AGE_MS: 86400000
 
       - name: Copy 404.html for SPA routing
         run: cp web/dist/index.html web/dist/404.html

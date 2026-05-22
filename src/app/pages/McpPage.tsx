@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react'
 import { MobileDetailPanel } from '../components/mobile-detail-panel'
-import mcpData from '@/data/mcp-registry.json'
+import mcpData from '@data/mcp-registry.json'
 
 interface McpServer {
   name: string

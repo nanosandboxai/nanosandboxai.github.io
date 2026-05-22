@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import comingSoonData from '@/data/coming-soon.json'
+import comingSoonData from '@data/coming-soon.json'
 
 interface ComingSoonPost {
   slug: string

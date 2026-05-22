@@ -5,21 +5,60 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 
 const MCP_REGISTRY_API = 'https://registry.modelcontextprotocol.io/v0/servers'
-const MCP_REGISTRY_OUTPUT = path.resolve(__dirname, 'src/data/mcp-registry.json')
+const GENERATED_DATA_DIR = path.resolve(__dirname, '.generated/data')
+const MCP_REGISTRY_OUTPUT = path.resolve(GENERATED_DATA_DIR, 'mcp-registry.json')
 const PUBLIC_SKILLS_API = 'https://openskills.space/api/skills'
-const PUBLIC_SKILLS_OUTPUT = path.resolve(__dirname, 'src/data/skills-public.json')
+const PUBLIC_SKILLS_OUTPUT = path.resolve(GENERATED_DATA_DIR, 'skills-public.json')
 const LOCAL_SKILLS_INDEX = path.resolve(__dirname, '../agents-registry/index.json')
-const LOCAL_SKILLS_OUTPUT = path.resolve(__dirname, 'src/data/skills-local.json')
+const LOCAL_SKILLS_OUTPUT = path.resolve(GENERATED_DATA_DIR, 'skills-local.json')
 const AGENTS_REGISTRY_DIR = path.resolve(__dirname, '../agents-registry')
-const AGENTS_OUTPUT = path.resolve(__dirname, 'src/data/agents-registry.json')
+const AGENTS_OUTPUT = path.resolve(GENERATED_DATA_DIR, 'agents-registry.json')
 
 const ARTICLES_DIR = path.resolve(__dirname, '../articles/articles')
 const COMING_SOON_DIR = path.resolve(__dirname, '../articles/coming-soon')
-const ARTICLES_OUTPUT = path.resolve(__dirname, 'src/data/articles.json')
-const COMING_SOON_OUTPUT = path.resolve(__dirname, 'src/data/coming-soon.json')
+const ARTICLES_OUTPUT = path.resolve(GENERATED_DATA_DIR, 'articles.json')
+const COMING_SOON_OUTPUT = path.resolve(GENERATED_DATA_DIR, 'coming-soon.json')
 const DOCS_CONTENT_DIR = path.resolve(__dirname, 'content/docs')
-const DOCS_MANIFEST_OUTPUT = path.resolve(__dirname, 'src/data/docs-manifest.json')
-const DOCS_CONTENT_OUTPUT = path.resolve(__dirname, 'src/data/docs-content.json')
+const DOCS_MANIFEST_OUTPUT = path.resolve(GENERATED_DATA_DIR, 'docs-manifest.json')
+const DOCS_CONTENT_OUTPUT = path.resolve(GENERATED_DATA_DIR, 'docs-content.json')
+
+const FETCH_TIMEOUT_MS = Number(process.env.DATA_FETCH_TIMEOUT_MS ?? 15000)
+const CACHE_MAX_AGE_MS = Number(process.env.DATA_CACHE_MAX_AGE_MS ?? 24 * 60 * 60 * 1000)
+const MCP_MAX_PAGES = Number(process.env.MCP_MAX_PAGES ?? 50)
+
+async function isFresh(filePath: string, maxAgeMs: number): Promise<boolean> {
+  try {
+    const stats = await fs.stat(filePath)
+    return Date.now() - stats.mtimeMs <= maxAgeMs
+  } catch {
+    return false
+  }
+}
+
+async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    await fs.access(filePath)
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function ensureJsonFile(filePath: string, fallback: unknown): Promise<void> {
+  if (await fileExists(filePath)) return
+  await fs.mkdir(path.dirname(filePath), { recursive: true })
+  await fs.writeFile(filePath, JSON.stringify(fallback, null, 2))
+}
+
+async function fetchJsonWithTimeout(url: string, timeoutMs: number): Promise<Response> {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    return await fetch(url, { signal: controller.signal })
+  } finally {
+    clearTimeout(timeout)
+  }
+}
 
 interface RegistryEntry {
   server: {
@@ -62,20 +101,43 @@ function mcpRegistryPlugin(): Plugin {
     name: 'fetch-mcp-registry',
     async buildStart() {
       try {
+        await fs.mkdir(GENERATED_DATA_DIR, { recursive: true })
+        await ensureJsonFile(MCP_REGISTRY_OUTPUT, [])
+
+        if (await isFresh(MCP_REGISTRY_OUTPUT, CACHE_MAX_AGE_MS)) {
+          console.log('[mcp-registry] Using cached data')
+          return
+        }
+
         const allServers: RegistryEntry[] = []
         let cursor: string | undefined
+        const seenCursors = new Set<string>()
+        let pageCount = 0
 
         while (true) {
+          if (pageCount >= MCP_MAX_PAGES) {
+            console.warn(`[mcp-registry] Reached page limit (${MCP_MAX_PAGES}), stopping pagination`)
+            break
+          }
+
           const url = cursor ? `${MCP_REGISTRY_API}?cursor=${encodeURIComponent(cursor)}` : MCP_REGISTRY_API
-          const res = await fetch(url)
+          const res = await fetchJsonWithTimeout(url, FETCH_TIMEOUT_MS)
           if (!res.ok) {
             console.warn(`[mcp-registry] API returned ${res.status}, using cached data if available`)
             break
           }
           const data = await res.json()
+          pageCount += 1
+
           if (data.servers) allServers.push(...data.servers)
+
           if (data.metadata?.nextCursor) {
+            if (seenCursors.has(data.metadata.nextCursor)) {
+              console.warn('[mcp-registry] Detected repeated cursor, stopping pagination')
+              break
+            }
             cursor = data.metadata.nextCursor
+            seenCursors.add(cursor)
           } else {
             break
           }
@@ -103,8 +165,12 @@ function mcpRegistryPlugin(): Plugin {
         }
 
         const result = Array.from(seen.values())
-        await fs.writeFile(MCP_REGISTRY_OUTPUT, JSON.stringify(result, null, 2))
-        console.log(`[mcp-registry] Fetched ${result.length} servers from official registry`)
+        if (result.length > 0) {
+          await fs.writeFile(MCP_REGISTRY_OUTPUT, JSON.stringify(result, null, 2))
+          console.log(`[mcp-registry] Fetched ${result.length} servers from official registry`) 
+        } else {
+          console.warn('[mcp-registry] No fresh data fetched, keeping cached file')
+        }
       } catch (err) {
         console.warn('[mcp-registry] Failed to fetch registry, build continues with cached data:', err)
       }
@@ -117,25 +183,31 @@ function skillsRegistryPlugin(): Plugin {
     name: 'fetch-skills-registry',
     async buildStart() {
       try {
-        await fs.mkdir(path.resolve(__dirname, 'src/data'), { recursive: true })
+        await fs.mkdir(GENERATED_DATA_DIR, { recursive: true })
+        await ensureJsonFile(PUBLIC_SKILLS_OUTPUT, [])
+        await ensureJsonFile(LOCAL_SKILLS_OUTPUT, [])
 
-        const publicRes = await fetch(PUBLIC_SKILLS_API)
-        if (publicRes.ok) {
-          const publicData = await publicRes.json()
-          const publicSkills = ((publicData.skills ?? []) as PublicSkillEntry[]).map((skill) => ({
-            id: skill.id ?? '',
-            name: skill.name ?? '',
-            description: skill.description ?? '',
-            category: skill.category ?? '',
-            tags: skill.tags ?? [],
-            sourceUrl: skill.sourceUrl ?? null,
-            owner: skill.owner ?? '',
-          }))
-
-          await fs.writeFile(PUBLIC_SKILLS_OUTPUT, JSON.stringify(publicSkills, null, 2))
-          console.log(`[skills-registry] Fetched ${publicSkills.length} public skills`)
+        if (await isFresh(PUBLIC_SKILLS_OUTPUT, CACHE_MAX_AGE_MS)) {
+          console.log('[skills-registry] Using cached public skills')
         } else {
-          console.warn(`[skills-registry] Public API returned ${publicRes.status}, using cached public skills if available`)
+          const publicRes = await fetchJsonWithTimeout(PUBLIC_SKILLS_API, FETCH_TIMEOUT_MS)
+          if (publicRes.ok) {
+            const publicData = await publicRes.json()
+            const publicSkills = ((publicData.skills ?? []) as PublicSkillEntry[]).map((skill) => ({
+              id: skill.id ?? '',
+              name: skill.name ?? '',
+              description: skill.description ?? '',
+              category: skill.category ?? '',
+              tags: skill.tags ?? [],
+              sourceUrl: skill.sourceUrl ?? null,
+              owner: skill.owner ?? '',
+            }))
+
+            await fs.writeFile(PUBLIC_SKILLS_OUTPUT, JSON.stringify(publicSkills, null, 2))
+            console.log(`[skills-registry] Fetched ${publicSkills.length} public skills`)
+          } else {
+            console.warn(`[skills-registry] Public API returned ${publicRes.status}, using cached public skills if available`)
+          }
         }
       } catch (err) {
         console.warn('[skills-registry] Failed to fetch public skills, build continues with cached data:', err)
@@ -234,7 +306,7 @@ function articlesPlugin(): Plugin {
   return {
     name: 'fetch-articles',
     async buildStart() {
-      await fs.mkdir(path.resolve(__dirname, 'src/data'), { recursive: true })
+      await fs.mkdir(GENERATED_DATA_DIR, { recursive: true })
 
       try {
         const articles = await readMarkdownDir(ARTICLES_DIR)
@@ -277,7 +349,7 @@ function docsPlugin(): Plugin {
   return {
     name: 'build-docs',
     async buildStart() {
-      await fs.mkdir(path.resolve(__dirname, 'src/data'), { recursive: true })
+      await fs.mkdir(GENERATED_DATA_DIR, { recursive: true })
 
       try {
         const sections: Array<{
@@ -433,11 +505,18 @@ function agentsRegistryPlugin(): Plugin {
 export default defineConfig({
   base: process.env.VITE_BASE_PATH || '/',
   plugins: [
-    mcpRegistryPlugin(),
-    skillsRegistryPlugin(),
-    agentsRegistryPlugin(),
-    articlesPlugin(),
-    docsPlugin(),
+    {
+      name: 'prepare-generated-data',
+      async buildStart() {
+        await Promise.all([
+          mcpRegistryPlugin().buildStart?.call(this),
+          skillsRegistryPlugin().buildStart?.call(this),
+          agentsRegistryPlugin().buildStart?.call(this),
+          articlesPlugin().buildStart?.call(this),
+          docsPlugin().buildStart?.call(this),
+        ])
+      },
+    },
     // The React and Tailwind plugins are both required for Make, even if
     // Tailwind is not being actively used – do not remove them
     react(),
@@ -447,6 +526,7 @@ export default defineConfig({
     alias: {
       // Alias @ to the src directory
       '@': path.resolve(__dirname, './src'),
+      '@data': path.resolve(GENERATED_DATA_DIR),
     },
   },
 
