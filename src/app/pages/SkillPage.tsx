@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import { MobileDetailPanel } from '../components/mobile-detail-panel'
-import publicSkillsData from '@/data/skills-public.json'
-import localSkillsData from '@/data/skills-local.json'
+import publicSkillsData from '@data/skills-public.json'
+import localSkillsData from '@data/skills-local.json'
 
 interface PublicSkill {
   id: string
