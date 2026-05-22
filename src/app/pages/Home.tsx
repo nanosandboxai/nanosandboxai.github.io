@@ -87,9 +87,10 @@ export default function Home() {
             </code>
           </div>
           {installTab === 'windows' && (
-            <p className="mt-2 text-xs text-[var(--text-tertiary)]">
+            <div className="mt-2 border border-[var(--border-secondary)] bg-[var(--bg-tertiary)] px-3 py-2 text-xs text-[var(--text-tertiary)]">
+              <span className="text-[var(--accent)] mr-1">[info]</span>
               Windows support is experimental.
-            </p>
+            </div>
           )}
         </div>
       </div>
