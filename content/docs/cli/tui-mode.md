@@ -20,6 +20,12 @@ The TUI auto-detects `sandbox.yml` in the current directory and starts all confi
 # Auto-detect sandbox.yml and start all sandboxes
 nanosb
 
+# Resume the latest saved session for this project
+nanosb -r
+
+# Resume a specific saved session id
+nanosb --session 20260509121030-ab12cd34
+
 # Use a specific config file
 nanosb --config my-config.yml
 
@@ -49,7 +55,7 @@ Type a slash command in any active panel to control the TUI.
 
 | Command | Description |
 |---|---|
-| `/add <agent> [options]` | Add a new agent panel (`claude`, `goose`, `codex`, `cursor`) |
+| `/add <agent> [options]` | Add a new agent panel (`claude`, `goose`, `codex`, `cursor`) or start from a custom image |
 | `/focus <index>` | Switch focus to a specific panel index |
 | `/close [target]` | Close (hide) a panel — sandbox keeps running in the background |
 | `/open [target]` | Show a previously hidden panel |
@@ -58,15 +64,53 @@ Type a slash command in any active panel to control the TUI.
 | `/reconnect` | Reconnect SSH terminal for the focused panel |
 | `/copy` | Copy focused panel content to system clipboard |
 
-The `/add` command supports these options:
+`/add` syntax:
 
+```bash
+/add <agent> [--tag <version>] [--model <model>] [--auto-mode -p <prompt>] [--image <image>] [--project <path>] [--branch <name>] [--name <name>] [--env-file <path>] [--use-env <KEY>]...
 ```
-/add claude                          # Add with default settings
-/add claude --project ~/myapp        # Mount a project directory
-/add claude --model claude-sonnet-4-5-20250929  # Specify model
-/add claude --name my-sandbox        # Custom sandbox name
-/add claude --auto-mode -p "Fix tests"  # Headless autonomous mode
+
+`/add` options:
+
+| Option | Description |
+|---|---|
+| `--image <image>` | Use a custom image instead of the built-in agent shortcut. |
+| `--tag <version>` | Override tag for shortcut agents (for example `claude:rc11`). Ignored when `--image` is set. |
+| `--model <model>` | Set the model id for the new panel. |
+| `--project <path>` | Mount a specific project directory for this panel. |
+| `--branch <name>` | Set project clone branch name for this panel. |
+| `--name <name>` | Set a custom sandbox name. |
+| `--env-file <path>` | Load `KEY=VALUE` pairs from a file for this panel only. |
+| `--auto-mode` | Start in headless autonomous mode. |
+| `-p`, `--prompt <prompt>` | Prompt text for autonomous mode. Required with `--auto-mode`; it consumes the rest of the command line. |
+| `--use-env <KEY>` | Import one startup runtime env key into this panel. Repeat for multiple keys. |
+| `--run-as-root` | Run agent commands as root inside the guest VM. |
+
+Examples:
+
+```bash
+/add claude                                      # Add with default settings
+/add claude --tag rc11                           # Use a non-latest agent tag
+/add claude --model claude-sonnet-4-5-20250929   # Specify model
+/add claude --project ~/myapp --branch feat/auth # Mount project + custom branch
+/add claude --name my-sandbox                    # Custom sandbox name
+/add claude --env-file .env.local                # Per-panel env file
+/add codex --auto-mode -p "Fix tests and open a PR"  # Headless autonomous mode
+/add claude --use-env OPENAI_API_KEY --use-env GITHUB_TOKEN # Import startup env keys
+/add claude --run-as-root                        # Run as root inside guest VM
+/add myagent --image ghcr.io/myorg/agent:v1      # Start from custom image
 ```
+
+Behavior notes:
+
+- `--auto-mode` requires `-p` or `--prompt`.
+- `-p` / `--prompt` consumes the rest of the command line, so place it last.
+- `--tag` applies to agent shortcuts (`claude`, `goose`, `codex`, `cursor`); with `--image`, the provided image reference is used as-is.
+- `--project` must point to an existing directory.
+- `--use-env` imports keys from startup runtime env (for example values passed with `nanosb --env` or `--env-file`).
+- Env precedence for `/add` is documented in [Global Flags](/docs/cli/global-flags#env-precedence).
+
+> The `--run-as-root` flag is the same one available on `nanosb run`. By default the agent runs as a non-root user (some agents refuse to start as root). Pass `--run-as-root` only when a workflow needs root in the guest.
 
 ### Agent & Environment
 
@@ -149,9 +193,28 @@ The TUI supports mouse interaction:
 
 ## Session Management
 
-Sessions persist across TUI restarts within the same project directory. When you exit the TUI, running sandboxes continue in the background. Re-launching `nanosb` in the same directory reattaches to the existing session.
+Sessions persist across TUI restarts within the same project directory. When you exit the TUI, running sandboxes continue in the background.
+
+Session startup is explicit:
+
+- `nanosb` starts a fresh session
+- `nanosb -r` resumes the latest saved session
+- `nanosb --session <id>` resumes a specific saved session id
+
+Use `nanosb sessions` to list saved sessions for the current project.
 
 To explicitly stop all sandboxes when exiting, use `/destroy` which removes all sandboxes and cleans up session state.
+
+```bash
+# List saved sessions for current project
+nanosb sessions
+
+# Resume the latest session
+nanosb -r
+
+# Resume a specific session id
+nanosb --session 20260509121030-ab12cd34
+```
 
 To stop individual sandboxes via the CLI:
 

@@ -96,6 +96,7 @@ sandboxes:
     skills: [<skill>, ...]
     auto_mode: <bool>
     permissions: <level>
+    run_as_root: <bool>
     prompt: <text>
     env_file: <path>
     env:
@@ -169,6 +170,14 @@ sandboxes:
     timeout: 1800
 ```
 
+### Compute Defaults
+
+When `cpus` and `memory` are omitted, nanosb applies built-in defaults for each supported agent type. You can override these defaults globally via `~/.nanosandbox/agent_defaults.yaml`.
+
+- Built-in defaults are applied before per-sandbox overrides.
+- Explicit `cpus`/`memory` values in `sandbox.yml` always win.
+- CLI flags (`--cpus`, `--memory`) override both.
+
 ### env
 
 A map of environment variables injected into the sandbox at startup. Values support `${VAR}` syntax, which resolves against the host environment.
@@ -192,6 +201,18 @@ Environment variables can also be injected at runtime via the `-e` flag or `--en
 3. Per-sandbox `env_file`
 4. Per-sandbox `env`
 5. CLI `-e` / `--env-file` flags
+
+In TUI mode without `sandbox.yml`, nanosb auto-loads `./.env` into a runtime env pool. That runtime pool behavior is documented in [Global Flags](/docs/cli/global-flags#env-precedence).
+
+### run_as_root
+
+Run processes as `root` inside the sandbox instead of the default `developer` user.
+
+```yaml
+run_as_root: true
+```
+
+Use this only when a workflow requires elevated privileges (for example package install steps that cannot run rootless).
 
 ### env_file
 
@@ -339,6 +360,8 @@ When the same setting is specified in multiple places, the following precedence 
 2. Per-sandbox definition in `sandbox.yml`
 3. `defaults` section in `sandbox.yml`
 4. Built-in runtime defaults
+
+For TUI runtime env source order (`./.env`, `--env-file`, `--use-env`), see [Global Flags](/docs/cli/global-flags#env-precedence).
 
 ## Name Validation
 
