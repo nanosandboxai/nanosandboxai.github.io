@@ -66,6 +66,8 @@ Creates a sandbox from the specified image and executes `cmd`. If `cmd` is omitt
 | `--cpus <n>` | CPU cores (default: 2) |
 | `--memory <mb>` | Memory in MB (default: 4096) |
 | `--timeout <secs>` | Maximum runtime in seconds (default: 600) |
+| `--disk <mb>` | Per-sandbox disk quota in MB (default: 0 = unlimited) |
+| `--max-pids <n>` | Guest process cap (default: 0 = 512) |
 | `-e KEY=VALUE` | Inject environment variable (repeatable) |
 | `--env-file <path>` | Load env vars from file (single file; use the global `--env-file` flag for multiple files) |
 | `--run-as-root` | Run the agent command as root inside the guest (default: non-root user) |
@@ -197,6 +199,22 @@ Verifies the host environment: kernel support, runtime availability, network con
 nanosb doctor
 nanosb doctor --format json
 ```
+
+## nanosb capacity
+
+Show detected host capacity, the resolved admission budget, and current resource usage.
+
+```bash
+nanosb capacity
+nanosb capacity --format json
+```
+
+Prints host CPU/RAM/disk, the admission budget (auto-derived, or from the
+`NANOSB_MAX_VMS` / `NANOSB_MEMORY_BUDGET_MB` / `NANOSB_CPU_BUDGET` /
+`NANOSB_DISK_BUDGET_MB` / `NANOSB_SANDBOX_DISK_MB` environment variables),
+aggregate usage across live supervisors and in-flight spawn reservations, and a
+per-sandbox list. Admission control is enabled by default and can be disabled
+with `NANOSB_ADMISSION=off`.
 
 ## nanosb cleanup
 

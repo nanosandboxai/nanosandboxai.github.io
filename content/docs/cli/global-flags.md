@@ -20,6 +20,8 @@ These flags can be used with any `nanosb` subcommand.
 | `--cpus <n>` | integer | *(from config)* | Override the number of CPU cores allocated to the sandbox. |
 | `--memory <mb>` | integer | *(from config)* | Override memory allocation in MB. |
 | `--timeout <secs>` | integer | *(from config)* | Override the maximum runtime in seconds. |
+| `--disk <mb>` | integer | *(from config)* | Override the per-sandbox disk quota in MB (0 = unlimited). |
+| `--max-pids <n>` | integer | *(from config)* | Override the maximum guest process count (0 = default 512). |
 | `--permissions <level>` | string | `default` | Agent permission level: `default`, `accept-edits`, or `allow-all`. |
 | `-e KEY=VALUE` | string (repeatable) | *(none)* | Inject an environment variable into the sandbox. Can be specified multiple times. |
 | `--env-file <path>` | string (repeatable) | *(none)* | Load environment variables from a file. Can be specified multiple times. |

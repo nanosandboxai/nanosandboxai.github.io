@@ -63,6 +63,8 @@ The `defaults` section sets baseline values applied to every sandbox unless over
 | `cpus` | integer | CPU cores allocated (runtime default: 1) |
 | `memory` | integer | Memory in MB (runtime default: 512) |
 | `timeout` | integer | Maximum runtime in seconds (runtime default: 300) |
+| `disk` | integer | Per-sandbox disk quota in MB (0 = unlimited) |
+| `max_pids` | integer | Maximum processes in the guest (0 = runtime default 512) |
 | `env` | map | Environment variables injected into every sandbox |
 | `env_file` | string | Path to a file containing `KEY=VALUE` environment variables |
 | `network` | object | Network configuration (see [network](#network)) |
@@ -77,6 +79,9 @@ The `defaults` section sets baseline values applied to every sandbox unless over
 | `model` | string | Model to use (validated against the agent type) |
 
 All fields are optional. When omitted, the runtime's built-in defaults are used.
+For how resource limits (`cpus`, `memory`, `disk`, `max_pids`) are enforced and
+how host admission budgets work, see
+[Resource Management](../architecture/resource-management.md).
 
 ## sandboxes
 
@@ -92,6 +97,8 @@ sandboxes:
     cpus: <n>
     memory: <mb>
     timeout: <secs>
+    disk: <mb>            # per-sandbox disk quota (0 = unlimited)
+    max_pids: <n>         # guest process cap (0 = default 512)
     agent: <agent-name>
     skills: [<skill>, ...]
     auto_mode: <bool>
@@ -356,7 +363,7 @@ Controls what the agent can do without asking for confirmation.
 
 When the same setting is specified in multiple places, the following precedence applies (highest to lowest):
 
-1. CLI flags (`--cpus`, `--memory`, `--timeout`, `-e`)
+1. CLI flags (`--cpus`, `--memory`, `--timeout`, `--disk`, `--max-pids`, `-e`)
 2. Per-sandbox definition in `sandbox.yml`
 3. `defaults` section in `sandbox.yml`
 4. Built-in runtime defaults

@@ -143,14 +143,27 @@ nanosb run -e CURSOR_API_KEY=$CURSOR_API_KEY cursor
 
 Each agent requires its own API key passed as an environment variable:
 
-| Agent | Environment Variable |
+| Agent | Required environment |
 |---|---|
-| Claude Code | `ANTHROPIC_API_KEY` |
-| Goose | `OPENAI_API_KEY` |
-| Codex | `OPENAI_API_KEY` |
+| Claude Code | `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` |
+| Codex | `OPENAI_API_KEY` or `CODEX_API_KEY` |
+| Goose | `GOOSE_PROVIDER` + `GOOSE_MODEL` + one of `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `OPENROUTER_API_KEY` |
 | Cursor | `CURSOR_API_KEY` |
+| OpenCode | one of `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `OPENROUTER_API_KEY` |
+| Aider | one of `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `DEEPSEEK_API_KEY` |
+| Gemini CLI | `GEMINI_API_KEY` or `GOOGLE_API_KEY` |
+| Crush | one of `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `OPENROUTER_API_KEY` |
 
 API keys are injected into the sandbox as environment variables. All environment variables are encrypted before entering the VM and are never written to disk inside the guest. See [Secrets Management](/docs/security/secrets) for details.
+
+When adding an agent in the TUI with `/add`, these requirements are validated
+**before** the sandbox is created. Most built-in agents support **browser
+sign-in** (OAuth / device flow), so validation is **advisory** for them: a
+missing variable is shown as a hint but the agent still starts and signs in
+through the auto-opened browser URL. Agents without a browser sign-in path are
+blocked, so they cannot boot and immediately exit with code 1. See
+[TUI Mode → Prerequisite validation](/docs/cli/tui-mode#prerequisite-validation)
+for the per-agent requirements and the browser sign-in hosts.
 
 ### TUI-first env workflows (recommended)
 
