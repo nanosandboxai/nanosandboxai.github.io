@@ -7,7 +7,8 @@ order: 1
 Eight protocol clients speak the versioned `nanosb-protocol` over a Unix socket
 to the `nanosb-runtime` helper — Rust, Python, TypeScript/Node, Go, Ruby, Java,
 C#/.NET, and Kotlin. All eight share one wire contract and one conformance
-corpus (35 scenarios).
+corpus (35 scenarios), and every package is published under the name
+**`nanosandbox-sdk`**.
 
 ## Install
 
@@ -17,10 +18,10 @@ corpus (35 scenarios).
 | Python | `pip install nanosandbox-sdk` |
 | TypeScript / Node | `npm install nanosandbox-sdk` |
 | Go | `go get github.com/nanosandboxai/nanosandbox/sdk/go` |
-| Ruby | `gem install nanosandbox` |
-| C# / .NET | `dotnet add package Nanosandbox` |
-| Java | `ai.nanosandbox:nanosandbox-java` (see below) |
-| Kotlin | `ai.nanosandbox:nanosandbox-kotlin` (see below) |
+| Ruby | `gem install nanosandbox-sdk` |
+| C# / .NET | `dotnet add package nanosandbox-sdk` |
+| Java | `ai.nanosandbox:nanosandbox-sdk` (see below) |
+| Kotlin | `ai.nanosandbox:nanosandbox-sdk-kotlin` (see below) |
 
 ### Java / Kotlin
 
@@ -35,7 +36,8 @@ the artifact:
 ```
 
 ```kotlin
-implementation("ai.nanosandbox:nanosandbox-java:0.2.0")   // or nanosandbox-kotlin
+implementation("ai.nanosandbox:nanosandbox-sdk:0.2.0")        // Java
+implementation("ai.nanosandbox:nanosandbox-sdk-kotlin:0.2.0") // Kotlin facade
 ```
 
 ## Use
