@@ -7,8 +7,7 @@ order: 1
 Eight protocol clients speak the versioned `nanosb-protocol` over a Unix socket
 to the `nanosb-runtime` helper — Rust, Python, TypeScript/Node, Go, Ruby, Java,
 C#/.NET, and Kotlin. All eight share one wire contract and one conformance
-corpus (35 scenarios), and every package is published under the name
-**`nanosandbox-sdk`**.
+corpus (35 scenarios).
 
 ## Install
 
@@ -19,21 +18,13 @@ corpus (35 scenarios), and every package is published under the name
 | TypeScript / Node | `npm install nanosandbox-sdk` |
 | Go | `go get github.com/nanosandboxai/nanosandbox/sdk/go` |
 | Ruby | `gem install nanosandbox-sdk` |
-| C# / .NET | `dotnet add package nanosandbox-sdk` |
-| Java | `ai.nanosandbox:nanosandbox-sdk` (see below) |
-| Kotlin | `ai.nanosandbox:nanosandbox-sdk-kotlin` (see below) |
+| C# / .NET | `dotnet add package Nanosandbox.Sdk` |
+| Java | `ai.nanosandbox:nanosandbox-sdk` (Maven Central) |
+| Kotlin | `ai.nanosandbox:nanosandbox-sdk-kotlin` (Maven Central) |
 
 ### Java / Kotlin
 
-The JVM SDKs publish a Maven repository to GitHub Pages. Add it and depend on
-the artifact:
-
-```xml
-<repository>
-  <id>nanosandbox</id>
-  <url>https://nanosandboxai.github.io/maven/</url>
-</repository>
-```
+The JVM SDKs are published to Maven Central, so no extra repository is needed:
 
 ```kotlin
 implementation("ai.nanosandbox:nanosandbox-sdk:0.2.0")        // Java
