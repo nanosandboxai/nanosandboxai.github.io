@@ -9,6 +9,13 @@ to the `nanosb-runtime` helper — Rust, Python, TypeScript/Node, Go, Ruby, Java
 C#/.NET, and Kotlin. All eight share one wire contract and one conformance
 corpus (35 scenarios).
 
+## The runtime installs automatically
+
+Installing the SDK is the only step. Each SDK's `ManagedRuntime` auto-provisions
+the runtime — downloading, verifying, and installing a per-platform bundle on
+first use. There is no separate runtime install. See
+[Runtime](./runtime.md) for details.
+
 ## Install
 
 | Language | Install |
