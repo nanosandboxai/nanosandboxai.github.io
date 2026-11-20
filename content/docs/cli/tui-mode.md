@@ -59,6 +59,10 @@ Type a slash command in any active panel to control the TUI.
 | `/focus <index>` | Switch focus to a specific panel index |
 | `/close [target]` | Close (hide) a panel — sandbox keeps running in the background |
 | `/open [target]` | Show a previously hidden panel |
+| `/stop [target]` | Stop a sandbox and keep its panel |
+| `/restart [target]` | Re-boot a sandbox in place |
+| `/pause [target]` | Freeze a running sandbox |
+| `/resume [target]` | Thaw a paused sandbox |
 | `/kill [panel]` | Kill (destroy) a sandbox and remove its panel |
 | `/zoom` | Toggle zoom (maximize/minimize) for the focused panel |
 | `/reconnect` | Reconnect SSH terminal for the focused panel |
