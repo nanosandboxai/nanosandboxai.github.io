@@ -157,6 +157,58 @@ Sends a graceful shutdown signal. The sandbox process is given time to exit befo
 nanosb stop my-sandbox
 ```
 
+## nanosb pause
+
+Pause a running sandbox by freezing the guest. The microVM keeps its state and
+`exec` calls stall until it is resumed.
+
+```bash
+nanosb pause <sandbox>
+```
+
+**Examples:**
+
+```bash
+nanosb pause my-sandbox
+```
+
+## nanosb resume
+
+Resume a paused sandbox.
+
+```bash
+nanosb resume <sandbox>
+```
+
+**Examples:**
+
+```bash
+nanosb resume my-sandbox
+```
+
+## nanosb restart
+
+Re-boot a sandbox while keeping its name and state directory.
+
+```bash
+nanosb restart <sandbox>
+```
+
+A running sandbox is restarted in place (same supervisor and control socket, a
+new VM process). A stopped sandbox is started again from its persisted spec. If
+the engine cannot serve the restart, the CLI falls back to respawning the
+supervisor from `deploy.json` and says so.
+
+| Flag | Description |
+|---|---|
+| `--allow-no-env` | Fall back to booting without re-resolved env/secrets |
+
+**Examples:**
+
+```bash
+nanosb restart my-sandbox
+```
+
 ## nanosb rm
 
 Remove a sandbox.
