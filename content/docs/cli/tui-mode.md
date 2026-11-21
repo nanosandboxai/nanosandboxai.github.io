@@ -104,7 +104,7 @@ Type a slash command in any active panel to control the TUI.
 
 | Command | Description |
 |---|---|
-| `/add <agent> [options]` | Add a new agent panel (`claude`, `goose`, `codex`, `cursor`) or start from a custom image |
+| `/add <agent> [options]` | Add a new agent panel (`claude`, `codex`, `goose`, `cursor`, `opencode`, `aider`, `gemini`, `crush`, `oh-my-openagent`, `oh-my-codex`, `oh-my-claude`) or start from a custom image |
 | `/focus <index>` | Switch to the agent tab at the given index |
 | `/close [target]` | Close (hide) a panel — sandbox keeps running in the background |
 | `/open [target]` | Show a previously hidden panel |
@@ -157,7 +157,7 @@ Behavior notes:
 
 - `--auto-mode` requires `-p` or `--prompt`.
 - `-p` / `--prompt` consumes the rest of the command line, so place it last.
-- `--tag` applies to agent shortcuts (`claude`, `goose`, `codex`, `cursor`); with `--image`, the provided image reference is used as-is.
+- `--tag` applies to all agent shortcuts (`claude`, `codex`, `goose`, `cursor`, `opencode`, `aider`, `gemini`, `crush`, `oh-my-openagent`, `oh-my-codex`, `oh-my-claude`); with `--image`, the provided image reference is used as-is.
 - `--project` must point to an existing directory.
 - `--use-env` imports keys from startup runtime env (for example values passed with `nanosb --env` or `--env-file`).
 - `--permissions` accepts `default`, `accept-edits`, or `allow-all` (mirrors the global `--permissions` flag); `--auto-mode` always runs with `allow-all`.
@@ -181,11 +181,14 @@ Validation has **two severities**, because most modern coding agents support
 | **Advisory** | The agent supports browser sign-in. The TUI shows the missing variable as a hint but **lets the agent start**. The agent's sign-in flow opens the provider's authorization URL in your host browser automatically. |
 | **Blocking** | The agent has no interactive sign-in path. Missing credentials would leave a dead panel whose only symptom is an opaque exit code, so `/add` is **rejected** before the sandbox starts. |
 
-All built-in agents (`claude`, `codex`, `goose`, `gemini`, `cursor`, `opencode`,
-`aider`, `crush`) support browser sign-in, so for them validation is
-**advisory**: you can start the panel with no credentials and sign in through
-the browser. Custom images (`--image`) are not validated — they may have their
-own credential requirements.
+All built-in agents except the three `oh-my-*` harnesses (`claude`, `codex`,
+`goose`, `gemini`, `cursor`, `opencode`, `aider`, `crush`) support browser
+sign-in, so for them validation is **advisory**: you can start the panel with no
+credentials and sign in through the browser. The `oh-my-*` agents
+(`oh-my-openagent`, `oh-my-codex`, `oh-my-claude`) have **no browser sign-in
+path**, so their validation is **blocking**: `/add` is rejected until the
+required API key is present. Custom images (`--image`) are not validated — they
+may have their own credential requirements.
 
 The browser sign-in flow auto-opens URLs for these providers:
 
@@ -205,16 +208,19 @@ with arbitrary tabs.
 
 #### What each agent needs
 
-| Agent | Required environment (advisory) |
-|---|---|
-| `claude` | `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` |
-| `codex` | `OPENAI_API_KEY` or `CODEX_API_KEY` |
-| `goose` | `GOOSE_PROVIDER` + `GOOSE_MODEL` + one provider key (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_API_KEY`, or `OPENROUTER_API_KEY`) |
-| `gemini` | `GEMINI_API_KEY` or `GOOGLE_API_KEY` |
-| `cursor` | `CURSOR_API_KEY` |
-| `opencode` | one of `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `OPENROUTER_API_KEY` |
-| `aider` | one of `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `DEEPSEEK_API_KEY` |
-| `crush` | one of `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `OPENROUTER_API_KEY` |
+| Agent | Required environment | Severity |
+|---|---|---|
+| `claude` | `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` | advisory |
+| `codex` | `OPENAI_API_KEY` or `CODEX_API_KEY` | advisory |
+| `goose` | `GOOSE_PROVIDER` + `GOOSE_MODEL` + one provider key (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_API_KEY`, or `OPENROUTER_API_KEY`) | advisory |
+| `gemini` | `GEMINI_API_KEY` or `GOOGLE_API_KEY` | advisory |
+| `cursor` | `CURSOR_API_KEY` | advisory |
+| `opencode` | one of `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `OPENROUTER_API_KEY` | advisory |
+| `aider` | one of `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `DEEPSEEK_API_KEY` | advisory |
+| `crush` | one of `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `OPENROUTER_API_KEY` | advisory |
+| `oh-my-openagent` | `OPENAI_API_KEY` (or `ANTHROPIC_API_KEY`) | blocking |
+| `oh-my-codex` | `OPENAI_API_KEY` or `CODEX_API_KEY` | blocking |
+| `oh-my-claude` | `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` | blocking |
 
 To satisfy a requirement without the browser flow, export the variable in the
 host environment before launching the TUI, or use one of the per-panel options:

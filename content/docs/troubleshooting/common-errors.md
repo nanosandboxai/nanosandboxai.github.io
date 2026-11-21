@@ -8,7 +8,7 @@ order: 1
 
 **Error:**
 ```
-Error: image not found: ghcr.io/nanosandboxai/agents-registry/claude:latest
+Error: image not found: ghcr.io/nanosandboxai/nanosandbox/claude:latest
   Caused by: manifest unknown
 ```
 
@@ -16,13 +16,13 @@ Error: image not found: ghcr.io/nanosandboxai/agents-registry/claude:latest
 
 1. **Typo in image name.** Verify the image reference is correct:
    ```bash
-   nanosb pull ghcr.io/nanosandboxai/agents-registry/claude:latest
+   nanosb pull ghcr.io/nanosandboxai/nanosandbox/claude:latest
    ```
 
 2. **Authentication required.** The registry may require login:
    ```bash
    echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
-   nanosb pull ghcr.io/nanosandboxai/agents-registry/claude:latest
+   nanosb pull ghcr.io/nanosandboxai/nanosandbox/claude:latest
    ```
 
 3. **Platform mismatch.** The image may not support your architecture. Try pulling with the short name which auto-resolves to the correct platform:

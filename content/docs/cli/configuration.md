@@ -76,7 +76,7 @@ The `defaults` section sets baseline values applied to every sandbox unless over
 | `auto_mode` | boolean | Run the agent fully autonomously (default: `false`) |
 | `permissions` | string | Permission level: `default`, `accept_edits`, or `allow_all` |
 | `prompt` | string | Prompt text for the agent (required when `auto_mode: true`) |
-| `model` | string | Model to use (validated against the agent type) |
+| `model` | string | Model to use (enforced at config load against the built-in catalog; extendable via `~/.nanosandbox/models.json`) |
 
 All fields are optional. When omitted, the runtime's built-in defaults are used.
 For how resource limits (`cpus`, `memory`, `disk`, `max_pids`) are enforced and
@@ -138,12 +138,18 @@ Per-sandbox values override `defaults`. The `type` field (agent type) is **per-s
 
 Required (either in `defaults` or per-sandbox). The container image to use.
 
-Bare names are automatically resolved to the default agents registry:
+Bare agent names are automatically resolved to the default agents registry:
 
 ```
-claude  ->  ghcr.io/nanosandboxai/agents-registry/claude:latest
-codex   ->  ghcr.io/nanosandboxai/agents-registry/codex:latest
+claude          ->  ghcr.io/nanosandboxai/nanosandbox/claude:latest
+codex           ->  ghcr.io/nanosandboxai/nanosandbox/codex:latest
+oh-my-openagent ->  ghcr.io/nanosandboxai/nanosandbox/oh-my-openagent:latest
+oh-my-codex     ->  ghcr.io/nanosandboxai/nanosandbox/oh-my-codex:latest
+oh-my-claude    ->  ghcr.io/nanosandboxai/nanosandbox/oh-my-claude:latest
 ```
+
+Every supported agent type resolves this way; any other bare name resolves to
+Docker Hub (`docker.io/library/<name>:latest`).
 
 You can also provide a fully qualified image reference:
 
@@ -161,8 +167,31 @@ The agent type. Per-sandbox only, not inherited from defaults.
 | `codex` | |
 | `goose` | |
 | `cursor` | `cursor-agent` |
+| `opencode` | |
+| `aider` | |
+| `gemini` | |
+| `crush` | |
+| `oh-my-openagent` | `omo` |
+| `oh-my-codex` | `omx` |
+| `oh-my-claude` | `omc` |
 
-When both `type` and `model` are set, the model is validated against the known models for that agent type.
+The three `oh-my-*` types are agent harnesses: OmO runs its own `omo` binary,
+OMX drives Codex, and OMC drives Claude Code. See
+[Agents Overview](/docs/agents/overview) for their images and licensing.
+
+When both `type` and `model` are set, the model is enforced at config load against the built-in model catalog (extendable via `~/.nanosandbox/models.json`).
+
+### Strict validation
+
+`sandbox.yml` is validated strictly before any microVM is created. Unknown or
+misspelled fields are rejected at every level (`defaults`, each sandbox, `mcp`
+servers, `network`, `mounts`, `project`, `claude`, `workspace`) with a clear
+error such as `unknown field 'interactivee', expected one of ...`. Unknown
+`skills` are also rejected when an agents registry is available
+(`skill 'foo' not found in agents registry`); if no registry is found, skill
+validation is skipped. The `model` is enforced against a built-in catalog
+compiled into the binary, extendable via `~/.nanosandbox/models.json` or
+`~/.nanosandbox/models.yaml`.
 
 ### Per-Sandbox Resource Overrides
 
@@ -180,6 +209,20 @@ sandboxes:
 ### Compute Defaults
 
 When `cpus` and `memory` are omitted, nanosb applies built-in defaults for each supported agent type. You can override these defaults globally via `~/.nanosandbox/agent_defaults.yaml`.
+
+| Agent type | `cpus` | `memory` (MB) |
+|---|---|---|
+| `claude` | 2 | 4096 |
+| `codex` | 2 | 2048 |
+| `goose` | 2 | 2048 |
+| `cursor` | 2 | 2048 |
+| `opencode` | 2 | 2048 |
+| `aider` | 2 | 2048 |
+| `gemini` | 2 | 2048 |
+| `crush` | 2 | 2048 |
+| `oh-my-openagent` | 2 | 2048 |
+| `oh-my-codex` | 2 | 2048 |
+| `oh-my-claude` | 2 | 2048 |
 
 - Built-in defaults are applied before per-sandbox overrides.
 - Explicit `cpus`/`memory` values in `sandbox.yml` always win.

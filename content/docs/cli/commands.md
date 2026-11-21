@@ -16,18 +16,21 @@ Pull an image from a container registry.
 nanosb pull <image>
 ```
 
-Requires a fully qualified image reference.
-
-> **Note:** Bare image names (e.g. `claude`) auto-resolve only inside `sandbox.yml` configuration files. The `pull` command requires the full registry path.
+Accepts a bare agent name or a fully qualified image reference. Bare agent names
+resolve to `ghcr.io/nanosandboxai/nanosandbox/<agent>:latest`; any other bare
+name resolves to Docker Hub (`docker.io/library/<name>:latest`).
 
 **Examples:**
 
 ```bash
-# Pull an agent image
-nanosb pull ghcr.io/nanosandboxai/agents-registry/claude:latest
+# Pull an agent image by bare name
+nanosb pull claude
+
+# Pull an oh-my-* agent image
+nanosb pull oh-my-codex
 
 # Pull a specific tag
-nanosb pull ghcr.io/nanosandboxai/agents-registry/claude:v2
+nanosb pull ghcr.io/nanosandboxai/nanosandbox/claude:v2
 
 # Pull from a custom registry
 nanosb pull ghcr.io/myorg/my-agent:latest

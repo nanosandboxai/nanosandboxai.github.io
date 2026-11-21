@@ -190,6 +190,8 @@ Skills published to the public MCP/skills registries. These are community-mainta
 
 ### Agents Registry
 
-Skills bundled with the Nanosandbox agents registry at `ghcr.io/nanosandboxai/agents-registry`. These are curated for use with the supported agents (Claude Code, Goose, Codex, Cursor).
+Skills bundled with the Nanosandbox agents registry at `ghcr.io/nanosandboxai/nanosandbox`. These are curated for use with the supported agents (Claude Code, Goose, Codex, Cursor, and the other agent types).
+
+> **Note:** the three `oh-my-*` agents (`oh-my-openagent`, `oh-my-codex`, `oh-my-claude`) do not receive generated skill files in this release — skill delivery for them is deferred. Declaring `skills` for those sandboxes is accepted but has no effect.
 
 Both sources are available in the TUI via `/skills list` and on the [Skills page](/skill) of this website.

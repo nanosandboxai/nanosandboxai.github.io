@@ -181,6 +181,13 @@ The agent-gateway generates the correct MCP config format for each agent type. E
 | Goose | YAML (`extensions:` with `cmd:`/`envs:`) | `~/.config/goose/config.yaml` |
 | Codex | TOML (`[mcp_servers.<name>]`) | `~/.codex/config.toml` |
 | Cursor | JSON (`mcpServers` in settings) | `~/.cursor/mcp.json` |
+| Oh My OpenAgent | none (deferred) | — |
+| Oh My Codex | none (deferred) | — |
+| Oh My Claude | none (deferred) | — |
+
+> The three `oh-my-*` agents do not receive generated MCP config in this release —
+> MCP delivery for them is deferred. `mcp` entries on those sandboxes are
+> accepted but not materialized.
 
 ### Cross-Agent Compatibility
 

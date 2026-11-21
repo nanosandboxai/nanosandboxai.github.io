@@ -10,10 +10,26 @@ Nanosandbox provides pre-built, sandboxed environments for popular AI coding age
 
 | Agent | CLI Name | Image | Agent Type |
 |---|---|---|---|
-| Claude Code | `claude` | `ghcr.io/nanosandboxai/agents-registry/claude:latest` | `claude` |
-| Goose | `goose` | `ghcr.io/nanosandboxai/agents-registry/goose:latest` | `goose` |
-| Codex | `codex` | `ghcr.io/nanosandboxai/agents-registry/codex:latest` | `codex` |
-| Cursor | `cursor` | `ghcr.io/nanosandboxai/agents-registry/cursor:latest` | `cursor` |
+| Claude Code | `claude` | `ghcr.io/nanosandboxai/nanosandbox/claude:latest` | `claude` |
+| Goose | `goose` | `ghcr.io/nanosandboxai/nanosandbox/goose:latest` | `goose` |
+| Codex | `codex` | `ghcr.io/nanosandboxai/nanosandbox/codex:latest` | `codex` |
+| Cursor | `cursor-agent` | `ghcr.io/nanosandboxai/nanosandbox/cursor:latest` | `cursor` |
+| OpenCode | `opencode` | `ghcr.io/nanosandboxai/nanosandbox/opencode:latest` | `opencode` |
+| Aider | `aider` | `ghcr.io/nanosandboxai/nanosandbox/aider:latest` | `aider` |
+| Gemini CLI | `gemini` | `ghcr.io/nanosandboxai/nanosandbox/gemini:latest` | `gemini` |
+| Crush | `crush` | `ghcr.io/nanosandboxai/nanosandbox/crush:latest` | `crush` |
+| Oh My OpenAgent | `omo` | `ghcr.io/nanosandboxai/nanosandbox/oh-my-openagent:latest` | `oh-my-openagent` |
+| Oh My Codex | `omx` | `ghcr.io/nanosandboxai/nanosandbox/oh-my-codex:latest` | `oh-my-codex` |
+| Oh My Claude | `omc` | `ghcr.io/nanosandboxai/nanosandbox/oh-my-claude:latest` | `oh-my-claude` |
+
+The three `oh-my-*` agents are agent harnesses that wrap a base CLI: OmO runs its
+own `omo` binary, OMX drives Codex, and OMC drives Claude Code. They are
+first-class agent types — usable from `sandbox.yml`, `nanosb run`, and the TUI's
+`/add` — and are published by the same CI pipeline as the other images.
+
+> **Licensing:** `oh-my-openagent` (OmO) is distributed under the Sustainable Use
+> License 1.0 (source-available, non-commercial), not an OSI license. Review the
+> upstream terms before commercial use. `oh-my-codex` and `oh-my-claude` are MIT.
 
 ## Base Image
 
@@ -22,7 +38,7 @@ All agent images are built on a common base:
 - **OS**: Debian (node:22-slim)
 - **Runtime**: Node.js 22 (LTS), Python 3 + uv/uvx
 - **Included tools**: git, curl, bash, sudo, openssh (dropbear)
-- **Registry**: `ghcr.io/nanosandboxai/agents-registry/`
+- **Registry**: `ghcr.io/nanosandboxai/nanosandbox/`
 
 The base image includes the **agent-gateway** binary — an HTTP server (`:8080`) that manages skill files, MCP config generation, and state persistence inside the VM.
 
@@ -55,14 +71,20 @@ The **agent-gateway** is the bridge between the CLI and the agent. It:
 
 ```bash
 # Pull a specific agent
-nanosb pull ghcr.io/nanosandboxai/agents-registry/claude:latest
+nanosb pull ghcr.io/nanosandboxai/nanosandbox/claude:latest
 
 # Pull using short names (auto-resolves to full registry path)
 nanosb pull claude
 nanosb pull goose
 nanosb pull codex
 nanosb pull cursor
+nanosb pull oh-my-openagent
+nanosb pull oh-my-codex
+nanosb pull oh-my-claude
 ```
+
+Every agent type in the table above resolves to
+`ghcr.io/nanosandboxai/nanosandbox/<agent>:latest` when you use its bare name.
 
 ## Running Agents
 
@@ -139,6 +161,54 @@ nanosb run -e OPENAI_API_KEY=$OPENAI_API_KEY codex
 nanosb run -e CURSOR_API_KEY=$CURSOR_API_KEY cursor
 ```
 
+**Oh My OpenAgent (OmO):**
+```bash
+nanosb run -e OPENAI_API_KEY=$OPENAI_API_KEY oh-my-openagent
+```
+
+**Oh My Codex (OMX):**
+```bash
+nanosb run -e OPENAI_API_KEY=$OPENAI_API_KEY oh-my-codex
+```
+
+**Oh My Claude (OMC):**
+```bash
+nanosb run -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY oh-my-claude
+```
+
+### How the oh-my-* agents are launched
+
+The TUI's `/add` and `sandbox.yml` share one command builder, so the same
+invocation is used whether you start from the TUI or the CLI:
+
+| Agent type | Interactive | Headless (`--headless -p "…"`) |
+|---|---|---|
+| `oh-my-openagent` | `omo` | `omo -p --no-session "<prompt>"` |
+| `oh-my-codex` | `omx` | `omx exec --skip-git-repo-check --json "<prompt>"` |
+| `oh-my-claude` | `omc launch` | `omc ask claude "<prompt>"` |
+
+Permission flags follow the same `--permissions` levels as the built-in agents:
+
+- **OmO** — `allow-all` adds `--permission-preset full-access`; `accept-edits`
+  adds `--permission-preset accept-edits`.
+- **OMX** — `allow-all` and `accept-edits` both add
+  `--dangerously-bypass-approvals-and-sandbox`.
+- **OMC** — no permission flag.
+
+Headless invocations redirect stdin to `/dev/null`; OMX reads extra input from
+stdin when it is not a TTY, so without the redirect it would block.
+
+```bash
+# TUI: interactive OmO panel
+/add oh-my-openagent
+
+# TUI: headless OMX panel
+/add oh-my-codex --headless -p "list the failing tests"
+
+# CLI equivalent
+nanosb run -e OPENAI_API_KEY=$OPENAI_API_KEY oh-my-codex -- omx exec --skip-git-repo-check --json "list the failing tests"
+```
+
 ## API Keys
 
 Each agent requires its own API key passed as an environment variable:
@@ -153,6 +223,9 @@ Each agent requires its own API key passed as an environment variable:
 | Aider | one of `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `DEEPSEEK_API_KEY` |
 | Gemini CLI | `GEMINI_API_KEY` or `GOOGLE_API_KEY` |
 | Crush | one of `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `OPENROUTER_API_KEY` |
+| Oh My OpenAgent | `OPENAI_API_KEY` (or `ANTHROPIC_API_KEY`) |
+| Oh My Codex | `OPENAI_API_KEY` or `CODEX_API_KEY` |
+| Oh My Claude | `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` |
 
 API keys are injected into the sandbox as environment variables. All environment variables are encrypted before entering the VM and are never written to disk inside the guest. See [Secrets Management](/docs/security/secrets) for details.
 
