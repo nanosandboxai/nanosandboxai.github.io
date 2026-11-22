@@ -162,7 +162,7 @@ Behavior notes:
 - `--use-env` imports keys from startup runtime env (for example values passed with `nanosb --env` or `--env-file`).
 - `--permissions` accepts `default`, `accept-edits`, or `allow-all` (mirrors the global `--permissions` flag); `--auto-mode` always runs with `allow-all`.
 - Agents added with `/add` **auto-accept the workspace-trust prompt** (Cursor `--trust`, Gemini `--skip-trust`, Codex `trust_level`, Claude `hasTrustDialogAccepted`), because the mounted workspace is a disposable per-sandbox clone.
-- On failure the panel **keeps the agent's last output** (frozen terminal) and shows the exit reason (e.g. `agent exited with code 1`) as a banner, so you can read the actual error. There is no pre-flight credential popup — credentials are only validated by the agent itself at runtime.
+- On failure the panel **keeps the agent's last output** (frozen terminal) and shows the exit reason (e.g. `agent exited with code 1`) as a banner, so you can read the actual error. Credentials are checked by `/add` before the sandbox starts (see [Prerequisite validation](#prerequisite-validation)); the panel never opens a credential popup.
 - Env precedence for `/add` is documented in [Global Flags](/docs/cli/global-flags#env-precedence).
 
 ### Prerequisite validation
