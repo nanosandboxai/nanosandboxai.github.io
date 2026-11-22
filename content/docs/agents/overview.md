@@ -86,6 +86,10 @@ nanosb pull oh-my-claude
 Every agent type in the table above resolves to
 `ghcr.io/nanosandboxai/nanosandbox/<agent>:latest` when you use its bare name.
 
+`latest` is published by the release pipeline on a clean `v*` tag. Between
+releases, CI builds publish semver, `sha-<sha>` and optional RC tags (for
+example `:rc2`) — use an explicit tag until the next release.
+
 ## Running Agents
 
 ### Via sandbox.yml (Recommended)
