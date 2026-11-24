@@ -372,12 +372,12 @@ headless modes:
 | Agent | `accept_edits` | `allow_all` |
 |---|---|---|
 | Claude Code | `--permission-mode acceptEdits` | `--dangerously-skip-permissions` |
-| Codex | `--dangerously-bypass-approvals-and-sandbox` | `--dangerously-bypass-approvals-and-sandbox` |
+| Codex | `-a on-request -s workspace-write` (interactive); bypass flag (headless) | `--dangerously-bypass-approvals-and-sandbox` |
 | Goose | `GOOSE_MODE=smart_approve` | `GOOSE_MODE=auto` |
 | Cursor | `--trust` (auto mode) | `--force` (plus `--trust --approve-mcps` in auto mode) |
 | OpenCode | — | `--auto` |
 | Aider | `--yes-always` (interactive) | `--yes-always` (interactive); headless always passes `--yes` |
-| Gemini CLI | — | `--approval-mode yolo` |
+| Gemini CLI | `--approval-mode auto_edit` | `--approval-mode yolo` |
 | Crush | — | `--yolo` |
 | OmO | `--permission-preset accept-edits` | `--permission-preset full-access` |
 | OMX | `--yolo` (interactive) / `--dangerously-bypass-approvals-and-sandbox` (headless) | same as accept_edits |
