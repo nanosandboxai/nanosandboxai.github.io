@@ -184,6 +184,10 @@ Because the underlying CLIs expose a single "bypass" switch, `accept_edits` and
 `allow_all` map to the same flag for OMX and OMC; OmO has a distinct
 `accept-edits` preset. `default` adds no flag (manual approval).
 
+OMX launches interactively with `omx --direct`: the panel already provides the
+PTY, and OMX's default detached tmux leader fails its authority handshake under
+the sandbox (`malformed detached leader authority`).
+
 Model selection:
 
 - **OmO** — `model:` or the `--model` flag (`--model <provider/model>`).
