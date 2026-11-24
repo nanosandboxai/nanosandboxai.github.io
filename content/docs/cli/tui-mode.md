@@ -55,7 +55,7 @@ Type a slash command in any active panel to control the TUI.
 
 | Command | Description |
 |---|---|
-| `/add <agent> [options]` | Add a new agent panel (`claude`, `goose`, `codex`, `cursor`) or start from a custom image |
+| `/add <agent> [options]` | Add a new agent panel (`claude`, `codex`, `goose`, `cursor`, `opencode`, `aider`, `gemini`, `crush`, `oh-my-openagent`/`omo`, `oh-my-codex`/`omx`, `oh-my-claude`/`omc`) or start from a custom image |
 | `/focus <index>` | Switch focus to a specific panel index |
 | `/close [target]` | Close (hide) a panel — sandbox keeps running in the background |
 | `/open [target]` | Show a previously hidden panel |
@@ -83,6 +83,8 @@ Type a slash command in any active panel to control the TUI.
 | `--env-file <path>` | Load `KEY=VALUE` pairs from a file for this panel only. |
 | `--auto-mode` | Start in headless autonomous mode. |
 | `-p`, `--prompt <prompt>` | Prompt text for autonomous mode. Required with `--auto-mode`; it consumes the rest of the command line. |
+| `--headless` | Alias for `--auto-mode` (runs the agent non-interactively). |
+| `--permissions <level>` | Per-panel permission level: `default`, `accept-edits`, or `allow-all`. `--headless` forces `allow-all`. |
 | `--use-env <KEY>` | Import one startup runtime env key into this panel. Repeat for multiple keys. |
 | `--run-as-root` | Run agent commands as root inside the guest VM. |
 
@@ -99,18 +101,48 @@ Examples:
 /add claude --use-env OPENAI_API_KEY --use-env GITHUB_TOKEN # Import startup env keys
 /add claude --run-as-root                        # Run as root inside guest VM
 /add myagent --image ghcr.io/myorg/agent:v1      # Start from custom image
+/add oh-my-openagent --model openrouter/deepseek/deepseek-v4.1-flash-1017  # OmO with an OpenRouter model
+/add oh-my-codex --permissions allow-all         # OMX, auto-approve everything
+/add oh-my-claude --permissions accept-edits     # OMC
 ```
 
 Behavior notes:
 
 - `--auto-mode` requires `-p` or `--prompt`.
 - `-p` / `--prompt` consumes the rest of the command line, so place it last.
-- `--tag` applies to agent shortcuts (`claude`, `goose`, `codex`, `cursor`); with `--image`, the provided image reference is used as-is.
+- `--tag` applies to agent shortcuts (`claude`, `codex`, `goose`, `cursor`, `opencode`, `aider`, `gemini`, `crush`, `oh-my-openagent`, `oh-my-codex`, `oh-my-claude`); with `--image`, the provided image reference is used as-is.
 - `--project` must point to an existing directory.
 - `--use-env` imports keys from startup runtime env (for example values passed with `nanosb --env` or `--env-file`).
 - Env precedence for `/add` is documented in [Global Flags](/docs/cli/global-flags#env-precedence).
 
 > The `--run-as-root` flag is the same one available on `nanosb run`. By default the agent runs as a non-root user (some agents refuse to start as root). Pass `--run-as-root` only when a workflow needs root in the guest.
+
+### Prerequisite validation
+
+`/add` checks that the agent has the credentials it needs before it creates the
+sandbox. The check is **advisory** for the built-in agents that support browser
+sign-in: a missing variable is shown as a hint, but the agent still starts and
+signs in through the auto-opened browser URL. Agents without a browser sign-in
+path are **blocked** until a credential is present.
+
+| Agent(s) | Accepted credentials (any one) |
+|---|---|
+| `claude` | `ANTHROPIC_API_KEY`, `CLAUDE_CODE_OAUTH_TOKEN` |
+| `codex` | `OPENAI_API_KEY`, `CODEX_API_KEY` |
+| `goose` | `GOOSE_PROVIDER` + `GOOSE_MODEL` + a provider key (`OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / `GOOGLE_API_KEY` / `OPENROUTER_API_KEY`) |
+| `cursor` | `CURSOR_API_KEY` |
+| `opencode` | `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `OPENROUTER_API_KEY`, ... |
+| `aider` | `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `DEEPSEEK_API_KEY`, ... |
+| `gemini` | `GEMINI_API_KEY`, `GOOGLE_API_KEY` |
+| `crush` | `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `OPENROUTER_API_KEY`, ... |
+| `oh-my-openagent` | `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `OPENROUTER_API_KEY` |
+| `oh-my-codex` | `OPENAI_API_KEY` or `CODEX_API_KEY` |
+| `oh-my-claude` | `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` |
+
+The `oh-my-*` agents have no browser sign-in flow in the sandbox, so they are
+blocked when their credential is missing. On agent failure the panel keeps the
+agent's last output and shows the exit reason as a banner (no pre-flight
+credential popup).
 
 ### Agent & Environment
 

@@ -10,10 +10,23 @@ Nanosandbox provides pre-built, sandboxed environments for popular AI coding age
 
 | Agent | CLI Name | Image | Agent Type |
 |---|---|---|---|
-| Claude Code | `claude` | `ghcr.io/nanosandboxai/agents-registry/claude:latest` | `claude` |
-| Goose | `goose` | `ghcr.io/nanosandboxai/agents-registry/goose:latest` | `goose` |
-| Codex | `codex` | `ghcr.io/nanosandboxai/agents-registry/codex:latest` | `codex` |
-| Cursor | `cursor` | `ghcr.io/nanosandboxai/agents-registry/cursor:latest` | `cursor` |
+| Claude Code | `claude` | `ghcr.io/nanosandboxai/nanosandbox/claude:latest` | `claude` |
+| Codex | `codex` | `ghcr.io/nanosandboxai/nanosandbox/codex:latest` | `codex` |
+| Goose | `goose` | `ghcr.io/nanosandboxai/nanosandbox/goose:latest` | `goose` |
+| Cursor | `cursor` | `ghcr.io/nanosandboxai/nanosandbox/cursor:latest` | `cursor` |
+| OpenCode | `opencode` | `ghcr.io/nanosandboxai/nanosandbox/opencode:latest` | `opencode` |
+| Aider | `aider` | `ghcr.io/nanosandboxai/nanosandbox/aider:latest` | `aider` |
+| Gemini CLI | `gemini` | `ghcr.io/nanosandboxai/nanosandbox/gemini:latest` | `gemini` |
+| Crush | `crush` | `ghcr.io/nanosandboxai/nanosandbox/crush:latest` | `crush` |
+| Oh-My-OpenAgent (OmO) | `omo` | `ghcr.io/nanosandboxai/nanosandbox/oh-my-openagent:latest` | `oh-my-openagent` (alias `omo`) |
+| Oh-My-Codex (OMX) | `omx` | `ghcr.io/nanosandboxai/nanosandbox/oh-my-codex:latest` | `oh-my-codex` (alias `omx`) |
+| Oh-My-Claude (OMC) | `omc` | `ghcr.io/nanosandboxai/nanosandbox/oh-my-claude:latest` | `oh-my-claude` (alias `omc`) |
+
+The `oh-my-*` agents are multi-agent orchestration front-ends: **OmO** (`omo`) wraps a
+provider-agnostic coding agent, **OMX** (`omx`) wraps Codex CLI with team/parallel
+workflows, and **OMC** (`omc`) wraps Claude Code. They support inline
+[`agent_config`](/docs/cli/configuration#agent_config) files and the same
+`default` / `accept_edits` / `allow_all` permission levels as the built-in agents.
 
 ## Base Image
 
@@ -22,28 +35,27 @@ All agent images are built on a common base:
 - **OS**: Debian (node:22-slim)
 - **Runtime**: Node.js 22 (LTS), Python 3 + uv/uvx
 - **Included tools**: git, curl, bash, sudo, openssh (dropbear)
-- **Registry**: `ghcr.io/nanosandboxai/agents-registry/`
-
-The base image includes the **agent-gateway** binary — an HTTP server (`:8080`) that manages skill files, MCP config generation, and state persistence inside the VM.
+- **Registry**: `ghcr.io/nanosandboxai/nanosandbox/`
 
 ## Architecture
 
-Each sandbox VM runs:
+Each sandbox runs a hardware-isolated microVM (libkrun) managed by a host-side
+supervisor:
 
 ```
-+-----------------------------------------------------------+
-|                       Sandbox VM                          |
-|                                                           |
-|  nanosb-init.sh (PID 1)                                  |
-|    ├── agent-gateway :8080  (skills, MCP, state mgmt)    |
-|    ├── dropbear sshd :2222  (terminal access)            |
-|    └── agent process        (claude, goose, codex, etc.) |
-|                                                           |
-|  /workspace/          ← project mounted via virtio-fs    |
-|  /home/developer/     ← agent HOME (symlinked to state)  |
-|  .nanosb-state/       ← persisted state directory        |
-+-----------------------------------------------------------+
+Host
+  └── supervisor (nanosb __supervise)
+        └── microVM (libkrun)
+              ├── guest exec-agent (PID 1 in next mode)
+              │     └── agent process (claude, codex, omo, ...)
+              ├── /home/developer    ← project mount (virtio-fs; default, overridable)
+              └── per-agent state dirs (RW, 0700) ← sessions, config, tokens
 ```
+
+Agent config (MCP servers, skills, inline `agent_config` files) and the agent
+command are generated **host-side** by the deploy planner on every launch and
+written into the per-agent state mounts; there is no in-guest config server.
+Interactive agents run their own TUI through the guest exec-agent's PTY.
 
 The **agent-gateway** is the bridge between the CLI and the agent. It:
 - Receives skill and MCP definitions from the CLI via bootstrap
@@ -55,13 +67,13 @@ The **agent-gateway** is the bridge between the CLI and the agent. It:
 
 ```bash
 # Pull a specific agent
-nanosb pull ghcr.io/nanosandboxai/agents-registry/claude:latest
+nanosb pull ghcr.io/nanosandboxai/nanosandbox/claude:latest
 
-# Pull using short names (auto-resolves to full registry path)
-nanosb pull claude
-nanosb pull goose
-nanosb pull codex
-nanosb pull cursor
+# Pull using short names (auto-resolves to full registry path inside sandbox.yml)
+nanosb pull ghcr.io/nanosandboxai/nanosandbox/omo:latest
+nanosb pull ghcr.io/nanosandboxai/nanosandbox/oh-my-openagent:latest
+nanosb pull ghcr.io/nanosandboxai/nanosandbox/oh-my-codex:latest
+nanosb pull ghcr.io/nanosandboxai/nanosandbox/oh-my-claude:latest
 ```
 
 ## Running Agents
@@ -139,16 +151,76 @@ nanosb run -e OPENAI_API_KEY=$OPENAI_API_KEY codex
 nanosb run -e CURSOR_API_KEY=$CURSOR_API_KEY cursor
 ```
 
+**Oh-My-OpenAgent (OmO):**
+```bash
+nanosb run -e OPENROUTER_API_KEY=$OPENROUTER_API_KEY \
+  ghcr.io/nanosandboxai/nanosandbox/oh-my-openagent:latest
+```
+
+**Oh-My-Codex (OMX):**
+```bash
+nanosb run -e OPENAI_API_KEY=$OPENAI_API_KEY \
+  ghcr.io/nanosandboxai/nanosandbox/oh-my-codex:latest
+```
+
+**Oh-My-Claude (OMC):**
+```bash
+nanosb run -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
+  ghcr.io/nanosandboxai/nanosandbox/oh-my-claude:latest
+```
+
+### Oh-My-* agents — permissions, model, and config
+
+The `oh-my-*` agents honor the same `permissions` levels as the built-in agents,
+in both interactive and headless mode:
+
+| Agent | `default` | `accept_edits` | `allow_all` |
+|---|---|---|---|
+| OmO (`oh-my-openagent`) | — | `--permission-preset accept-edits` | `--permission-preset full-access` |
+| OMX (`oh-my-codex`) | — | `--yolo` (interactive) / `--dangerously-bypass-approvals-and-sandbox` (headless) | same as accept_edits |
+| OMC (`oh-my-claude`) | — | `--madmax` | `--madmax` |
+
+Because the underlying CLIs expose a single "bypass" switch, `accept_edits` and
+`allow_all` map to the same flag for OMX and OMC; OmO has a distinct
+`accept-edits` preset. `default` adds no flag (manual approval).
+
+Model selection:
+
+- **OmO** — `model:` or the `--model` flag (`--model <provider/model>`).
+- **OMX** — `model:` or the `--model` flag (`-m`).
+- **OMC** — set the model through `agent_config` (for example
+  `.config/claude-omc/`) — the `omc` CLI has no `--model` flag.
+
+Agent-native config (model profiles, per-category models, provider settings) is
+supplied inline with [`agent_config`](/docs/cli/configuration#agent_config).
+For OmO, the native file is `~/.omo/omo.jsonc` plus
+`~/.omo/agent/settings.json` (`defaultProvider` + `defaultModel`).
+
+The `oh-my-*` agents keep their state in per-sandbox mounts:
+`~/.omo` (OmO), `~/.codex` + `~/.agents` (OMX), and
+`~/.claude` + `~/.config/claude-omc` + `~/.omc` (OMC).
+
 ## API Keys
 
 Each agent requires its own API key passed as an environment variable:
 
 | Agent | Environment Variable |
 |---|---|
-| Claude Code | `ANTHROPIC_API_KEY` |
-| Goose | `OPENAI_API_KEY` |
-| Codex | `OPENAI_API_KEY` |
+| Claude Code | `ANTHROPIC_API_KEY` (or `CLAUDE_CODE_OAUTH_TOKEN`) |
+| Codex | `OPENAI_API_KEY` (or `CODEX_API_KEY`) |
+| Goose | `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, or `OPENROUTER_API_KEY` |
 | Cursor | `CURSOR_API_KEY` |
+| OpenCode | `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, or `OPENROUTER_API_KEY` |
+| Aider | `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, or `DEEPSEEK_API_KEY` |
+| Gemini CLI | `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) |
+| Crush | `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, or `OPENROUTER_API_KEY` |
+| Oh-My-OpenAgent | `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `OPENROUTER_API_KEY` (any one) |
+| Oh-My-Codex | `OPENAI_API_KEY` or `CODEX_API_KEY` (either) |
+| Oh-My-Claude | `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` (either) |
+
+The `oh-my-*` agents have no browser sign-in flow, so the TUI blocks `/add` for
+them until one of their credentials is present (see
+[Prerequisite validation](/docs/cli/tui-mode#prerequisite-validation)).
 
 API keys are injected into the sandbox as environment variables. All environment variables are encrypted before entering the VM and are never written to disk inside the guest. See [Secrets Management](/docs/security/secrets) for details.
 
@@ -190,7 +262,7 @@ Agents can share context through several mechanisms.
 
 ### Project Mount
 
-All agents mount the project directory at `/workspace` via virtio-fs. This is the fixed mount point for all sandboxes. Use the `--project` flag to specify which directory to mount:
+All agents mount the project directory at the guest home (`/home/developer`) by default, via virtio-fs. Override the mount point per sandbox with `project.mount_point`, and the agent's working directory with `workdir`. Use the `--project` flag to specify which directory to mount:
 
 ```bash
 nanosb run --project ./my-project claude

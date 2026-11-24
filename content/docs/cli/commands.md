@@ -24,10 +24,10 @@ Requires a fully qualified image reference.
 
 ```bash
 # Pull an agent image
-nanosb pull ghcr.io/nanosandboxai/agents-registry/claude:latest
+nanosb pull ghcr.io/nanosandboxai/nanosandbox/claude:latest
 
 # Pull a specific tag
-nanosb pull ghcr.io/nanosandboxai/agents-registry/claude:v2
+nanosb pull ghcr.io/nanosandboxai/nanosandbox/claude:v2
 
 # Pull from a custom registry
 nanosb pull ghcr.io/myorg/my-agent:latest

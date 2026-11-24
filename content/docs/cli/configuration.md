@@ -72,9 +72,11 @@ The `defaults` section sets baseline values applied to every sandbox unless over
 | `agent` | string | Agent definition name |
 | `skills` | list | Skill names to load (see [skills](#skills)) |
 | `auto_mode` | boolean | Run the agent fully autonomously (default: `false`) |
+| `interactive` | boolean | Run the agent interactively on a TTY (default: `false`); mutually exclusive with `auto_mode` |
 | `permissions` | string | Permission level: `default`, `accept_edits`, or `allow_all` |
 | `prompt` | string | Prompt text for the agent (required when `auto_mode: true`) |
 | `model` | string | Model to use (validated against the agent type) |
+| `agent_config` | map | Inline agent-native config files (see [`agent_config`](#agent_config)) |
 
 All fields are optional. When omitted, the runtime's built-in defaults are used.
 
@@ -87,8 +89,12 @@ sandboxes:
   <name>:
     image: <image>           # required (unless set in defaults)
     name: <display-name>     # optional display name override
-    type: <agent-type>       # claude, codex, goose, or cursor
+    type: <agent-type>       # claude, codex, goose, cursor, opencode, aider, gemini, crush, oh-my-openagent|omo, oh-my-codex|omx, oh-my-claude|omc
     model: <model-id>        # model for this agent type
+    interactive: <bool>      # run the agent's own TUI on a PTY
+    agent_config:            # inline agent-native config files
+      .omo/omo.jsonc: |
+        { "[native]": { "model_profile": "openrouter/deepseek/deepseek-v4.1-flash-1017" } }
     cpus: <n>
     memory: <mb>
     timeout: <secs>
@@ -134,8 +140,9 @@ Required (either in `defaults` or per-sandbox). The container image to use.
 Bare names are automatically resolved to the default agents registry:
 
 ```
-claude  ->  ghcr.io/nanosandboxai/agents-registry/claude:latest
-codex   ->  ghcr.io/nanosandboxai/agents-registry/codex:latest
+claude          ->  ghcr.io/nanosandboxai/nanosandbox/claude:latest
+codex           ->  ghcr.io/nanosandboxai/nanosandbox/codex:latest
+oh-my-openagent ->  ghcr.io/nanosandboxai/nanosandbox/oh-my-openagent:latest
 ```
 
 You can also provide a fully qualified image reference:
@@ -154,8 +161,15 @@ The agent type. Per-sandbox only, not inherited from defaults.
 | `codex` | |
 | `goose` | |
 | `cursor` | `cursor-agent` |
+| `opencode` | `open-code` |
+| `aider` | |
+| `gemini` | `gemini-cli` |
+| `crush` | |
+| `oh-my-openagent` | `omo` |
+| `oh-my-codex` | `omx` |
+| `oh-my-claude` | `omc` |
 
-When both `type` and `model` are set, the model is validated against the known models for that agent type.
+When both `type` and `model` are set, the model is validated against the known models for that agent type. The `oh-my-*` agents can additionally select a model through [`agent_config`](#agent_config) when it is not in the built-in catalog.
 
 ### Per-Sandbox Resource Overrides
 
@@ -301,7 +315,7 @@ Configure the project directory mounted into the sandbox.
 project:
   path: ~/repos/my-project
   branch: nanosb/feature
-  mount_point: /workspace
+  mount_point: /home/developer
   auto_sync: true
 ```
 
@@ -309,7 +323,7 @@ project:
 |---|---|---|---|
 | `path` | string | config directory | Path to the project directory |
 | `branch` | string | *(auto-generated)* | Git branch name |
-| `mount_point` | string | `/workspace` | Mount point inside the sandbox |
+| `mount_point` | string | `/home/developer` | Mount point inside the sandbox |
 | `auto_sync` | boolean | `false` | Auto-sync git changes |
 
 Paths starting with `~` are expanded. Relative paths are resolved from the directory containing `sandbox.yml`. Per-sandbox project **replaces** defaults project entirely.
@@ -351,6 +365,92 @@ Controls what the agent can do without asking for confirmation.
 | `default` | Agent uses its default approval mode |
 | `accept_edits` | Auto-accepts file edits, asks for other operations |
 | `allow_all` | Fully autonomous, no confirmation |
+
+The concrete CLI flag differs per agent and is applied in both interactive and
+headless modes:
+
+| Agent | `accept_edits` | `allow_all` |
+|---|---|---|
+| Claude Code | `--permission-mode acceptEdits` | `--dangerously-skip-permissions` |
+| Codex | `--dangerously-bypass-approvals-and-sandbox` | `--dangerously-bypass-approvals-and-sandbox` |
+| Goose | `GOOSE_MODE=smart_approve` | `GOOSE_MODE=auto` |
+| Cursor | `--trust` (auto mode) | `--force` (plus `--trust --approve-mcps` in auto mode) |
+| OpenCode | — | `--auto` |
+| Aider | `--yes-always` (interactive) | `--yes-always` (interactive); headless always passes `--yes` |
+| Gemini CLI | — | `--approval-mode yolo` |
+| Crush | — | `--yolo` |
+| OmO | `--permission-preset accept-edits` | `--permission-preset full-access` |
+| OMX | `--yolo` (interactive) / `--dangerously-bypass-approvals-and-sandbox` (headless) | same as accept_edits |
+| OMC | `--madmax` | `--madmax` |
+
+### interactive
+
+When `interactive: true`, the agent's own interactive TUI runs in the panel on a
+real PTY and keystrokes are forwarded to it. This is the opposite of
+`auto_mode`; the two are mutually exclusive. Interactive is the default when a
+panel is added from the TUI (`/add`); `--headless` switches to auto mode.
+
+```yaml
+sandboxes:
+  claude:
+    type: claude
+    image: claude
+    interactive: true
+    permissions: accept_edits
+    env:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+```
+
+### agent_config
+
+`agent_config` injects agent-native config files inline, so a sandbox can run
+with a different model/provider set without editing host state dirs, baking a
+custom image, or using an out-of-band script.
+
+- **Keys** are guest-relative paths under the agent's state dirs (for example
+  `.omo/omo.jsonc`, `.codex/config.toml`, `.claude/settings.json`).
+- **Values** are the raw file body, written verbatim (JSONC/TOML/YAML as the
+  agent expects); nanosb does not parse the content.
+- **Precedence:** available on `defaults` and per-sandbox; per-sandbox entries
+  override `defaults` per key, and win over generated config at the same path.
+- **Validation:** keys must be relative, non-empty, with no NUL, `..`, or `.`
+  components, and must resolve under the guest home and an allowed agent state
+  dir. Limits: ≤ 32 files, ≤ 256 KiB each, ≤ 1 MiB total.
+- **Security:** for **non-secret** settings only; secrets belong in
+  `env:`/`secrets`. Files are written `0644` in the guest, and their parent
+  state dirs are kept private (`0700`).
+
+```yaml
+sandboxes:
+  omo-openrouter:
+    type: oh-my-openagent
+    image: oh-my-openagent:rc2
+    interactive: true
+    env:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+    agent_config:
+      .omo/omo.jsonc: |
+        {
+          "[native]": {
+            "model_profile": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+            "categories": { "default": { "model": "openrouter/deepseek/deepseek-v4.1-flash-1017" } }
+          }
+        }
+      .omo/agent/settings.json: |
+        {
+          "defaultProvider": "openrouter",
+          "defaultModel": "deepseek/deepseek-v4.1-flash-1017"
+        }
+```
+
+> **OmO 5.1.79 config shape.** OmO reads `[native].model_profile` and
+> `[native].categories` from `~/.omo/omo.jsonc`, and `defaultProvider` +
+> `defaultModel` from `~/.omo/agent/settings.json`. The top-level
+> `model_profile` / `categories` shape is ignored by 5.1.79, which makes OmO
+> silently fall back to its built-in default model.
+
+The same field is exposed on the wire as `SandboxSpec.agent_config`, so
+cloud/shim/SDK consumers can deliver config files through the shared host layer.
 
 ## Merge Order
 
