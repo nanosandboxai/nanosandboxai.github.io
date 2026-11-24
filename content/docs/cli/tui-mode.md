@@ -61,7 +61,7 @@ Type a slash command in any active panel to control the TUI.
 | `/open [target]` | Show a previously hidden panel |
 | `/kill [panel]` | Kill (destroy) a sandbox and remove its panel |
 | `/zoom` | Toggle zoom (maximize/minimize) for the focused panel |
-| `/reconnect` | Reconnect SSH terminal for the focused panel |
+| `/reconnect` | Reconnect the focused panel's terminal; if the sandbox stopped, redeploy it from its saved config first |
 | `/copy` | Copy focused panel content to system clipboard |
 
 `/add` syntax:
