@@ -91,11 +91,11 @@ nanosb run --cpus 4 --memory 8192 -e ANTHROPIC_API_KEY=sk-... claude
 # Name the sandbox
 nanosb run --name my-claude claude
 
-# Run as root inside the guest (Windows FUSE workspace, system package installs, etc.)
+# Run as root inside the guest (system package installs, etc.)
 nanosb run --run-as-root claude "apt-get install -y graphviz"
 ```
 
-> **About `--run-as-root`.** By default the agent runs as a non-root user inside the guest (typically `uid 1000`) because some agents — for example Claude Code — refuse to start as root. `--run-as-root` overrides that. It is most often useful on Windows, where the FUSE workspace is backed by NTFS and a few system-level package or build workflows need root in the guest to write outside the user-owned tree. Keep the default off unless a specific workflow requires it.
+> **About `--run-as-root`.** By default the agent runs as a non-root user inside the guest (typically `uid 1000`) because some agents — for example Claude Code — refuse to start as root. `--run-as-root` overrides that. It is useful when a workflow needs root inside the guest to write outside the user-owned tree (for example system package installs or build scripts that touch `/etc`). Keep the default off unless a specific workflow requires it.
 
 ## nanosb exec
 

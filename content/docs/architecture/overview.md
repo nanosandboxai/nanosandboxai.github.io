@@ -1,6 +1,6 @@
 ---
 title: "Architecture Overview"
-description: "How nanosb builds a sandbox across macOS, Linux, and Windows"
+description: "How nanosb builds a sandbox across macOS and Linux"
 order: 1
 ---
 
@@ -11,7 +11,7 @@ Nanosandbox uses the same high-level flow on every host OS. The CLI starts a mic
 ```mermaid
 graph LR
     A["nanosb CLI"] --> B["libkrun"]
-    B --> C["Host hypervisor\n(HVF / KVM / WHPX)"]
+    B --> C["Host hypervisor\n(HVF / KVM)"]
     C --> D["Isolated microVM\nLinux guest kernel"]
     D --> E["Agent runtime + project workspace"]
 ```
@@ -26,24 +26,10 @@ Your project directory is mounted into the sandbox so the agent can read and edi
 | --- | --- | --- | --- | --- |
 | macOS | virtio-fs (direct) | POSIX-style | Supported | Stable |
 | Linux | virtio-fs (direct) | POSIX-style | Supported | Stable |
-| Windows | FUSE-on-vsock backed by NTFS | Linux-like behavior for common workflows | Archived | Not maintained |
 
-On the archived Windows track, the host runs a small FUSE server that talks to the guest over an AF_VSOCK socket. The guest mounts that socket as a `fuse.virtiofs`-compatible filesystem, so agents see the same `/home/developer` layout as on macOS or Linux. The four runtime files (`libkrunfw.dll`, `busybox`, `vsock_proxy`, `fuse_mount`) carry this bridge — see [installation](/docs/getting-started/installation) for details.
-
-For most users, this means package installs, builds, tests, and normal project cleanup work the same way across platforms.
-
-## What Is Still Being Tightened on Windows
-
-Windows support is live and practical, but a few advanced edge cases are still being improved:
-
-- Cross-process file locking behaviors in rare tool combinations.
-- A small set of low-level read/write hints that only advanced workloads use.
-- Some shared-memory mapping patterns used by highly specialized tools.
-
-These do not affect the common local development loop. If you hit one of these cases, start with the troubleshooting guides and share a reproducible example so we can prioritize it.
+For most users, this means package installs, builds, tests, and normal project cleanup work the same way on macOS and Linux.
 
 ## Related Reading
 
-- [Linux Is Hardened. Windows Is Live. The Sandbox Runs Everywhere.](/articles/docker-sbx-linux-windows-shipped)
 - [How We See Sandboxing Today](/articles/how-we-see-sandboxing-today)
 - [Troubleshooting: Common Errors](/docs/troubleshooting/common-errors)

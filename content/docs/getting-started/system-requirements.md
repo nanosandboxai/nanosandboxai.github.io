@@ -9,8 +9,7 @@ order: 3
 | Platform                    | Hypervisor        | Status             |
 | --------------------------- | ----------------- | ------------------ |
 | macOS Apple Silicon (arm64) | HVF               | **Stable**         |
-| Windows 11 (x86_64)         | WHPX              | **Experimental**   |
-| Linux (x86_64 / arm64)     | KVM               | **In Development** |
+| Linux (x86_64 / arm64)     | KVM               | **Stable**         |
 
 ## macOS Requirements
 
@@ -53,38 +52,6 @@ Linux support targets KVM-based virtualization. Requirements:
 - libkrun built for your distribution
 
 Linux binaries are published with every release. See the [releases page](https://github.com/nanosandboxai/nanosandbox/releases) for the current version.
-
-## Windows Requirements
-
-> **Windows support is archived.** The Windows track is no longer maintained; the requirements and installer below are kept for historical reference. See the repository's archived Windows branch for details.
-
-### Hardware
-
-- 64-bit CPU with virtualization support enabled in BIOS/UEFI
-
-### Software
-
-- Windows 11 (22H2 or later)
-- Hyper-V and Windows Hypervisor Platform (WHPX)
-
-The installer can enable missing Windows features automatically and will prompt for a reboot if needed.
-
-### Runtime Dependencies
-
-The Windows installer places four files in `%USERPROFILE%\.nanosandbox\libs\`. They run inside the Linux guest, so they have no `.exe` extension:
-
-| File | Role |
-| --- | --- |
-| `libkrunfw.dll` | Guest Linux kernel firmware loaded by libkrun |
-| `busybox` | Static Linux ELF used as the guest init shell |
-| `vsock_proxy` | Static Linux ELF that bridges HvSocket and AF_VSOCK |
-| `fuse_mount` | Static Linux ELF that mounts the rootfs and workspace over FUSE-on-vsock |
-
-These dependencies are installed automatically by the [PowerShell installer](./installation.md). You can verify them at any time with:
-
-```powershell
-nanosb doctor
-```
 
 ## Environment Variables
 

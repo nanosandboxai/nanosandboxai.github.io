@@ -20,21 +20,10 @@ function CopyButton({ text, className = '' }: { text: string; className?: string
   )
 }
 
-type InstallTab = 'unix' | 'windows'
-
-const INSTALL_COMMANDS: Record<InstallTab, string> = {
-  unix: 'curl -fsSL https://github.com/nanosandboxai/cli/releases/latest/download/install.sh | bash',
-  windows: 'irm https://raw.githubusercontent.com/nanosandboxai/cli/latest/scripts/install.ps1 | iex',
-}
-
-const INSTALL_TABS: { id: InstallTab; label: string }[] = [
-  { id: 'unix', label: '[macOS / Linux]' },
-  { id: 'windows', label: '[Windows]' },
-]
+const INSTALL_COMMAND =
+  'curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash'
 
 export default function Home() {
-  const [installTab, setInstallTab] = useState<InstallTab>('unix')
-
   return (
     <>
       {/* Hero Section */}
@@ -49,7 +38,7 @@ export default function Home() {
         <p className="text-[var(--text-tertiary)] text-sm leading-relaxed">
           Deploy AI agents in hardware-isolated microVMs with sub-second boot times.
           <br />
-          OCI image support, cross-platform (macOS, Linux, Windows), and built-in
+          OCI image support, cross-platform (macOS, Linux), and built-in
           <br />
           multi-agent TUI for concurrent development workflows.
         </p>
@@ -58,40 +47,16 @@ export default function Home() {
       {/* Getting Started */}
       <div className="mb-6 border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 font-mono">
         <h2 className="text-lg font-bold text-[var(--accent)] mb-3">$ Getting Started</h2>
-        <div className="flex gap-3 mb-2 text-xs">
-          {INSTALL_TABS.map((tab) => {
-            const isActive = installTab === tab.id
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setInstallTab(tab.id)}
-                className={
-                  isActive
-                    ? 'text-[var(--accent)] border-b border-[var(--accent)] pb-0.5'
-                    : 'text-[var(--text-tertiary)] hover:text-[var(--text-heading)] transition-colors pb-0.5'
-                }
-              >
-                {tab.label}
-              </button>
-            )
-          })}
-        </div>
         <div className="text-sm">
           <div className="flex items-center justify-between mb-1">
             <p className="text-[var(--text-tertiary)] text-xs"># Install nanosb</p>
-            <CopyButton text={INSTALL_COMMANDS[installTab]} />
+            <CopyButton text={INSTALL_COMMAND} />
           </div>
           <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-3 overflow-x-auto">
             <code className="text-[var(--text-primary)] text-xs md:text-sm whitespace-nowrap">
-              {INSTALL_COMMANDS[installTab]}
+              {INSTALL_COMMAND}
             </code>
           </div>
-          {installTab === 'windows' && (
-            <div className="mt-2 border border-[var(--border-secondary)] bg-[var(--bg-tertiary)] px-3 py-2 text-xs text-[var(--text-tertiary)]">
-              <span className="text-[var(--accent)] mr-1">[info]</span>
-              Windows support is experimental.
-            </div>
-          )}
         </div>
       </div>
 
@@ -111,7 +76,7 @@ export default function Home() {
             { name: 'Multi-Agent TUI', desc: 'Run multiple AI agents concurrently in panel-based terminal UI' },
             { name: 'Project Mounting', desc: 'VirtioFS mounts with automatic git integration and branch tracking' },
             { name: 'MCP Server Support', desc: 'Model Context Protocol integration for agent tooling' },
-            { name: 'Cross-Platform', desc: 'macOS Apple Silicon (HVF), Linux (KVM), Windows (HCS)' },
+            { name: 'Cross-Platform', desc: 'macOS Apple Silicon (HVF), Linux (KVM)' },
             { name: 'Streaming I/O', desc: 'Real-time output streaming with backpressure handling' },
           ].map((f) => (
             <div key={f.name} className="flex items-start gap-2">
