@@ -62,7 +62,7 @@ The `defaults` section sets baseline values applied to every sandbox unless over
 | `image` | string | Default container image |
 | `cpus` | integer | CPU cores allocated (runtime default: 1) |
 | `memory` | integer | Memory in MB (runtime default: 512) |
-| `timeout` | integer | Maximum runtime in seconds (runtime default: 300) |
+| `timeout` | integer | Maximum runtime in seconds (runtime default: 0, unlimited) |
 | `disk` | integer | Per-sandbox disk quota in MB (0 = unlimited) |
 | `max_pids` | integer | Maximum processes in the guest (0 = runtime default 512) |
 | `env` | map | Environment variables injected into every sandbox |
