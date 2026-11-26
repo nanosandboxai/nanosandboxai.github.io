@@ -16,7 +16,7 @@ These flags can be used with any `nanosb` subcommand.
 | `--verbose` | boolean | `false` | Enable debug logging. Prints internal state, API calls, and timing information to stderr. |
 | `--config <path>` | string (repeatable) | `./sandbox.yml` | Path to a `sandbox.yml` configuration file. Can be specified multiple times; files are merged in order. |
 | `--sandbox <name>` | string | *(all)* | Start only the named sandbox from the configuration file. |
-| `--project <path>` | string | *(cwd)* | Project directory to mount into the sandbox at `/workspace`. |
+| `--project <path>` | string | *(cwd)* | Project directory to mount into the sandbox at `/home/developer` (default; overridable via `project.mount_point`). |
 | `--cpus <n>` | integer | *(from config)* | Override the number of CPU cores allocated to the sandbox. |
 | `--memory <mb>` | integer | *(from config)* | Override memory allocation in MB. |
 | `--timeout <secs>` | integer | *(from config)* | Override the maximum runtime in seconds. |

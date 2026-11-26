@@ -8,7 +8,7 @@ order: 2
 
 The Model Context Protocol (MCP) is an open standard for connecting AI agents to external tools and data sources. MCP servers expose capabilities (tools, resources, prompts) over a standardized JSON-RPC transport. Agents that support MCP can discover and invoke these capabilities at runtime.
 
-In Nanosandbox, the agent-gateway manages MCP server configuration inside the sandbox. It generates the correct config format for each agent type so servers work consistently across Claude, Goose, Codex, and Cursor.
+In Nanosandbox, nanosb generates MCP server configuration host-side and writes it into the sandbox. It generates the correct config format for each agent type so servers work consistently across Claude, Goose, Codex, and Cursor.
 
 ## Config vs Commands
 
@@ -42,7 +42,7 @@ sandboxes:
         args: ["-y", "@modelcontextprotocol/server-memory"]
       filesystem:
         command: npx
-        args: ["-y", "@modelcontextprotocol/server-filesystem", "/workspace"]
+        args: ["-y", "@modelcontextprotocol/server-filesystem", "/home/developer"]
       github:
         command: npx
         args: ["-y", "@modelcontextprotocol/server-github"]
@@ -138,7 +138,7 @@ Provides safe, scoped file access. The agent can read and write files only withi
 mcp:
   filesystem:
     command: npx
-    args: ["-y", "@modelcontextprotocol/server-filesystem", "/workspace"]
+    args: ["-y", "@modelcontextprotocol/server-filesystem", "/home/developer"]
 ```
 
 **Exposed tools**: `read_file`, `write_file`, `list_directory`, `search_files`, `get_file_info`.
@@ -173,7 +173,7 @@ mcp:
 
 ## How MCP Config Is Generated
 
-The agent-gateway generates the correct MCP config format for each agent type. Each agent reads MCP config from a different location and in a different format:
+Nanosb generates the correct MCP config format for each agent type. Each agent reads MCP config from a different location and in a different format:
 
 | Agent | Config Format | Config Location |
 |---|---|---|
@@ -191,7 +191,7 @@ The agent-gateway generates the correct MCP config format for each agent type. E
 
 ### Cross-Agent Compatibility
 
-MCP servers defined with `npx` commands automatically get `uvx` equivalents generated for agents that use Python tooling (Goose). The gateway handles this transparently — you define the server once and it works across all agents.
+MCP servers defined with `npx` commands automatically get `uvx` equivalents generated for agents that use Python tooling (Goose). Nanosb handles this transparently — you define the server once and it works across all agents.
 
 ```
 sandbox.yml:  command: npx, args: ["-y", "@modelcontextprotocol/server-github"]
@@ -233,7 +233,7 @@ After adding or removing an MCP server, the TUI prompts you to reconnect (`/reco
 
 ## State Persistence
 
-MCP server definitions (along with skills) are persisted to `~/.nanosandbox/state.json` inside the VM. This file is saved on every mutation and reloaded on startup. The `~/.nanosandbox/` directory is symlinked to `/workspace/.nanosb-state/.nanosandbox/`, so it survives VM restarts via virtio-fs.
+MCP server definitions (along with skills) are generated host-side from the sandbox configuration on every launch, so they persist across sandbox restarts and redeploys. TUI runtime additions are kept with the sandbox's saved state and reapplied when the panel reconnects.
 
 ## Troubleshooting
 

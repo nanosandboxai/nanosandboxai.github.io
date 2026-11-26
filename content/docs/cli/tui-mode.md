@@ -104,7 +104,7 @@ Type a slash command in any active panel to control the TUI.
 
 | Command | Description |
 |---|---|
-| `/add <agent> [options]` | Add a new agent panel (`claude`, `codex`, `goose`, `cursor`, `opencode`, `aider`, `gemini`, `crush`, `oh-my-openagent`, `oh-my-codex`, `oh-my-claude`) or start from a custom image |
+| `/add <agent> [options]` | Add a new agent panel (`claude`, `codex`, `goose`, `cursor`, `opencode`, `aider`, `gemini`, `crush`, `oh-my-openagent`/`omo`, `oh-my-codex`/`omx`, `oh-my-claude`/`omc`) or start from a custom image |
 | `/focus <index>` | Switch to the agent tab at the given index |
 | `/close [target]` | Close (hide) a panel — sandbox keeps running in the background |
 | `/open [target]` | Show a previously hidden panel |
@@ -114,7 +114,7 @@ Type a slash command in any active panel to control the TUI.
 | `/resume [target]` | Thaw a paused sandbox |
 | `/kill [panel]` | Kill (destroy) a sandbox and remove its panel |
 | `/zoom` | Toggle zoom (maximize/minimize) for the focused panel |
-| `/reconnect` | Reconnect SSH terminal for the focused panel |
+| `/reconnect` | Reconnect the focused panel's terminal; if the sandbox stopped, redeploy it from its saved config first |
 | `/copy` | Copy focused panel content to system clipboard |
 | `/sandboxes` | Toggle the sandbox sidebar (alias `/sb`) |
 
@@ -137,8 +137,9 @@ Type a slash command in any active panel to control the TUI.
 | `--env-file <path>` | Load `KEY=VALUE` pairs from a file for this panel only. |
 | `--auto-mode` | Start in headless autonomous mode. |
 | `-p`, `--prompt <prompt>` | Prompt text for autonomous mode. Required with `--auto-mode`; it consumes the rest of the command line. |
+| `--headless` | Alias for `--auto-mode` (runs the agent non-interactively). |
+| `--permissions <level>` | Per-panel permission level: `default`, `accept-edits`, or `allow-all`. `--headless` forces `allow-all`. |
 | `--use-env <KEY>` | Import one startup runtime env key into this panel. Repeat for multiple keys. |
-| `--permissions <level>` | Agent permissions for this panel: `default`, `accept-edits`, or `allow-all`. `allow-all` runs the agent unattended; with `default`/`accept-edits` the agent asks for human approval of edits. Forced to `allow-all` in `--auto-mode`. |
 | `--run-as-root` | Run agent commands as root inside the guest VM. |
 
 Examples:
@@ -155,6 +156,9 @@ Examples:
 /add claude --run-as-root                        # Run as root inside guest VM
 /add claude --permissions allow-all               # Run unattended (no human approval)
 /add myagent --image ghcr.io/myorg/agent:v1      # Start from custom image
+/add oh-my-openagent --model openrouter/deepseek/deepseek-v4.1-flash-1017  # OmO with an OpenRouter model
+/add oh-my-codex --permissions allow-all         # OMX, auto-approve everything
+/add oh-my-claude --permissions accept-edits     # OMC
 ```
 
 Behavior notes:
@@ -222,7 +226,7 @@ with arbitrary tabs.
 | `opencode` | one of `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `OPENROUTER_API_KEY` | advisory |
 | `aider` | one of `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `DEEPSEEK_API_KEY` | advisory |
 | `crush` | one of `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `OPENROUTER_API_KEY` | advisory |
-| `oh-my-openagent` | `OPENAI_API_KEY` (or `ANTHROPIC_API_KEY`) | blocking |
+| `oh-my-openagent` | `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `OPENROUTER_API_KEY` | blocking |
 | `oh-my-codex` | `OPENAI_API_KEY` or `CODEX_API_KEY` | blocking |
 | `oh-my-claude` | `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` | blocking |
 

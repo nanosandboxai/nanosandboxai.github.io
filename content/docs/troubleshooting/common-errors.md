@@ -152,7 +152,7 @@ sudo usermod -aG kvm $USER
 
 **Error:**
 ```
-Error: permission denied writing to /workspace
+Error: permission denied writing to /home/developer
 ```
 
 **Fix:** The mount point permissions must allow the guest user (typically UID 0 or 1000) to write. Check host directory permissions:
@@ -243,7 +243,7 @@ nanosb pull <image>
 
 **Error:**
 ```
-Error: failed to mount /workspace
+Error: failed to mount /home/developer
   Caused by: virtio-fs device not ready
 ```
 

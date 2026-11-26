@@ -114,7 +114,7 @@ The `<sandbox>` argument is the sandbox name or ID returned by `nanosb ps`.
 **Examples:**
 
 ```bash
-nanosb exec my-sandbox "ls /workspace"
+nanosb exec my-sandbox "ls /home/developer"
 nanosb exec my-sandbox "cat /tmp/output.log"
 nanosb exec --buffered my-sandbox "npm test"
 ```
