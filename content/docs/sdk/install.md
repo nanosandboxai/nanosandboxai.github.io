@@ -34,8 +34,8 @@ first use. There is no separate runtime install. See
 The JVM SDKs are published to Maven Central, so no extra repository is needed:
 
 ```kotlin
-implementation("ai.nanosandbox:nanosandbox-sdk:0.2.0")        // Java
-implementation("ai.nanosandbox:nanosandbox-sdk-kotlin:0.2.0") // Kotlin facade
+implementation("ai.nanosandbox:nanosandbox-sdk:0.3.0")        // Java
+implementation("ai.nanosandbox:nanosandbox-sdk-kotlin:0.3.0") // Kotlin facade
 ```
 
 ## Use

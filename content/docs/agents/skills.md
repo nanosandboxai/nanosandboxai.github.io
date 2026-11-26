@@ -180,7 +180,7 @@ Skills have a **source** that determines their lifecycle:
 
 When you modify `sandbox.yml` and restart, config-sourced skills are refreshed from the new config, but runtime-added skills (from TUI) are preserved. This means you can add skills interactively without losing them on restart.
 
-State is persisted to `~/.nanosandbox/state.json` inside the VM, which survives VM restarts via the `.nanosb-state/` symlink mechanism.
+State is persisted in the sandbox's per-agent state mounts (generated host-side from the sandbox configuration), which survive VM restarts.
 
 ## Skill Sources
 

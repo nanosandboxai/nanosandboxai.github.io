@@ -9,7 +9,7 @@ order: 1
 The fastest way to install the `nanosb` CLI on macOS or Linux is with the official shell installer:
 
 ```bash
-curl -fsSL https://github.com/nanosandboxai/cli/releases/latest/download/install.sh | bash
+curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash
 ```
 
 The script detects your platform, downloads the correct binary, and places it on your `PATH`.
@@ -24,10 +24,10 @@ The installer sets up three components:
 | **libkrun**  | Lightweight VMM library used by the runtime               |
 | **gvproxy**  | User-space networking proxy for bridge networking (Linux) |
 
-By default, binaries are installed to `~/.nanosb/bin`. You can override this with the `INSTALL_DIR` environment variable:
+By default, binaries are installed to `~/.nanosandbox/bin`. You can override this with the `INSTALL_DIR` environment variable:
 
 ```bash
-INSTALL_DIR=/usr/local/bin curl -fsSL https://github.com/nanosandboxai/cli/releases/latest/download/install.sh | bash
+INSTALL_DIR=/usr/local/bin curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash
 ```
 
 ### Verify the Installation
@@ -40,10 +40,12 @@ nanosb --version
 
 ## Install on Windows
 
+> **Windows support is archived.** The Windows track is no longer maintained; the installer and steps below are kept for historical reference.
+
 Use the PowerShell installer. Run PowerShell as Administrator on a fresh machine so the installer can enable Windows features in one step:
 
 ```powershell
-irm https://raw.githubusercontent.com/nanosandboxai/cli/latest/scripts/install.ps1 | iex
+irm https://raw.githubusercontent.com/nanosandboxai/nanosandbox/latest/scripts/install.ps1 | iex
 ```
 
 > **Heads up: run elevated.** If you launch the installer from a non-elevated terminal **and** your user is not in the local `Hyper-V Administrators` group, the installer prints a clear warning explaining what will be skipped (feature enables, Defender exclusions) and asks before continuing. Sandbox creation will then fail with `access denied` from the Host Compute Service until you elevate or join the group.

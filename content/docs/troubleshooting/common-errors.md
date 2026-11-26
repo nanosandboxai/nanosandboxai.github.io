@@ -97,7 +97,7 @@ Error: failed to create sandbox
 
    Re-run the installer if any of them is missing:
    ```powershell
-   irm https://github.com/nanosandboxai/cli/releases/latest/download/install.ps1 | iex
+   irm https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.ps1 | iex
    ```
 
 6. **Quick check with the doctor command.**

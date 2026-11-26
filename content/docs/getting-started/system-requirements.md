@@ -44,17 +44,19 @@ If building from source, you also need:
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-## Linux Requirements (In Development)
+## Linux Requirements
 
-Linux support targets KVM-based virtualization. The following will be required once available:
+Linux support targets KVM-based virtualization. Requirements:
 
 - Linux kernel 5.10+ with KVM enabled
-- arm64 or x86_64 architecture
+- x86_64 (live-verified) or arm64 architecture
 - libkrun built for your distribution
 
-Linux binaries are not yet published. Check the [releases page](https://github.com/nanosandboxai/cli/releases) for updates.
+Linux binaries are published with every release. See the [releases page](https://github.com/nanosandboxai/nanosandbox/releases) for the current version.
 
 ## Windows Requirements
+
+> **Windows support is archived.** The Windows track is no longer maintained; the requirements and installer below are kept for historical reference. See the repository's archived Windows branch for details.
 
 ### Hardware
 
@@ -91,18 +93,18 @@ The following environment variables can be used to configure installation and ru
 | Variable           | Description                                          | Default           |
 | ------------------ | ---------------------------------------------------- | ----------------- |
 | `NANOSB_VERSION`   | Pin a specific CLI version for the installer script  | `latest`          |
-| `INSTALL_DIR`      | Override the binary installation directory            | `~/.nanosb/bin`   |
+| `INSTALL_DIR`      | Override the binary installation directory            | `~/.nanosandbox/bin` |
 
 ### Examples
 
 Install a specific version:
 
 ```bash
-NANOSB_VERSION=0.3.1 curl -fsSL https://github.com/nanosandboxai/cli/releases/latest/download/install.sh | bash
+NANOSB_VERSION=0.3.0 curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash
 ```
 
 Install to a custom directory:
 
 ```bash
-INSTALL_DIR=/usr/local/bin curl -fsSL https://github.com/nanosandboxai/cli/releases/latest/download/install.sh | bash
+INSTALL_DIR=/usr/local/bin curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash
 ```

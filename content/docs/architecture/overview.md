@@ -26,9 +26,9 @@ Your project directory is mounted into the sandbox so the agent can read and edi
 | --- | --- | --- | --- | --- |
 | macOS | virtio-fs (direct) | POSIX-style | Supported | Stable |
 | Linux | virtio-fs (direct) | POSIX-style | Supported | Stable |
-| Windows | FUSE-on-vsock backed by NTFS | Linux-like behavior for common workflows | Supported with limits | Stable for day-to-day use |
+| Windows | FUSE-on-vsock backed by NTFS | Linux-like behavior for common workflows | Archived | Not maintained |
 
-On Windows, the host runs a small FUSE server that talks to the guest over an AF_VSOCK socket. The guest mounts that socket as a `fuse.virtiofs`-compatible filesystem, so agents see the same `/workspace/` layout as on macOS or Linux. The four runtime files (`libkrunfw.dll`, `busybox`, `vsock_proxy`, `fuse_mount`) carry this bridge — see [installation](/docs/getting-started/installation) for details.
+On the archived Windows track, the host runs a small FUSE server that talks to the guest over an AF_VSOCK socket. The guest mounts that socket as a `fuse.virtiofs`-compatible filesystem, so agents see the same `/home/developer` layout as on macOS or Linux. The four runtime files (`libkrunfw.dll`, `busybox`, `vsock_proxy`, `fuse_mount`) carry this bridge — see [installation](/docs/getting-started/installation) for details.
 
 For most users, this means package installs, builds, tests, and normal project cleanup work the same way across platforms.
 
