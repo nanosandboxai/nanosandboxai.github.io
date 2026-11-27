@@ -1,0 +1,5 @@
+Archify skill, vendored from https://github.com/tt-a1i/archify
+tag: v3.3.2
+commit: a0199aab7bc1e87821c286f9b297afb8f98894ec
+installed: 2026-11-27 (copied from the tagged source; no install script run)
+license: Apache-2.0 (LICENSE, NOTICE)
