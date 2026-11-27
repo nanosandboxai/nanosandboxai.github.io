@@ -5,6 +5,7 @@ import agentsRegistry from '@data/agents-registry.json'
 import mcpData from '@data/mcp-registry.json'
 import localSkillsData from '@data/skills-local.json'
 import publicSkillsData from '@data/skills-public.json'
+import { resolveSandboxEnv, gooseModelValue } from '@/app/lib/agent-env.mjs'
 
 interface McpServer {
   name: string
@@ -52,12 +53,6 @@ interface ProviderCatalog {
   agents: Record<string, AgentRule>
 }
 
-interface ResolvedCredential {
-  provider: string | null
-  keys: string[]
-  oauth: boolean
-}
-
 interface AgentRegistryData {
   models: Record<string, { models: string[] }>
   providerCatalog?: ProviderCatalog
@@ -68,92 +63,15 @@ const mcpServers = mcpData as McpServer[]
 const registrySkills = localSkillsData as LocalSkill[]
 const publicSkills = publicSkillsData as PublicSkill[]
 
-// Provider resolution mirroring the product scripts/models/providers.py `resolve`.
-
-function normalizePrefix(prefix: string): string {
-  return prefix.split(':', 1)[0].toLowerCase()
-}
-
-function canonicalProvider(prefix: string, canonical: Record<string, string>): string {
-  const normalized = normalizePrefix(prefix)
-  return canonical[normalized] ?? normalized
-}
-
-function overrideSpec(spec: string[] | { keys?: string[]; oauth?: boolean }): { keys: string[]; oauth: boolean } {
-  if (Array.isArray(spec)) return { keys: spec, oauth: false }
-  return { keys: spec.keys ?? [], oauth: spec.oauth ?? false }
-}
-
-function providerCredential(provider: string, catalog: ProviderCatalog): ResolvedCredential {
-  const creds = catalog.credentials[provider]
-  const keys = creds ?? []
-  return { provider, keys: [...keys], oauth: provider in catalog.credentials && keys.length === 0 }
-}
-
-function resolveProvider(agent: string, model: string, catalog: ProviderCatalog): ResolvedCredential | null {
-  const rule = catalog.agents[agent]
-  if (!rule) return null
-  const mode = rule.mode ?? 'derived'
-  const alt = rule.alt ?? []
-  const seg = model.includes('/') ? model.split('/', 1)[0] : ''
-
-  if (seg === '') {
-    let def = rule.default ?? null
-    if (def == null && mode === 'collapse') def = rule.collapse_default ?? null
-    if (def == null) return { provider: null, keys: [...alt], oauth: false }
-    const cred = providerCredential(def, catalog)
-    return { ...cred, keys: [...cred.keys, ...alt] }
-  }
-
-  if (mode === 'collapse') {
-    const collapse = rule.collapse ?? {}
-    const key = rule.case_sensitive ? seg : seg.toLowerCase()
-    const provider = collapse[key] ?? rule.collapse_default ?? null
-    if (provider == null) return null
-    return providerCredential(provider, catalog)
-  }
-
-  const canon = canonicalProvider(seg, catalog.canonical)
-  const overrides = rule.overrides ?? {}
-  const segKey = rule.case_sensitive ? seg : seg.toLowerCase()
-  if (segKey in overrides) {
-    const { keys, oauth } = overrideSpec(overrides[segKey])
-    return { provider: null, keys, oauth }
-  }
-  if (canon in overrides) {
-    const { keys, oauth } = overrideSpec(overrides[canon])
-    return { provider: null, keys, oauth }
-  }
-  if ((rule.no_env ?? []).includes(canon)) return { provider: canon, keys: [], oauth: true }
-  if (mode === 'derived' || (rule.providers ?? []).includes(canon)) {
-    if (canon in catalog.credentials || (rule.no_env ?? []).includes(canon)) {
-      return providerCredential(canon, catalog)
-    }
-    return null
-  }
-  return null
-}
-
-// GOOSE_MODEL keeps the full string for openrouter/gateway providers and strips
-// the prefix for first-party ones, matching the product resolve_goose_env.
-function gooseModelValue(provider: string, model: string): string {
-  if (provider === 'openrouter') return model
-  if (provider === 'anthropic' || provider === 'openai' || provider === 'google') {
-    const idx = model.indexOf('/')
-    return idx === -1 ? model : model.slice(idx + 1)
-  }
-  return model
-}
-
+// Provider/env resolution lives in the shared module `@/app/lib/agent-env.mjs`.
 function buildEnvBlock(
   agent: string,
   model: string,
   catalog: ProviderCatalog
 ): { lines: string[]; oauthComment?: string } | null {
-  const rule = catalog.agents[agent]
-  const resolved = resolveProvider(agent, model, catalog)
+  const resolved = resolveSandboxEnv(catalog, agent, model)
   if (!resolved) return null
-  const alt = rule?.alt ?? []
+  const alt = resolved.alt ?? []
   const primaryKeys = resolved.keys.filter((k) => !alt.includes(k))
 
   if (resolved.oauth && primaryKeys.length === 0) {
