@@ -4,6 +4,8 @@ import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 import type { Components } from 'react-markdown'
 import { MermaidDiagram } from './mermaid-diagram'
+import { ArchifyDiagram, parseArchifySpec } from './archify-diagram'
+import { slugify } from '../lib/slug'
 import TerminalDemo, { parseTerminalScript } from './terminal-demo'
 
 function extractLanguageFromPre(
@@ -63,33 +65,47 @@ function CopyButton({ text }: { text: string }) {
 interface MarkdownRendererProps {
   content: string
   basePath?: string
+  /** 'docs' uses the reader-page typography and note callouts */
+  variant?: 'default' | 'docs'
 }
 
-function createComponents(basePath?: string): Components {
+function createComponents(basePath?: string, variant: 'default' | 'docs' = 'default'): Components {
+  const docs = variant === 'docs'
   return {
     h1: ({ children }) => (
       <h1 className="text-xl md:text-2xl font-bold text-[var(--accent)] mb-4 font-mono">{children}</h1>
     ),
     h2: ({ children }) => {
-      const id =
-        typeof children === 'string'
-          ? children.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')
-          : undefined
+      const id = slugify(extractTextFromChildren(children))
       return (
-        <h2 id={id} className="text-lg md:text-xl font-bold text-[var(--text-heading)] mt-8 mb-3 font-mono border-b border-[var(--border-secondary)] pb-2">
+        <h2
+          id={id}
+          className={
+            docs
+              ? 'scroll-mt-6 text-xl font-bold text-[var(--text-heading)] mt-10 mb-3 pt-6 font-mono border-t border-[var(--border-secondary)]'
+              : 'text-lg md:text-xl font-bold text-[var(--text-heading)] mt-8 mb-3 font-mono border-b border-[var(--border-secondary)] pb-2'
+          }
+        >
           <a href={`#${id}`} className="hover:text-[var(--accent)] transition-colors">
             {children}
           </a>
         </h2>
       )
     },
-    h3: ({ children }) => (
-      <h3 className="text-lg font-bold text-[var(--text-heading)] mt-6 mb-2 font-mono">{children}</h3>
-    ),
+    h3: ({ children }) => {
+      const id = slugify(extractTextFromChildren(children))
+      return (
+        <h3 id={id} className={`scroll-mt-6 font-bold text-[var(--text-heading)] font-mono ${docs ? 'text-base mt-7 mb-2' : 'text-lg mt-6 mb-2'}`}>
+          {children}
+        </h3>
+      )
+    },
     h4: ({ children }) => (
       <h4 className="text-base font-bold text-[var(--text-secondary)] mt-4 mb-2 font-mono">{children}</h4>
     ),
-    p: ({ children }) => <p className="text-[var(--text-secondary)] text-sm leading-relaxed mb-4">{children}</p>,
+    p: ({ children }) => (
+      <p className={`text-[var(--text-secondary)] mb-4 ${docs ? 'text-[14.5px] leading-7' : 'text-sm leading-relaxed'}`}>{children}</p>
+    ),
     a: ({ href, children }) => {
       let resolvedHref = href ?? ''
 
@@ -104,7 +120,7 @@ function createComponents(basePath?: string): Components {
       return (
         <a
           href={resolvedHref}
-          className="text-[var(--accent)] hover:text-[var(--accent-hover)] underline transition-colors"
+          className="text-[var(--accent)] hover:text-[var(--accent-hover)] underline transition-colors [overflow-wrap:anywhere]"
           target={isExternal ? '_blank' : undefined}
           rel={isExternal ? 'noopener noreferrer' : undefined}
         >
@@ -115,9 +131,15 @@ function createComponents(basePath?: string): Components {
     ul: ({ children }) => <ul className="list-disc list-inside text-[var(--text-secondary)] text-sm space-y-1 mb-4 ml-2">{children}</ul>,
     ol: ({ children }) => <ol className="list-decimal list-inside text-[var(--text-secondary)] text-sm space-y-1 mb-4 ml-2">{children}</ol>,
     li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-    blockquote: ({ children }) => (
-      <blockquote className="border-l-2 border-[var(--accent)] pl-4 my-4 text-[var(--text-tertiary)] italic">{children}</blockquote>
-    ),
+    blockquote: ({ children }) =>
+      docs ? (
+        <aside className="docs-callout my-5 border-l-[3px] border-[#6ea2ff] bg-[var(--bg-secondary)] px-4 py-3 text-[var(--text-secondary)]">
+          <span className="mb-1 block font-mono text-[10.5px] uppercase tracking-widest text-[#6ea2ff]">Note</span>
+          {children}
+        </aside>
+      ) : (
+        <blockquote className="border-l-2 border-[var(--accent)] pl-4 my-4 text-[var(--text-tertiary)] italic">{children}</blockquote>
+      ),
     hr: () => <hr className="border-[var(--border-secondary)] my-6" />,
     strong: ({ children }) => <strong className="text-[var(--text-heading)] font-bold">{children}</strong>,
     em: ({ children }) => <em className="text-[var(--text-secondary)]">{children}</em>,
@@ -135,6 +157,12 @@ function createComponents(basePath?: string): Components {
       )
     },
     pre: ({ children }) => {
+      const archifyText = extractLanguageFromPre(children, 'archify')
+      if (archifyText) {
+        const spec = parseArchifySpec(archifyText)
+        if (spec) return <ArchifyDiagram {...spec} />
+      }
+
       const mermaidCode = extractMermaidFromPre(children)
       if (mermaidCode) {
         return <MermaidDiagram chart={mermaidCode} />
@@ -173,8 +201,8 @@ function createComponents(basePath?: string): Components {
   }
 }
 
-export function MarkdownRenderer({ content, basePath }: MarkdownRendererProps) {
-  const components = createComponents(basePath)
+export function MarkdownRenderer({ content, basePath, variant = 'default' }: MarkdownRendererProps) {
+  const components = createComponents(basePath, variant)
 
   return (
     <div className="markdown-content">
