@@ -90,6 +90,8 @@ Calls throw `NanosbError`; branch on `code()` and re-throw unknown errors.
 See [Error Codes](./errors.md) for the full table and retry policy.
 
 ```java
+import nanosandbox.NanosbError;
+
 try {
   box.exec("echo", new String[]{"hi"});
 } catch (NanosbError err) {

@@ -71,4 +71,5 @@ and start a sandbox → exec → remove the sandbox → close the runtime. Full 
 reference lives in each SDK's README under `sdk/<lang>/` in the repository.
 
 To run a real coding agent instead of Alpine — Claude, Codex, Gemini, and
-others — see [Headless Code Agents](./agents.md).
+others — see [Headless Code Agents](./agents.md). Stable error codes and retry
+guidance live in [Error Codes](./errors.md).

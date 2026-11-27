@@ -141,6 +141,8 @@ if err != nil {
 }
 ```
 
+Add `errors` to the import block for `errors.As`.
+
 ## Runtime and API reference
 
 - [Runtime provisioning and environment variables](./runtime.md)
