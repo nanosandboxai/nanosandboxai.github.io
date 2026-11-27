@@ -26,3 +26,6 @@ Thumbs.db
 
 # Test artifacts
 *.log
+
+# Archify working folders (candidates, receipts)
+.archify/
