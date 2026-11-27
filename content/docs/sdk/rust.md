@@ -1,0 +1,64 @@
+---
+title: "Rust SDK"
+description: "Install the Rust SDK and run a microVM sandbox"
+order: 3
+---
+
+# Rust SDK
+
+## Prerequisites
+
+- Rust 1.94 or newer (the release toolchain).
+- macOS Apple Silicon or Linux (x86_64 or aarch64).
+
+## Install
+
+```bash
+cargo add nanosandbox-sdk
+```
+
+## Quickstart
+
+The first run downloads the per-platform runtime bundle. Save this as
+`src/main.rs` in a new crate and run `cargo run`:
+
+```rust
+use nanosandbox_sdk::{ManagedRuntime, Result, SandboxBuilder, SandboxClient};
+
+fn main() -> Result<()> {
+    let rt = ManagedRuntime::start().unwrap();
+    let client = SandboxClient::connect(rt.socket())?;
+    let sandbox = client
+        .create_with(SandboxBuilder::new("library/alpine:latest").name("demo"))?;
+
+    sandbox.start()?;
+    let out = sandbox.exec("echo", &["hello from a microVM"])?;
+    print!("{}", out.stdout);
+
+    sandbox.remove(true)?;
+    drop(rt);
+    Ok(())
+}
+```
+
+Expected output:
+
+```text
+hello from a microVM
+```
+
+`ManagedRuntime::start()` locates or provisions `nanosb-runtime`,
+`sandbox.remove(true)` stops and deletes the sandbox, and dropping `rt` shuts
+the helper down.
+
+## Errors
+
+Client calls return `nanosandbox_sdk::Result<T>` with
+`nanosandbox_sdk::Error`; use `?` as in the example, or handle the error
+explicitly.
+
+## Runtime and API reference
+
+- [Runtime provisioning and environment variables](./runtime.md)
+- [Full Rust API reference](https://github.com/nanosandboxai/nanosandbox/blob/main/sdk/rust/README.md)
+- Speaks `nanosb-protocol` v1.0.0; covered by the 40-scenario conformance suite.
