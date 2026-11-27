@@ -4,8 +4,6 @@ description: "Install the Ruby SDK and run a microVM sandbox"
 order: 9
 ---
 
-# Ruby SDK
-
 ## Prerequisites
 
 - Ruby 2.6 or newer.

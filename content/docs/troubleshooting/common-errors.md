@@ -7,7 +7,7 @@ order: 1
 ## Image Not Found
 
 **Error:**
-```
+```text
 Error: image not found: ghcr.io/nanosandboxai/nanosandbox/claude:latest
   Caused by: manifest unknown
 ```
@@ -33,7 +33,7 @@ Error: image not found: ghcr.io/nanosandboxai/nanosandbox/claude:latest
 ## Sandbox Creation Failed
 
 **Error:**
-```
+```text
 Error: failed to create sandbox
   Caused by: krun_create_ctx returned -1
 ```
@@ -68,7 +68,7 @@ Error: failed to create sandbox
 ## Timeout Errors
 
 **Error:**
-```
+```text
 Error: sandbox execution timed out after 60s
 ```
 
@@ -98,7 +98,7 @@ Error: sandbox execution timed out after 60s
 ## Permission Errors
 
 **Error:**
-```
+```text
 Error: permission denied
   Caused by: /dev/kvm: Permission denied
 ```
@@ -110,7 +110,7 @@ sudo usermod -aG kvm $USER
 ```
 
 **Error:**
-```
+```text
 Error: permission denied writing to /home/developer
 ```
 
@@ -124,7 +124,7 @@ chmod 755 ./project
 ## Network Errors
 
 **Error:**
-```
+```text
 Error: network configuration failed
   Caused by: gvproxy not found in PATH
 ```
@@ -143,7 +143,7 @@ Alternatively, use TSI mode (default) which does not require gvproxy.
 ## Codesigning Errors (macOS)
 
 **Error:**
-```
+```text
 Error: failed to create VM
   Caused by: hv_vm_create: HV_ERROR
 ```
@@ -159,7 +159,7 @@ brew reinstall nanosandbox
 ```
 
 **Error:**
-```
+```text
 Error: EXC_BAD_ACCESS when creating VM
 ```
 
@@ -173,7 +173,7 @@ The output must include `com.apple.security.hypervisor` set to `true`.
 ## Image Layer Corruption
 
 **Error:**
-```
+```text
 Error: layer verification failed
   Caused by: sha256 digest mismatch for blob abc123...
 ```
@@ -187,7 +187,7 @@ nanosb pull <image>
 ## Virtio-fs Mount Failures
 
 **Error:**
-```
+```text
 Error: failed to mount /home/developer
   Caused by: virtio-fs device not ready
 ```

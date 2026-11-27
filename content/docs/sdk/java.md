@@ -4,8 +4,6 @@ description: "Install the Java SDK and run a microVM sandbox"
 order: 10
 ---
 
-# Java SDK
-
 ## Prerequisites
 
 - JDK 21 or newer.

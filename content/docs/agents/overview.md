@@ -48,7 +48,7 @@ All agent images are built on a common base:
 Each sandbox runs a hardware-isolated microVM (libkrun) managed by a host-side
 supervisor:
 
-```
+```text
 Host
   └── supervisor (nanosb __supervise)
         └── microVM (libkrun)
@@ -343,7 +343,7 @@ git log --oneline -10
 
 The TUI provides slash commands for managing agents interactively:
 
-```
+```text
 /agent show      Show current agent definition
 /agent list      List available agents
 /agent set       Set the agent for the focused panel

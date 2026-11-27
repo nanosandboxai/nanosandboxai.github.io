@@ -4,8 +4,6 @@ description: "Complete CLI command reference for nanosb"
 order: 1
 ---
 
-# Commands
-
 Complete reference for every `nanosb` subcommand.
 
 ## nanosb pull

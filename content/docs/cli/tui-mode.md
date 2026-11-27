@@ -4,8 +4,6 @@ description: "Interactive terminal UI for managing sandboxes"
 order: 4
 ---
 
-# TUI Mode
-
 Running `nanosb` with no subcommand launches the interactive terminal UI.
 
 ```bash
@@ -54,7 +52,7 @@ Each open tab's panel operates in one of three modes:
 The **sandbox sidebar** is open by default (toggle with `/sandboxes` or `/sb`) and
 shows, for every panel, a live resource line and a host-capacity header:
 
-```
+```text
 ┌ Sandboxes ───────────────────────┐
 │ host 8cpu · 16G ram · 120G free  │
 │ [0] ● claude *                   │
@@ -313,7 +311,7 @@ Set both explicitly to use a different model.
 
 ### Available Themes
 
-```
+```text
 /theme nanosandbox
 /theme nanosandbox-light
 /theme dracula

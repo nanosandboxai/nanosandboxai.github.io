@@ -4,8 +4,6 @@ description: "Install the Rust SDK and run a microVM sandbox"
 order: 5
 ---
 
-# Rust SDK
-
 ## Prerequisites
 
 - Rust 1.94 or newer (the release toolchain).

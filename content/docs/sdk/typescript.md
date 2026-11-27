@@ -4,8 +4,6 @@ description: "Install the TypeScript/Node SDK and run a microVM sandbox"
 order: 7
 ---
 
-# TypeScript SDK
-
 ## Prerequisites
 
 - Node.js 24 or newer.

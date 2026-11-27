@@ -4,8 +4,6 @@ description: "sandbox.yml configuration reference"
 order: 2
 ---
 
-# Configuration
-
 Nanosb is configured through a `sandbox.yml` file. When launched, the CLI auto-detects `sandbox.yml` in the current working directory. You can also specify a path explicitly with `--config <path>`.
 
 ## Full Example
@@ -146,7 +144,7 @@ Required (either in `defaults` or per-sandbox). The container image to use.
 
 Bare agent names are automatically resolved to the default agents registry:
 
-```
+```text
 claude          ->  ghcr.io/nanosandboxai/nanosandbox/claude:latest
 codex           ->  ghcr.io/nanosandboxai/nanosandbox/codex:latest
 oh-my-openagent ->  ghcr.io/nanosandboxai/nanosandbox/oh-my-openagent:latest

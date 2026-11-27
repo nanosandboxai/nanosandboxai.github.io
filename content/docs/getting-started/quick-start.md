@@ -40,7 +40,7 @@ nanosb run python:3.12-slim python -c "print('Hello from a microVM')"
 
 Expected output:
 
-```
+```text
 Hello from a microVM
 ```
 

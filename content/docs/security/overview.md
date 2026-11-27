@@ -4,8 +4,6 @@ description: "Defense-in-depth security architecture for AI agent sandboxes"
 order: 1
 ---
 
-# Security Overview
-
 Nanosandbox isolates AI code agents inside lightweight microVMs with hardware-enforced boundaries. Every sandbox is a disposable, single-tenant virtual machine. Agents cannot access the host system, other sandboxes, or each other.
 
 ## Security Layers
@@ -14,7 +12,7 @@ Nanosandbox applies defense-in-depth with multiple independent security layers. 
 
 The hardware VM boundary is the primary security control. Everything else provides additional protection.
 
-```
+```text
 Layer 1: Hardware VM        Hypervisor-enforced isolation with a dedicated kernel per sandbox
 Layer 2: Kernel hardening   No module loading, no kexec, seccomp syscall filtering
 Layer 3: Seccomp profile    34 dangerous syscalls blocked including ptrace, bpf, and io_uring

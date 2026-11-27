@@ -4,8 +4,6 @@ description: "Flags available across all nanosb commands"
 order: 3
 ---
 
-# Global Flags
-
 These flags can be used with any `nanosb` subcommand.
 
 ## Reference
@@ -77,7 +75,7 @@ Human-readable tabular output suited for terminal use.
 nanosb ps
 ```
 
-```
+```text
 NAME     IMAGE    STATUS   CPUS  MEMORY  UPTIME
 claude   claude   running  2     4096    5m32s
 codex    codex    running  4     4096    3m17s

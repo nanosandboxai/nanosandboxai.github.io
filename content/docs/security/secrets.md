@@ -4,8 +4,6 @@ description: "Encrypted secrets pipeline for AI agent sandboxes"
 order: 4
 ---
 
-# Secrets Management
-
 Nanosandbox encrypts all environment variables before they enter the VM. Every value, whether declared in `env:`, passed via `--env`, or loaded from an `env_file`, is encrypted on the host and decrypted only inside the guest. Credentials are never exposed in plaintext outside the agent process.
 
 ## Configuration

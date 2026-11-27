@@ -4,8 +4,6 @@ description: "The nanosb runtime is bundled with the SDKs and auto-provisions it
 order: 2
 ---
 
-# Runtime
-
 The nanosandbox SDKs **auto-provision the runtime**. Installing the SDK is the
 only step — there is no separate runtime install.
 

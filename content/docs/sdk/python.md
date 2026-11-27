@@ -4,8 +4,6 @@ description: "Install the Python SDK and run a microVM sandbox"
 order: 6
 ---
 
-# Python SDK
-
 ## Prerequisites
 
 - Python 3.9 or newer.

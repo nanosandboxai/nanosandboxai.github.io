@@ -4,8 +4,6 @@ description: "Install the Go SDK and run a microVM sandbox"
 order: 8
 ---
 
-# Go SDK
-
 ## Prerequisites
 
 - Go 1.27 or newer.

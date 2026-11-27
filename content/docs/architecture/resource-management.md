@@ -4,8 +4,6 @@ description: "How nanosb allocates, enforces, and accounts for CPU, memory, disk
 order: 2
 ---
 
-# Resource Management
-
 Nanosandbox separates two ideas that are easy to conflate:
 
 1. **Per-sandbox requests** — what a single sandbox asks for (CPUs, memory,
@@ -104,7 +102,7 @@ supervisor reports running.
 When a request exceeds the budget, the sandbox is **not started** and the
 command fails with a specific message, for example:
 
-```
+```text
 Error: sandbox VM cap reached (16/16 running); free a sandbox or raise NANOSB_MAX_VMS
 Error: host memory budget exceeded (need 4096 MiB, 100 MiB available); free memory or raise NANOSB_MEMORY_BUDGET_MB
 Error: host disk too full (13336 MiB free, need at least 2048 MiB); free disk space

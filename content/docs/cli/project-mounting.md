@@ -4,8 +4,6 @@ description: "How nanosb mounts your project directory into sandboxes, with and 
 order: 5
 ---
 
-# Project Mounting
-
 When you pass a project directory to nanosb, it mounts your code into the sandbox at the guest home (`/home/developer`) by default. Each sandbox gets an isolated copy — changes made inside the sandbox stay on a separate branch and never touch your working directory until you decide to merge them.
 
 ## How It Works
@@ -18,7 +16,7 @@ nanosb --project /path/to/myapp
 
 nanosb creates a local clone of your project for each sandbox and mounts it at the guest home (`/home/developer`) by default. Agent changes accumulate in that clone on a dedicated branch named `nanosb/<short-id>`. When the session ends, that branch is fetched back into your source directory.
 
-```
+```text
 your project/
 ├── main branch      ← your work, untouched
 └── nanosb/abc12345  ← agent's branch, fetched back on teardown
@@ -95,7 +93,7 @@ git branch -d nanosb/<short-id>
 
 Running several agents on the same directory works out of the box. Each gets an independent branch:
 
-```
+```text
 nanosb/aabb1122  ← sandbox A
 nanosb/ccdd3344  ← sandbox B
 ```

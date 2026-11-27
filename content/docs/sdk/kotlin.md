@@ -4,8 +4,6 @@ description: "Install the Kotlin SDK and run a microVM sandbox"
 order: 11
 ---
 
-# Kotlin SDK
-
 ## Prerequisites
 
 - JDK 21 or newer.

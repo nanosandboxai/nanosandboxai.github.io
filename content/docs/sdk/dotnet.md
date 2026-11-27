@@ -4,8 +4,6 @@ description: "Install the C#/.NET SDK and run a microVM sandbox"
 order: 12
 ---
 
-# C#/.NET SDK
-
 ## Prerequisites
 
 - .NET SDK 8.0 or newer.

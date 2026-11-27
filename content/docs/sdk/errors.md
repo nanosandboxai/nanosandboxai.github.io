@@ -4,8 +4,6 @@ description: "Stable protocol error codes and how to handle them in each SDK"
 order: 3
 ---
 
-# Error Codes
-
 ## Three kinds of failure
 
 | Kind | What you see | Retry? |

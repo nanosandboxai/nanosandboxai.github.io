@@ -37,7 +37,7 @@ The exact checks depend on the host OS.
 
 Sample failure with fix hint:
 
-```
+```text
   [✗] libkrunfw Kernel Firmware: libkrunfw.5.dylib not found in ~/.nanosandbox/libs/, /opt/homebrew/lib, or /usr/local/lib
       Fix: brew install libkrunfw
 ```
@@ -52,7 +52,7 @@ Sample failure with fix hint:
 
 Sample failure with fix hint:
 
-```
+```text
   [✗] KVM Device: /dev/kvm not accessible
       Fix: sudo usermod -aG kvm $USER && log out and back in
 ```

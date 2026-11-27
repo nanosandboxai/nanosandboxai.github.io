@@ -193,7 +193,7 @@ Nanosb generates the correct MCP config format for each agent type. Each agent r
 
 MCP servers defined with `npx` commands automatically get `uvx` equivalents generated for agents that use Python tooling (Goose). Nanosb handles this transparently — you define the server once and it works across all agents.
 
-```
+```text
 sandbox.yml:  command: npx, args: ["-y", "@modelcontextprotocol/server-github"]
     ├── Claude:  npx -y @modelcontextprotocol/server-github
     ├── Codex:   npx -y @modelcontextprotocol/server-github
@@ -205,7 +205,7 @@ sandbox.yml:  command: npx, args: ["-y", "@modelcontextprotocol/server-github"]
 
 The TUI provides slash commands for managing MCP servers interactively:
 
-```
+```text
 /mcp                                      Toggle the MCP sidebar
 /mcp list                                 List configured MCP servers
 /mcp add <name> <command> [args...]       Add an MCP server to the focused sandbox
@@ -219,7 +219,7 @@ The TUI provides slash commands for managing MCP servers interactively:
 
 ### Example: Adding an MCP Server via TUI
 
-```
+```text
 /mcp add memory npx -y @modelcontextprotocol/server-memory
 # Added MCP server: memory
 
@@ -250,7 +250,7 @@ nanosb exec my-sandbox "npx -y @modelcontextprotocol/server-memory"
 
 Verify the agent supports MCP. Check that the MCP servers are listed as enabled:
 
-```
+```text
 # In the TUI
 /mcp list
 ```
@@ -259,7 +259,7 @@ Verify the agent supports MCP. Check that the MCP servers are listed as enabled:
 
 If a `${VAR}` reference in `sandbox.yml` is undefined, you see:
 
-```
+```text
 Error: environment variable 'VAR' is not set (referenced in mcp server config)
 ```
 

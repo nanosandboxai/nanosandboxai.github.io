@@ -108,7 +108,7 @@ Skills defined in `sandbox.yml` are tagged as **config-sourced**. They are re-ap
 
 The TUI provides slash commands for managing skills interactively:
 
-```
+```text
 /skills list                              List all available skills
 /skills add <name>                        Add a skill to the focused sandbox
 /skills add --all <name>                  Add a skill to all sandboxes

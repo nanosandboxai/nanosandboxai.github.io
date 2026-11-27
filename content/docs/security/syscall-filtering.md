@@ -4,8 +4,6 @@ description: "Seccomp profile and capability restrictions for sandboxed agents"
 order: 2
 ---
 
-# Syscall Filtering
-
 Nanosandbox applies kernel-level restrictions to limit what system calls agents can make inside the VM. These restrictions are enforced by the kernel itself and cannot be bypassed by the agent process.
 
 ## Seccomp Profile

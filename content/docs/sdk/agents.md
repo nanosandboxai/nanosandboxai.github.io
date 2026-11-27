@@ -4,8 +4,6 @@ description: "Run Claude, Codex, and other coding agents headlessly from an SDK"
 order: 4
 ---
 
-# Headless Code Agents
-
 The Alpine quickstarts show the SDK lifecycle. To run a real coding agent, use
 an agent image, inject its provider key, and execute its headless command in the
 sandbox.
