@@ -20,7 +20,7 @@ sandbox.
 | OpenCode | `ghcr.io/nanosandboxai/nanosandbox/opencode:latest` | `opencode run "<prompt>"` | provider key |
 | Crush | `ghcr.io/nanosandboxai/nanosandbox/crush:latest` | `crush run "<prompt>"` | provider key |
 | Cursor | `ghcr.io/nanosandboxai/nanosandbox/cursor:latest` | `cursor-agent --message "<prompt>"` | browser sign-in (no key declared) |
-| Oh-My-OpenAgent | `ghcr.io/nanosandboxai/nanosandbox/oh-my-openagent:latest` | `omo -p --no-session "<prompt>"` | `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `OPENROUTER_API_KEY` |
+| Oh-My-OpenAgent | `ghcr.io/nanosandboxai/nanosandbox/oh-my-openagent:latest` | `omo -p --no-session "<prompt>"` | one of the provider keys (see the provider catalog) |
 | Oh-My-Codex | `ghcr.io/nanosandboxai/nanosandbox/oh-my-codex:latest` | `omx exec --skip-git-repo-check --json "<prompt>"` | `OPENAI_API_KEY` or `CODEX_API_KEY` |
 | Oh-My-Claude | `ghcr.io/nanosandboxai/nanosandbox/oh-my-claude:latest` | `omc ask claude "<prompt>"` | `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` |
 

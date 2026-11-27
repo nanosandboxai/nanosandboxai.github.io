@@ -466,6 +466,21 @@ function agentsRegistryPlugin(): Plugin {
           console.warn('[agents-registry] models.json not found, using empty defaults:', err)
         }
 
+        let providerCatalog: {
+          canonical?: Record<string, string>
+          credentials?: Record<string, string[]>
+          agents?: Record<string, unknown>
+        } = {}
+        try {
+          const providerCatalogRaw = await fs.readFile(
+            path.join(PRODUCT_REGISTRIES_DIR, 'models/provider-catalog.json'),
+            'utf8'
+          )
+          providerCatalog = JSON.parse(providerCatalogRaw)
+        } catch (err) {
+          console.warn('[agents-registry] provider-catalog.json not found, using empty defaults:', err)
+        }
+
         let mcpSources: Array<{ id: string; url: string; description: string }> = []
         try {
           const sourcesRaw = await fs.readFile(path.join(AGENTS_REGISTRY_DIR, 'mcps/sources.yaml'), 'utf8')
@@ -521,6 +536,7 @@ function agentsRegistryPlugin(): Plugin {
           mcpSources,
           models: models.agents ?? {},
           agentDefinitions: agents,
+          providerCatalog,
         }
 
         await fs.writeFile(AGENTS_OUTPUT, JSON.stringify(result, null, 2))
@@ -534,6 +550,7 @@ function agentsRegistryPlugin(): Plugin {
           mcpSources: [],
           models: {},
           agentDefinitions: [],
+          providerCatalog: { canonical: {}, credentials: {}, agents: {} },
         })
       }
     },

@@ -32,14 +32,150 @@ interface PublicSkill {
   owner: string
 }
 
+interface AgentRule {
+  mode?: 'single' | 'collapse' | 'derived'
+  case_sensitive?: boolean
+  default?: string | null
+  alt?: string[]
+  collapse?: Record<string, string>
+  collapse_default?: string | null
+  overrides?: Record<string, string[] | { keys?: string[]; oauth?: boolean }>
+  no_env?: string[]
+  extra_keys?: string[]
+  providers?: string[]
+  accepted_keys?: string[]
+}
+
+interface ProviderCatalog {
+  canonical: Record<string, string>
+  credentials: Record<string, string[]>
+  agents: Record<string, AgentRule>
+}
+
+interface ResolvedCredential {
+  provider: string | null
+  keys: string[]
+  oauth: boolean
+}
+
 interface AgentRegistryData {
   models: Record<string, { models: string[] }>
+  providerCatalog?: ProviderCatalog
 }
 
 const registry = agentsRegistry as AgentRegistryData
 const mcpServers = mcpData as McpServer[]
 const registrySkills = localSkillsData as LocalSkill[]
 const publicSkills = publicSkillsData as PublicSkill[]
+
+// Provider resolution mirroring the product scripts/models/providers.py `resolve`.
+
+function normalizePrefix(prefix: string): string {
+  return prefix.split(':', 1)[0].toLowerCase()
+}
+
+function canonicalProvider(prefix: string, canonical: Record<string, string>): string {
+  const normalized = normalizePrefix(prefix)
+  return canonical[normalized] ?? normalized
+}
+
+function overrideSpec(spec: string[] | { keys?: string[]; oauth?: boolean }): { keys: string[]; oauth: boolean } {
+  if (Array.isArray(spec)) return { keys: spec, oauth: false }
+  return { keys: spec.keys ?? [], oauth: spec.oauth ?? false }
+}
+
+function providerCredential(provider: string, catalog: ProviderCatalog): ResolvedCredential {
+  const creds = catalog.credentials[provider]
+  const keys = creds ?? []
+  return { provider, keys: [...keys], oauth: provider in catalog.credentials && keys.length === 0 }
+}
+
+function resolveProvider(agent: string, model: string, catalog: ProviderCatalog): ResolvedCredential | null {
+  const rule = catalog.agents[agent]
+  if (!rule) return null
+  const mode = rule.mode ?? 'derived'
+  const alt = rule.alt ?? []
+  const seg = model.includes('/') ? model.split('/', 1)[0] : ''
+
+  if (seg === '') {
+    let def = rule.default ?? null
+    if (def == null && mode === 'collapse') def = rule.collapse_default ?? null
+    if (def == null) return { provider: null, keys: [...alt], oauth: false }
+    const cred = providerCredential(def, catalog)
+    return { ...cred, keys: [...cred.keys, ...alt] }
+  }
+
+  if (mode === 'collapse') {
+    const collapse = rule.collapse ?? {}
+    const key = rule.case_sensitive ? seg : seg.toLowerCase()
+    const provider = collapse[key] ?? rule.collapse_default ?? null
+    if (provider == null) return null
+    return providerCredential(provider, catalog)
+  }
+
+  const canon = canonicalProvider(seg, catalog.canonical)
+  const overrides = rule.overrides ?? {}
+  const segKey = rule.case_sensitive ? seg : seg.toLowerCase()
+  if (segKey in overrides) {
+    const { keys, oauth } = overrideSpec(overrides[segKey])
+    return { provider: null, keys, oauth }
+  }
+  if (canon in overrides) {
+    const { keys, oauth } = overrideSpec(overrides[canon])
+    return { provider: null, keys, oauth }
+  }
+  if ((rule.no_env ?? []).includes(canon)) return { provider: canon, keys: [], oauth: true }
+  if (mode === 'derived' || (rule.providers ?? []).includes(canon)) {
+    if (canon in catalog.credentials || (rule.no_env ?? []).includes(canon)) {
+      return providerCredential(canon, catalog)
+    }
+    return null
+  }
+  return null
+}
+
+// GOOSE_MODEL keeps the full string for openrouter/gateway providers and strips
+// the prefix for first-party ones, matching the product resolve_goose_env.
+function gooseModelValue(provider: string, model: string): string {
+  if (provider === 'openrouter') return model
+  if (provider === 'anthropic' || provider === 'openai' || provider === 'google') {
+    const idx = model.indexOf('/')
+    return idx === -1 ? model : model.slice(idx + 1)
+  }
+  return model
+}
+
+function buildEnvBlock(
+  agent: string,
+  model: string,
+  catalog: ProviderCatalog
+): { lines: string[]; oauthComment?: string } | null {
+  const rule = catalog.agents[agent]
+  const resolved = resolveProvider(agent, model, catalog)
+  if (!resolved) return null
+  const alt = rule?.alt ?? []
+  const primaryKeys = resolved.keys.filter((k) => !alt.includes(k))
+
+  if (resolved.oauth && primaryKeys.length === 0) {
+    return {
+      lines: [],
+      oauthComment: `# OAuth provider (${resolved.provider}); authenticate inside the agent; no env var.`,
+    }
+  }
+
+  const lines: string[] = []
+  if (agent === 'goose' && resolved.provider) {
+    lines.push(`      GOOSE_PROVIDER: "${resolved.provider}"`)
+    lines.push(`      GOOSE_MODEL: "${gooseModelValue(resolved.provider, model)}"`)
+  }
+  for (const key of primaryKeys) {
+    lines.push(`      ${key}: \${${key}}`)
+  }
+  if (alt.length > 0 && primaryKeys.length > 0) {
+    lines.push(`      # Alternative: ${alt.join(', ')}`)
+  }
+  return { lines }
+}
 
 // Combine all skills for selection
 const allAvailableSkills = [
@@ -171,7 +307,6 @@ export default function AgentsPage() {
   const generatedYaml = useMemo(() => {
     if (!selectedAgent) return ''
     const agentDef = AGENTS.find((a) => a.id === selectedAgent)
-    const envVar = AGENT_META[selectedAgent]?.envVar ?? 'API_KEY'
     const lines: string[] = [
       `# Nanosandbox agent configuration`,
       `# Generated for ${agentDef?.label ?? selectedAgent}`,
@@ -191,8 +326,22 @@ export default function AgentsPage() {
       lines.push(`    model: ${JSON.stringify(selectedModel)}`)
     }
 
-    lines.push(`    env:`)
-    lines.push(`      ${envVar}: \${${envVar}}`)
+    const catalog = registry.providerCatalog
+    let envBlock: { lines: string[]; oauthComment?: string } | null = null
+    if (selectedModel && catalog?.agents?.[selectedAgent]) {
+      envBlock = buildEnvBlock(selectedAgent, selectedModel, catalog)
+    }
+
+    if (envBlock && envBlock.lines.length > 0) {
+      lines.push(`    env:`)
+      lines.push(...envBlock.lines)
+    } else if (envBlock?.oauthComment) {
+      lines.push(`    ${envBlock.oauthComment}`)
+    } else {
+      const envVar = AGENT_META[selectedAgent]?.envVar ?? 'API_KEY'
+      lines.push(`    env:`)
+      lines.push(`      ${envVar}: \${${envVar}}`)
+    }
 
     if (selectedSkills.size > 0) {
       lines.push(`    skills:`)

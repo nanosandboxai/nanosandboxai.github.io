@@ -256,7 +256,7 @@ Each agent requires its own API key passed as an environment variable:
 | Aider | one of `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `DEEPSEEK_API_KEY` |
 | Gemini CLI | `GEMINI_API_KEY` or `GOOGLE_API_KEY` |
 | Crush | one of `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `OPENROUTER_API_KEY` |
-| Oh-My-OpenAgent | `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `OPENROUTER_API_KEY` (any one) |
+| Oh-My-OpenAgent | one of the provider keys (e.g. `ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY`, `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY`); the builder picks the key from the selected model's provider |
 | Oh-My-Codex | `OPENAI_API_KEY` or `CODEX_API_KEY` (either) |
 | Oh-My-Claude | `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` (either) |
 
