@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react'
+import PageHero from '@/app/components/page-hero'
 import { MobileDetailPanel } from '../components/mobile-detail-panel'
 import mcpData from '@data/mcp-registry.json'
 
@@ -60,20 +61,25 @@ export default function McpPage() {
 
   return (
     <div>
-      <div className="mb-6 font-mono">
-        <h1 className="text-2xl font-bold text-[var(--accent)] mb-2">MCP Servers</h1>
-        <p className="text-[var(--text-tertiary)] text-sm">
-          {servers.length} servers from{' '}
-          <a
-            href="https://registry.modelcontextprotocol.io"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[var(--accent)] hover:underline"
-          >
-            registry.modelcontextprotocol.io
-          </a>
-        </p>
-      </div>
+      <PageHero
+        command="nanosb mcp list"
+        title="Tools for the agent,"
+        accent="inside its cell."
+        description={
+          <p>
+            {servers.length} servers from{' '}
+            <a
+              href="https://registry.modelcontextprotocol.io"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[var(--accent)] hover:underline"
+            >
+              registry.modelcontextprotocol.io
+            </a>
+            . Every server you add runs inside the agent's microVM, so it gets the same walls the agent does.
+          </p>
+        }
+      />
 
       {/* Search */}
       <div className="mb-4">
@@ -95,7 +101,7 @@ export default function McpPage() {
       <div className="flex flex-col md:flex-row gap-4">
         {/* Server list */}
         <div className="flex-1 min-w-0">
-          <div className="grid gap-2">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-2">
             {filtered.slice(0, 80).map((server) => (
               <button
                 key={server.name}

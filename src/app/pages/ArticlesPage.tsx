@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import PageHero from '@/app/components/page-hero'
 import { Link } from 'react-router'
 import articlesData from '@data/articles.json'
 
@@ -48,10 +49,12 @@ export default function ArticlesPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-6 font-mono">
-        <h1 className="text-2xl font-bold text-[var(--accent)] mb-2">Articles</h1>
-        <p className="text-[var(--text-tertiary)] text-sm">Technical articles about sandboxing, isolation, and AI agent security.</p>
-      </div>
+      <PageHero
+        command="cat articles/*.md"
+        title="Notes from"
+        accent="inside the walls."
+        description={<p>Technical articles about sandboxing, isolation, and AI agent security.</p>}
+      />
 
       {/* Search and filter */}
       <div className="mb-6 space-y-3">

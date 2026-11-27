@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Outlet, Link, useLocation } from 'react-router'
 import { ThemeToggle } from './components/theme-toggle'
+import SiteFooter from './components/site-footer'
 
 const navItems = [
   { path: '/', label: 'home' },
@@ -184,6 +185,7 @@ export default function Layout() {
 
       <main className="container mx-auto px-4 py-4 md:py-6 max-w-7xl pb-16">
         <Outlet />
+        {!location.pathname.startsWith('/docs') && <SiteFooter />}
       </main>
 
       {/* Bottom Status Bar */}

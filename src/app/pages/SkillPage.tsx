@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react'
+import PageHero from '@/app/components/page-hero'
 import { MobileDetailPanel } from '../components/mobile-detail-panel'
 import publicSkillsData from '@data/skills-public.json'
 import localSkillsData from '@data/skills-local.json'
@@ -112,12 +113,17 @@ export default function SkillPage() {
 
   return (
     <div>
-      <div className="mb-6 font-mono">
-        <h1 className="text-2xl font-bold text-[var(--accent)] mb-2">Skills</h1>
-        <p className="text-[var(--text-tertiary)] text-sm">
-          {allSkills.length} skills available — {publicSkills.length} public, {localSkills.length} from registry.
-        </p>
-      </div>
+      <PageHero
+        command="nanosb skills list"
+        title="Teach the agent new tricks,"
+        accent="not new permissions."
+        description={
+          <p>
+            {allSkills.length} skills available: {publicSkills.length} public, {localSkills.length} from the registry. A skill
+            changes what the agent knows, never what it can reach.
+          </p>
+        }
+      />
 
       {/* Search and filters */}
       <div className="mb-4 space-y-3">

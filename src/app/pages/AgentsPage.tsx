@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react'
+import PageHero from '@/app/components/page-hero'
 import { MobileDetailPanel } from '../components/mobile-detail-panel'
 import agentsRegistry from '@data/agents-registry.json'
 import mcpData from '@data/mcp-registry.json'
@@ -192,12 +193,12 @@ export default function AgentsPage() {
     <div className="flex flex-col md:flex-row gap-4">
       {/* Left: configurator */}
       <div className="flex-1 min-w-0">
-        <div className="mb-6 font-mono">
-          <h1 className="text-2xl font-bold text-[var(--accent)] mb-2">Agent Configurator</h1>
-          <p className="text-[var(--text-tertiary)] text-sm">
-            Configure an AI coding agent with MCP servers and skills, then generate a sandbox.yml.
-          </p>
-        </div>
+        <PageHero
+          command="nanosb init --agent"
+          title="Pick an agent."
+          accent="We build the cell."
+          description={<p>Configure an AI coding agent with MCP servers and skills, then generate a sandbox.yml.</p>}
+        />
 
         {/* Step 1: Select Agent */}
         <div className="mb-6 border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 font-mono">
