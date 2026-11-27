@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sandbox Builder</title>
+<link rel="stylesheet" href="base.css">
+<style>
+/* Idea 4: agents + skills + MCP in one builder; the docs panel shows only the pages that matter for the current choices. */
+.hero h1 { margin: 0 0 6px; font-size: clamp(24px, 3.6vw, 38px); color: var(--text-heading); letter-spacing: -.02em; line-height: 1.1; }
+.hero h1 span { color: var(--accent); }
+.hero p { margin: 0; color: var(--text-tertiary); max-width: 72ch; }
+.build { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) 260px; gap: 16px; align-items: start; }
+@media (max-width: 1100px) { .build { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .docs { grid-column: 1 / -1; } }
+@media (max-width: 760px) { .build { grid-template-columns: 1fr; } }
+.stepbox { border: 1px solid var(--border-secondary); background: var(--bg-secondary); padding: 14px; margin-bottom: 12px; }
+.stepbox h3 { margin: 0 0 10px; font-size: 13px; color: var(--accent); }
+.stepbox h3 span { color: var(--text-muted); font-weight: 400; }
+.pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill { font: 12px var(--mono); border: 1px solid var(--border-secondary); background: var(--bg-elevated); color: var(--text-secondary); padding: 5px 10px; cursor: pointer; transition: all .15s; }
+.pill:hover { border-color: var(--accent); }
+.pill.on { background: var(--accent); border-color: var(--accent); color: #000; }
+.pill small { opacity: .7; margin-left: 4px; }
+.out { position: sticky; top: 60px; display: grid; gap: 12px; }
+.panel { border: 1px solid var(--border-primary); background: var(--bg-inverse); }
+.panel h3 { margin: 0; padding: 8px 12px; font-size: 12px; border-bottom: 1px solid var(--border-secondary); color: var(--accent); display: flex; justify-content: space-between; }
+.panel pre { margin: 0; padding: 12px; font-size: 12px; line-height: 1.6; color: var(--text-secondary); overflow-x: auto; white-space: pre; }
+.panel pre .k { color: var(--accent-ink); }
+.panel pre .new { background: var(--accent-wash); }
+.docs { position: sticky; top: 60px; border: 1px solid var(--border-secondary); background: var(--bg-elevated); }
+.docs h3 { margin: 0; padding: 8px 12px; font-size: 12px; border-bottom: 1px solid var(--border-secondary); color: #6ea2ff; }
+.doclink { display: block; padding: 10px 12px; border-bottom: 1px dashed var(--border-secondary); text-decoration: none; animation: din .3s ease-out; }
+.doclink:last-child { border-bottom: 0; }
+.doclink b { display: block; color: var(--text-heading); font-weight: 400; font-size: 13px; }
+.doclink small { color: var(--text-tertiary); font-size: 11.5px; }
+.doclink span { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .08em; }
+.doclink:hover { background: var(--bg-selected); }
+.warn { border-left: 3px solid var(--yellow); padding: 8px 10px; font-size: 12px; color: var(--text-secondary); background: var(--bg-secondary); margin: 10px 12px; }
+@keyframes din { from { opacity: 0; transform: translateX(6px); } }
+@media (prefers-reduced-motion: reduce) { .doclink { animation: none; } }
+</style>
+</head>
+<body>
+<main class="container">
+  <section class="box inv hero">
+    <p class="kicker" style="margin-bottom:8px">$ nanosb init</p>
+    <h1>Build the cell. <span>The docs follow you.</span></h1>
+    <p>Agents, skills and MCP servers on one page. The <code>sandbox.yml</code> updates as you pick, and the docs panel shows only the pages that matter for your choices, so docs are found in context instead of in a separate tab.</p>
+  </section>
+
+  <div class="build">
+    <section>
+      <div class="stepbox"><h3>1. Agent <span>· one per cell</span></h3><div class="pills" id="agents"></div></div>
+      <div class="stepbox"><h3>2. Skills <span>· what it knows</span></h3><div class="pills" id="skills"></div></div>
+      <div class="stepbox"><h3>3. MCP servers <span>· the tools it can use</span></h3><div class="pills" id="mcps"></div></div>
+      <div class="stepbox"><h3>4. Permissions <span>· how much it may do alone</span></h3><div class="pills" id="perms"></div></div>
+    </section>
+    <section class="out">
+      <div class="panel"><h3>sandbox.yml <button class="copy" type="button" id="cp">[copy]</button></h3><pre id="yml"></pre></div>
+      <div class="panel"><h3>then run</h3><pre>nanosb apply
+nanosb --sandbox <span id="runId">claude</span></pre></div>
+    </section>
+    <aside class="docs" aria-live="polite"><h3>docs for your choices</h3><div id="docs"></div></aside>
+  </div>
+</main>
+<script src="base.js"></script>
+<script src="catalog-data.js"></script>
+<script>
+NS.chrome();
+const C = CAT;
+const agentIds = { 'Claude Code': 'claude', 'Codex': 'codex', 'Goose': 'goose', 'Cursor': 'cursor', 'OpenCode': 'opencode', 'Aider': 'aider', 'Gemini CLI': 'gemini', 'Crush': 'crush' };
+const state = { agent: 'Claude Code', skills: new Set(['pdf']), mcp: new Set(['github']), perm: 'accept-edits' };
+let last = '';
+const pills = (el, list, isOn, onClick) => { el.innerHTML = list.map(([v, l, s]) => `<button type="button" class="pill ${isOn(v) ? 'on' : ''}" data-v="${v}">${l}${s ? `<small>${s}</small>` : ''}</button>`).join(''); el.onclick = e => { const b = e.target.closest('.pill'); if (b) { onClick(b.dataset.v); render(); } }; };
+function docsFor() {
+  const d = [['Getting Started', 'Quick Start', 'Run your first sandbox in five minutes']];
+  d.push(['Agents', 'Agents Overview', `How ${state.agent} signs in and what it needs`]);
+  if (state.skills.size) d.push(['Agents', 'Skills', 'How skills are loaded into the sandbox']);
+  if (state.mcp.size) d.push(['Agents', 'MCP Servers', 'Declaring servers and passing their config']);
+  if ([...state.mcp].some(m => (C.mcp.find(x => x.id === m) || {}).env)) d.push(['Security', 'Secrets Management', 'Tokens are injected per sandbox, never mounted']);
+  if (state.perm === 'allow-all') d.push(['Security', 'Security Overview', 'What the microVM protects when the agent runs unattended']);
+  d.push(['CLI Reference', 'Configuration', 'Every sandbox.yml field']);
+  return d;
+}
+function render() {
+  pills(document.getElementById('agents'), C.agents.map(a => [a, a]), v => v === state.agent, v => state.agent = v);
+  pills(document.getElementById('skills'), C.skills.slice(0, 10).map(s => [s.n, s.n]), v => state.skills.has(v), v => state.skills.has(v) ? state.skills.delete(v) : state.skills.add(v));
+  pills(document.getElementById('mcps'), C.mcp.map(m => [m.id, m.n]), v => state.mcp.has(v), v => state.mcp.has(v) ? state.mcp.delete(v) : state.mcp.add(v));
+  pills(document.getElementById('perms'), [['default', 'default', 'asks'], ['accept-edits', 'accept-edits', 'asks for edits'], ['allow-all', 'allow-all', 'unattended']], v => v === state.perm, v => state.perm = v);
+  const id = agentIds[state.agent];
+  const mcps = [...state.mcp].map(m => C.mcp.find(x => x.id === m));
+  const envs = mcps.filter(m => m.env).map(m => `      ${m.env}: \${${m.env}}`);
+  const yml = [`<span class="k">sandboxes:</span>`, `  ${id}:`, `    image: ${id}`, `    permissions: ${state.perm}`,
+    ...(envs.length ? ['    <span class="k">env:</span>', ...envs] : []),
+    ...(state.skills.size ? [`    <span class="k">skills:</span> [${[...state.skills].join(', ')}]`] : []),
+    ...(mcps.length ? ['    <span class="k">mcp:</span>', ...mcps.flatMap(m => { const [c, ...a] = m.cmd.split(' '); return [`      ${m.id}:`, `        command: ${c}`, `        args: [${a.map(x => JSON.stringify(x)).join(', ')}]`]; })] : [])].join('\n');
+  const yEl = document.getElementById('yml');
+  yEl.innerHTML = yml;
+  document.getElementById('runId').textContent = id;
+  document.getElementById('cp').dataset.copy = yEl.textContent;
+  document.getElementById('docs').innerHTML = docsFor().map(([s, p, why]) => `<a class="doclink" href="#"><span>${s}</span><b>${p}</b><small>${why}</small></a>`).join('') + (state.perm === 'allow-all' ? '<div class="warn">allow-all runs unattended. Safe inside the microVM, but read Security Overview first.</div>' : '');
+}
+render();
+</script>
+</body>
+</html>

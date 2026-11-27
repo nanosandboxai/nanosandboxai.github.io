@@ -1,0 +1,26 @@
+/* Shared stage chrome for the 3D jail sketches. The 3D scene is deliberately night-dark in both themes; the page around it follows the theme. */
+.stage3d { position: relative; height: clamp(380px, 62vh, 600px); border: 1px solid var(--border-primary); background: #0b0d10; overflow: hidden; touch-action: none; }
+.stage3d canvas { cursor: grab; }
+.stage3d canvas:active { cursor: grabbing; }
+.hud { position: absolute; left: 12px; top: 12px; max-width: min(420px, calc(100% - 24px)); pointer-events: none; font-size: 12px; color: #c9cfd6; }
+.hud .ttl { color: #ff6b6b; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: 11px; margin-bottom: 4px; }
+.hud-log div { background: rgba(8,10,12,.72); border-left: 2px solid #3a3f47; padding: 2px 8px; margin-top: 3px; animation: hudIn .3s ease-out; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hud-log .x { border-color: #ff6b6b; color: #ffb3b3; } .hud-log .ok { border-color: #28c840; color: #a6f3b5; } .hud-log .w { border-color: #ffbd2e; color: #ffe3a3; } .hud-log .b { border-color: #6ea2ff; color: #bcd3ff; }
+.score { position: absolute; right: 12px; top: 12px; display: flex; gap: 6px; pointer-events: none; }
+.score span { background: rgba(8,10,12,.8); border: 1px solid #3a3f47; color: #c9cfd6; padding: 4px 9px; font-size: 12px; font-variant-numeric: tabular-nums; }
+.score b { color: #fff; } .score .esc b { color: #28c840; }
+.tip { position: absolute; right: 12px; bottom: 10px; font-size: 11px; color: #6b7280; pointer-events: none; }
+.steps3d { position: absolute; left: 12px; bottom: 10px; display: flex; gap: 4px; flex-wrap: wrap; pointer-events: none; max-width: calc(100% - 140px); }
+.steps3d span { font-size: 10.5px; padding: 2px 7px; border: 1px solid #2c3138; color: #6b7280; background: rgba(8,10,12,.7); transition: all .25s; }
+.steps3d span.on { color: #0b0d10; background: #ff6b6b; border-color: #ff6b6b; }
+.nogl { position: absolute; inset: 0; display: grid; place-items: center; color: #c9cfd6; font-size: 13px; padding: 20px; text-align: center; }
+@keyframes hudIn { from { opacity: 0; transform: translateX(-8px); } }
+@media (max-width: 600px) { .steps3d { display: none; } .hud-log div:nth-last-child(n+4) { display: none; } }
+
+/* Embedded in the switcher: scene only, sized to the frame. */
+.embed body { padding-bottom: 0; background: #0b0d10; }
+.embed main.container { padding-block: 0; padding-left: 0; padding-right: 0; max-width: none; }
+.embed main > .box:not(.inv) { display: none; }
+.embed .box.inv { border: 0; padding: 0; background: #0b0d10; }
+.embed .box.inv > h2, .embed .box.inv > p { display: none; }
+.embed .stage3d { height: 100vh; border: 0; }

@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Isolation Layers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: engineering blueprint. Hero = isometric exploded stack of the isolation layers; scrolling pulls the layers apart and highlights one per step. Light + dark. */
+:root {
+  --paper: #eef1f4; --sheet: #ffffff; --ink: #14181f; --dim: #5b6573; --grid: rgba(30,60,110,.07); --rule: #cfd6df;
+  --coral: #e5484d; --blue: #2f6fde; --layer-a: #ffffff; --layer-b: #f6f8fb;
+  --sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif; --mono: "DM Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --paper: #0b1018; --sheet: #111824; --ink: #e8edf4; --dim: #8b97a8; --grid: rgba(120,160,230,.07); --rule: #243044; --coral: #ff6b6b; --blue: #6ea2ff; --layer-a: #152033; --layer-b: #101a2a; color-scheme: dark; } }
+:root[data-theme="dark"] { --paper: #0b1018; --sheet: #111824; --ink: #e8edf4; --dim: #8b97a8; --grid: rgba(120,160,230,.07); --rule: #243044; --coral: #ff6b6b; --blue: #6ea2ff; --layer-a: #152033; --layer-b: #101a2a; color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--paper); background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 24px 24px; color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.55; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.wrap { max-width: 1160px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+.mono { font-family: var(--mono); }
+
+header .wrap { display: flex; align-items: center; gap: 28px; height: 64px; }
+.logo { font-weight: 700; letter-spacing: -.01em; display: flex; align-items: center; gap: 10px; }
+.logo svg { width: 22px; height: 22px; }
+nav { display: flex; gap: 22px; font-size: 14px; color: var(--dim); margin-left: auto; }
+nav a:hover { color: var(--ink); }
+.pill { font: 500 13px var(--mono); padding: 8px 14px; border: 1px solid var(--ink); border-radius: 4px; }
+.pill:hover { background: var(--ink); color: var(--paper); }
+@media (max-width: 780px) { nav { display: none; } .pill { margin-left: auto; } }
+
+.hero { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; padding-block: 56px 40px; }
+.hero > * { min-width: 0; }
+@media (max-width: 880px) { .hero { grid-template-columns: 1fr; } }
+.tag { font: 500 12px var(--mono); color: var(--blue); letter-spacing: .08em; text-transform: uppercase; }
+h1 { font-size: clamp(38px, 5.6vw, 68px); line-height: 1.02; letter-spacing: -.035em; margin: 14px 0 20px; font-weight: 600; text-wrap: balance; }
+h1 span { color: var(--coral); }
+.lede { color: var(--dim); max-width: 46ch; margin: 0 0 28px; font-size: 18px; }
+.install { display: flex; align-items: center; gap: 10px; background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 6px 6px 6px 14px; font: 13px var(--mono); min-width: 0; }
+.install code { overflow-x: auto; white-space: nowrap; flex: 1; min-width: 0; color: var(--dim); }
+.install button { font: 500 12px var(--mono); background: var(--ink); color: var(--paper); border: 0; border-radius: 4px; padding: 9px 14px; cursor: pointer; flex-shrink: 0; }
+
+/* exploded stack */
+.stage { position: relative; height: 460px; perspective: 1400px; max-width: 100%; }
+.stack { position: absolute; inset: 0; transform-style: preserve-3d; transform: rotateX(58deg) rotateZ(-38deg); }
+.layer { position: absolute; left: 50%; top: 50%; width: 270px; height: 190px; margin: -95px 0 0 -135px; border: 1.5px solid var(--rule); border-radius: 10px; background: var(--layer-a); transform: translateZ(calc(var(--i) * var(--gap, 46px))); transition: transform .5s cubic-bezier(.2,.8,.2,1), border-color .3s, box-shadow .3s; box-shadow: 0 1px 0 var(--rule); display: grid; place-items: end start; padding: 12px; }
+.layer:nth-child(even) { background: var(--layer-b); }
+.layer b { font: 500 11px var(--mono); letter-spacing: .06em; color: var(--dim); text-transform: uppercase; }
+.layer.on { border-color: var(--coral); box-shadow: 0 0 0 4px color-mix(in srgb, var(--coral) 18%, transparent); }
+.layer.on b { color: var(--coral); }
+.layer.agent { background: var(--coral); border-color: var(--coral); width: 120px; height: 80px; margin: -40px 0 0 -60px; }
+.layer.agent b { color: #fff; }
+.callouts { position: absolute; right: 0; top: 10px; display: grid; gap: 6px; font: 12px var(--mono); color: var(--dim); text-align: right; }
+.callouts span.on { color: var(--coral); }
+@media (max-width: 520px) { .stage { height: 360px; } .layer { width: 200px; height: 140px; margin: -70px 0 0 -100px; } .callouts { display: none; } }
+
+/* scrolly steps */
+.walk { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding-block: 40px 80px; }
+@media (max-width: 880px) { .walk { grid-template-columns: 1fr; } .walk .sticky { display: none; } }
+.sticky { position: sticky; top: 40px; align-self: start; }
+.step { background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; padding: 28px; margin-bottom: 18px; transition: border-color .3s, transform .3s; }
+.step.on { border-color: var(--coral); transform: translateX(6px); }
+.step .n { font: 500 12px var(--mono); color: var(--blue); }
+.step h3 { margin: 8px 0 8px; font-size: 22px; letter-spacing: -.015em; }
+.step p { margin: 0; color: var(--dim); }
+.step code { font: 12.5px var(--mono); background: var(--paper); padding: 2px 6px; border-radius: 3px; }
+
+h2 { font-size: clamp(28px, 3.6vw, 40px); letter-spacing: -.025em; margin: 0 0 10px; font-weight: 600; text-wrap: balance; }
+.spec { background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+.spec-row { display: grid; grid-template-columns: 220px 1fr 140px; gap: 20px; padding: 16px 22px; border-top: 1px solid var(--rule); align-items: baseline; }
+.spec-row:first-child { border-top: 0; }
+.spec-row span:first-child { font-weight: 600; }
+.spec-row span:nth-child(2) { color: var(--dim); }
+.spec-row span:last-child { font: 12px var(--mono); color: var(--blue); text-align: right; }
+@media (max-width: 680px) { .spec-row { grid-template-columns: 1fr; gap: 2px; } .spec-row span:last-child { text-align: left; } }
+section.more { padding-block: 20px 80px; }
+
+.foot { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; border-top: 1px solid var(--rule); padding-block: 48px; }
+@media (max-width: 780px) { .foot { grid-template-columns: 1fr; } }
+form { display: flex; gap: 8px; }
+input { flex: 1; min-width: 0; font: 14px var(--mono); padding: 12px; border: 1px solid var(--rule); border-radius: 4px; background: var(--sheet); color: var(--ink); }
+input:focus { outline: none; border-color: var(--blue); }
+form button { font: 500 13px var(--mono); background: var(--coral); color: #fff; border: 0; border-radius: 4px; padding: 0 16px; cursor: pointer; }
+small { color: var(--dim); font-family: var(--mono); font-size: 12px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <a class="logo" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><rect x="8" y="8" width="8" height="8" rx="1.5" fill="#ff6b6b" stroke="none"/></svg>nanosandbox</a>
+  <nav><a href="#">MCP</a><a href="#">Skills</a><a href="#">Agents</a><a href="#">Docs</a><a href="#">Articles</a><a href="#">Roadmap</a></nav>
+  <a class="pill" href="#">Install</a>
+</div></header>
+
+<div class="wrap hero">
+  <div>
+    <span class="tag">Sheet 01 · Isolation model</span>
+    <h1>Five walls between your agent and <span>your laptop.</span></h1>
+    <p class="lede">Containers share a kernel. Nanosandbox gives every AI code agent its own microVM, its own guest kernel and a hypervisor boundary, and still boots in about 180&nbsp;ms.</p>
+    <div class="install"><code>curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash</code><button type="button" id="cp">Copy</button></div>
+  </div>
+  <div class="stage" aria-label="Exploded diagram of isolation layers">
+    <div class="stack" id="stack">
+      <div class="layer" style="--i:0" data-l="0"><b>Host · macOS / Linux</b></div>
+      <div class="layer" style="--i:1" data-l="1"><b>Hypervisor · HVF / KVM</b></div>
+      <div class="layer" style="--i:2" data-l="2"><b>libkrun microVM</b></div>
+      <div class="layer" style="--i:3" data-l="3"><b>Guest kernel + seccomp</b></div>
+      <div class="layer agent" style="--i:4" data-l="4"><b>agent</b></div>
+    </div>
+    <div class="callouts mono" id="callouts"><span data-l="4">agent · claude</span><span data-l="3">guest kernel</span><span data-l="2">microVM</span><span data-l="1">hypervisor</span><span data-l="0">host</span></div>
+  </div>
+</div>
+
+<div class="wrap walk">
+  <div class="sticky"><h2>Read the stack from the top down</h2><p style="color:var(--dim);max-width:40ch">Scroll through each layer. The diagram above lights the wall you are reading about, and the stack spreads apart as you go.</p></div>
+  <div id="steps">
+    <div class="step" data-l="4"><span class="n">L4 · agent</span><h3>The agent runs as root, in a room of its own</h3><p>Claude, Codex or Goose gets full control of an OCI image like <code>python:3.12-slim</code>. Nothing it does touches your shell.</p></div>
+    <div class="step" data-l="3"><span class="n">L3 · guest kernel</span><h3>Its own kernel and syscall filter</h3><p>Every sandbox boots an independent kernel. Syscall filtering and package-install policies apply inside the guest.</p></div>
+    <div class="step" data-l="2"><span class="n">L2 · microVM</span><h3>libkrun microVM, sub-second boot</h3><p>A minimal VM with VirtioFS project mounts and git branch tracking. The agent edits a clone, not your working tree.</p></div>
+    <div class="step" data-l="1"><span class="n">L1 · hypervisor</span><h3>Hardware virtualization</h3><p>Apple Hypervisor.framework on Apple Silicon, KVM on Linux. The CPU enforces the boundary.</p></div>
+    <div class="step" data-l="0"><span class="n">L0 · host</span><h3>Your machine stays clean</h3><p>Secrets are injected per sandbox, never mounted. <code>nanosb rm</code> leaves nothing behind.</p></div>
+  </div>
+</div>
+
+<section class="wrap more">
+  <h2>Specification</h2>
+  <p style="color:var(--dim);margin:0 0 24px">What ships today, and where it runs.</p>
+  <div class="spec">
+    <div class="spec-row"><span>OCI image support</span><span>Docker Hub, GHCR or any private registry</span><span>nanosb pull</span></div>
+    <div class="spec-row"><span>Multi-agent TUI</span><span>Concurrent agents in panel-based terminal UI</span><span>nanosb</span></div>
+    <div class="spec-row"><span>MCP servers + skills</span><span>Model Context Protocol tooling, configured per agent</span><span>/mcp · /skill</span></div>
+    <div class="spec-row"><span>Streaming I/O</span><span>Real-time output with backpressure handling</span><span>nanosb exec</span></div>
+    <div class="spec-row"><span>Platforms</span><span>macOS Apple Silicon, Linux x86_64 / arm64</span><span>nanosb doctor</span></div>
+  </div>
+</section>
+
+<div class="wrap foot">
+  <div><h2 style="font-size:26px">Get the next sheet</h2><small>Windows, desktop app and the caging tournament are in the works.</small></div>
+  <form onsubmit="event.preventDefault(); this.querySelector('button').textContent='Subscribed'"><label for="em3" hidden>Email</label><input id="em3" type="email" placeholder="you@company.com" required><button type="submit">Subscribe</button></form>
+</div>
+
+<script>
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.getElementById('cp').onclick = e => navigator.clipboard?.writeText(document.querySelector('.install code').textContent).then(() => { e.target.textContent = 'Copied'; setTimeout(() => e.target.textContent = 'Copy', 1400); }).catch(() => {});
+const stack = document.getElementById('stack');
+function light(l) {
+  document.querySelectorAll('[data-l]').forEach(n => n.classList.toggle('on', n.dataset.l === String(l)));
+}
+// Spread layers with scroll progress, light the step nearest the viewport center.
+function onScroll() {
+  const steps = [...document.querySelectorAll('.step')];
+  const mid = innerHeight * .5; let best = null, bd = 1e9;
+  steps.forEach(s => { const r = s.getBoundingClientRect(), d = Math.abs(r.top + r.height / 2 - mid); if (d < bd) { bd = d; best = s; } });
+  const p = Math.min(1, Math.max(0, scrollY / (innerHeight * 1.2)));
+  if (!reduce) stack.style.setProperty('--gap', (46 + p * 34) + 'px');
+  if (best && scrollY > 40) light(best.dataset.l); else light(4);
+}
+addEventListener('scroll', onScroll, { passive: true }); onScroll();
+// Idle: cycle the highlight while the reader sits on the hero.
+if (!reduce) { let k = 4; setInterval(() => { if (scrollY < 40) { k = (k + 4) % 5; light(k); } }, 1600); }
+// Hovering a layer lights it too.
+document.querySelectorAll('.layer, .callouts span').forEach(n => n.addEventListener('mouseenter', () => light(n.dataset.l)));
+</script>
+</body>
+</html>

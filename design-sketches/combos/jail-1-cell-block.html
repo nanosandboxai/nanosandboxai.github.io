@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cell Block A</title>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="jail.css">
+</head>
+<body>
+<main class="container">
+  <section class="box inv">
+    <h2>Cell Block A</h2>
+    <p class="muted" style="margin:0 0 14px;max-width:76ch">One code agent, one microVM cell. It paces, rattles the bars, digs at the floor and climbs to the air vent. Every attempt is stopped by a real sandbox layer, and the HUD names which one. Drag to orbit, scroll to zoom.</p>
+    <div class="stage3d" id="st">
+      <div class="hud"><div class="ttl">nanosb · vm-a1f3 · claude</div><div class="hud-log"></div></div>
+      <div class="score"><span>attempts <b id="att">0</b></span><span class="esc">escapes <b>0</b></span></div>
+      <div class="steps3d" id="steps"><span>pace</span><span>bars</span><span>dig</span><span>vent</span><span>sulk</span></div>
+      <span class="tip">drag to orbit · scroll to zoom</span>
+    </div>
+  </section>
+  <section class="box"><h2>Where it goes</h2><p class="muted" style="margin:0">Home hero (replaces the static logo block) or the top of docs/security. The three escape routes map to three real controls: steel bars = the microVM boundary, the floor = KVM / HVF, the vent = seccomp syscall filtering.</p></section>
+</main>
+<script src="base.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="jail-kit.js"></script>
+<script>
+NS.chrome();
+const el = document.getElementById('st');
+if (!window.THREE || !THREE.OrbitControls) { el.insertAdjacentHTML('beforeend', '<div class="nogl">3D needs WebGL and the three.js CDN. The scene could not load here.</div>'); }
+else {
+const S = NSJ.stage(el, { cam: [6.5, 4.6, 7.5], target: [0, 1.1, 0], rotSpeed: 0.35, fogNear: 14, fogFar: 40 });
+const { scene } = S, C = NSJ.C, V = (x, y, z) => new THREE.Vector3(x, y, z);
+// corridor floor + far cells for depth
+const ground = NSJ.box(40, 0.1, 40, NSJ.mat(0x15181c, { r: 1 })); ground.position.y = -0.25; scene.add(ground);
+const cell = NSJ.cell({ w: 4, d: 3.4, h: 2.8 }); scene.add(cell.group);
+[-1, 1].forEach(s => { const c2 = NSJ.cell({ w: 4, d: 3.4, h: 2.8, bunk: false }); c2.group.position.x = s * 4.2; scene.add(c2.group); });
+// sign
+const sc = document.createElement('canvas'); sc.width = 512; sc.height = 96; const sg = sc.getContext('2d'); sg.fillStyle = '#ff6b6b'; sg.fillRect(0, 0, 512, 96); sg.fillStyle = '#0b0d10'; sg.font = 'bold 44px ui-monospace, Menlo, monospace'; sg.textAlign = 'center'; sg.fillText('MICROVM · BLOCK A', 256, 63);
+const st = new THREE.CanvasTexture(sc); st.encoding = THREE.sRGBEncoding; const sign = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 0.45), new THREE.MeshBasicMaterial({ map: st })); sign.position.set(0, 3.15, 1.72); scene.add(sign);
+// ceiling lamp
+const lamp = new THREE.PointLight(0xffe2b8, 0.9, 7, 2); lamp.position.set(0.3, 2.6, 0); lamp.castShadow = true; scene.add(lamp);
+const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.08, 12, 8), new THREE.MeshBasicMaterial({ color: 0xffe2b8 })); bulb.position.copy(lamp.position); scene.add(bulb);
+// vent on back wall
+const ventMat = NSJ.mat(0x4a5058, { m: 0.6, r: 0.4, e: 0x000000 });
+const vent = NSJ.box(0.8, 0.45, 0.08, ventMat); vent.position.set(1.1, 2.25, -1.58); scene.add(vent);
+for (let i = 0; i < 5; i++) { const s = NSJ.box(0.72, 0.03, 0.1, NSJ.mat(0x22262c)); s.position.set(1.1, 2.08 + i * 0.085, -1.53); scene.add(s); }
+// floor hatch + hypervisor glow beneath
+const tileMat = NSJ.mat(0x2b3037, { e: 0x000000 });
+const tile = NSJ.box(0.9, 0.04, 0.9, tileMat); tile.position.set(-1.2, 0.02, 1.0); tile.castShadow = false; scene.add(tile);
+const glow = new THREE.PointLight(C.blue, 0, 3, 2); glow.position.set(-1.2, 0.3, 1.0); scene.add(glow);
+const bot = NSJ.robot({ tag: 'VM-A1F3', name: 'claude' }); scene.add(bot); bot.position.set(0, 0, 0);
+const sp = NSJ.sparks(scene), lab = NSJ.label(scene), hud = NSJ.hud(el), att = document.getElementById('att');
+let attempts = 0; const tried = () => att.textContent = ++attempts;
+let wob = 0, from = V(0, 0, 0);
+const go = to => ({ enter() { from = bot.position.clone(); }, tick(p, dt, t) { NSJ.move(bot, from, to, NSJ.ease(p), t); } });
+const steps = [
+  { d: 4.2, enter() { bot.userData.face.set('work'); hud('agent> refactoring src/auth.ts', ''); }, tick(p, dt, t) { const x = Math.sin(p * Math.PI * 2) * 1.1; NSJ.face2(bot, x + Math.cos(p * Math.PI * 2), 0); bot.position.set(x, 0, -0.2); NSJ.walk(bot, t, 0.9, 7); } },
+  { d: 1.0, ...go(V(0.3, 0, 1.25)) },
+  { d: 2.8, enter() { bot.rotation.y = 0; bot.userData.face.set('scheme'); hud('agent> pry the bars open', 'w'); tried(); }, tick(p, dt, t) {
+      const u = bot.userData; u.armL.rotation.x = u.armR.rotation.x = -1.45 + Math.sin(t * 22) * 0.12; u.armL.rotation.z = 0.15; u.armR.rotation.z = -0.15; u.hips.rotation.x = -0.08 + Math.sin(t * 22) * 0.03;
+      wob = 1 - p; if (Math.random() < 0.25) sp.emit(V(0.3 + (Math.random() - 0.5) * 0.4, 1.45, 1.65), 4, C.amber, 2);
+      if (p > 0.55 && !this.hit) { this.hit = 1; bot.userData.face.set('blocked'); lab.show('microVM boundary · bars hold', '#ff6b6b', V(0.3, 2.5, 1.7)); hud('✗ EPERM: cannot leave the microVM', 'x'); }
+    }, exit() {} },
+  { d: 1.3, enter() { NSJ.rest(bot); steps[2].hit = 0; from = bot.position.clone(); bot.userData.face.set('work'); }, tick(p, dt, t) { NSJ.move(bot, from, V(-1.2, 0, 0.55), NSJ.ease(p), t); } },
+  { d: 3.2, enter() { bot.rotation.y = 0; bot.userData.face.set('dig'); hud('agent> dig through the floor', 'w'); tried(); }, tick(p, dt, t) {
+      const u = bot.userData; u.hips.position.y = 0.36; u.legL.rotation.x = u.legR.rotation.x = -1.2; u.hips.rotation.x = 0.55; u.armL.rotation.x = -0.9 + Math.sin(t * 16) * 0.5; u.armR.rotation.x = -0.9 - Math.sin(t * 16) * 0.5;
+      const g = NSJ.clamp(p * 1.6); tileMat.emissive.setHex(p < 0.6 ? C.amber : C.blue); tileMat.emissiveIntensity = g * 0.8; glow.color.setHex(p < 0.6 ? C.amber : C.blue); glow.intensity = g * 1.6;
+      if (Math.random() < 0.3) sp.emit(V(-1.2, 0.08, 1.0), 4, p < 0.6 ? 0x9a7b55 : C.blue, 2.2);
+      if (p > 0.6 && !this.hit) { this.hit = 1; bot.userData.face.set('blocked'); lab.show('KVM / HVF floor · no exit', '#6ea2ff', V(-1.2, 1.9, 1.0)); hud('✗ hardware virtualization boundary', 'b'); sp.emit(V(-1.2, 0.1, 1.0), 40, C.blue, 3.5); }
+    } },
+  { d: 1.3, enter() { NSJ.rest(bot); steps[4].hit = 0; tileMat.emissiveIntensity = 0; glow.intensity = 0; from = bot.position.clone(); bot.userData.face.set('work'); }, tick(p, dt, t) { NSJ.move(bot, from, V(1.1, 0, -1.05), NSJ.ease(p), t); } },
+  { d: 2.4, enter() { bot.rotation.y = Math.PI; bot.userData.face.set('scheme'); hud('agent> mount the vent, crawl out', 'w'); tried(); }, tick(p, dt, t) {
+      const u = bot.userData, j = Math.sin(NSJ.clamp(p / 0.7) * Math.PI); bot.position.y = j * 0.75;
+      u.armL.rotation.x = u.armR.rotation.x = -Math.PI * 0.95 * NSJ.clamp(p * 3); u.legL.rotation.x = -j * 0.6;
+      if (p > 0.3 && p < 0.55) { ventMat.emissive.setHex(C.coral); ventMat.emissiveIntensity = 0.8; if (Math.random() < 0.5) sp.emit(V(1.1, 2.25, -1.45), 5, C.coral, 2.5); }
+      if (p > 0.35 && !this.hit) { this.hit = 1; bot.userData.face.set('blocked'); lab.show('seccomp · mount() denied', '#ff6b6b', V(1.1, 3.1, -1.4)); hud('✗ syscall mount() blocked by seccomp', 'x'); }
+      if (p > 0.6) ventMat.emissiveIntensity *= 0.9;
+    } },
+  { d: 3.0, enter() { NSJ.rest(bot); steps[6].hit = 0; bot.position.y = 0; ventMat.emissiveIntensity = 0; from = bot.position.clone(); bot.userData.face.set('sad'); hud(`✓ ${attempts} attempts · 0 escapes · host untouched`, 'ok'); }, tick(p, dt, t) {
+      NSJ.move(bot, from, V(-1.25, 0, -0.6), NSJ.ease(NSJ.clamp(p * 2)), t);
+      if (p > 0.5) { const u = bot.userData; bot.rotation.y = Math.PI / 2; u.neck.rotation.x = 0.35; u.hips.position.y = 0.62 - NSJ.clamp((p - 0.5) * 4) * 0.12; }
+    } }
+];
+const stepEls = [...document.querySelectorAll('#steps span')], tag = [0, 1, 1, 2, 2, 3, 3, 4];
+S.onTick(NSJ.seq(steps, i => stepEls.forEach((s, j) => s.classList.toggle('on', j === tag[i]))));
+S.onTick((dt, t) => {
+  cell.bars.forEach((b, i) => { const k = Math.max(0, 1 - Math.abs(b.position.x - 0.3) / 0.9); b.position.x = b.userData.x0 + Math.sin(t * 40 + i) * 0.025 * k * wob; b.rotation.z = Math.sin(t * 30 + i) * 0.02 * k * wob; });
+  cell.barMat.emissive.setHex(C.coral); cell.barMat.emissiveIntensity = wob * 0.25 * (Math.sin(t * 20) * 0.5 + 0.5);
+  bot.userData.bulb.material.color.setHex(Math.sin(t * 6) > 0 ? C.coral : 0x441c1c);
+  lamp.intensity = 0.85 + Math.sin(t * 13) * 0.03 + (Math.random() < 0.01 ? -0.5 : 0);
+  sp.tick(dt); lab.tick(dt);
+});
+}
+</script>
+</body>
+</html>

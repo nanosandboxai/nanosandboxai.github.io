@@ -1,0 +1,98 @@
+<title>Cage Motion Ideas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: review board in the site's own mono language. One row per combination: live preview + what it borrows from where. */
+:root {
+  --bg: #f5f5f5; --card: #fafafa; --ink: #111; --text: #1a1a1a; --dim: #777; --rule: #ccc; --rule2: #ddd; --accent: #ff6b6b; --accent-ink: #d9363b;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #0a0a0a; --card: #000; --ink: #fff; --text: #e0e0e0; --dim: #888; --rule: #444; --rule2: #333; --accent-ink: #ff6b6b; color-scheme: dark; } }
+:root[data-theme="dark"] { --bg: #0a0a0a; --card: #000; --ink: #fff; --text: #e0e0e0; --dim: #888; --rule: #444; --rule2: #333; --accent-ink: #ff6b6b; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: var(--mono); font-size: 14px; line-height: 1.6; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 64px; }
+h1 { font-size: clamp(22px, 3.4vw, 32px); color: var(--accent); margin: 0 0 10px; text-wrap: balance; }
+h1::before { content: "$ "; }
+.intro { color: var(--dim); max-width: 78ch; margin: 0 0 20px; }
+.recipe { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--rule); background: var(--card); margin-bottom: 36px; }
+.recipe div { padding: 12px 14px; border-right: 1px solid var(--rule2); min-width: 0; }
+.recipe div:last-child { border-right: 0; }
+.recipe b { color: var(--ink); display: block; font-weight: 600; }
+.recipe span { color: var(--dim); font-size: 12.5px; }
+@media (max-width: 700px) { .recipe { grid-template-columns: 1fr; } .recipe div { border-right: 0; border-bottom: 1px solid var(--rule2); } }
+.opts { display: grid; gap: 24px; }
+.opt { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 24px; border: 1px solid var(--rule); background: var(--card); padding: 16px; }
+@media (max-width: 860px) { .opt { grid-template-columns: 1fr; } }
+.shot { position: relative; aspect-ratio: 16 / 10; max-width: 100%; overflow: hidden; border: 1px solid var(--rule2); background: var(--bg); }
+.shot iframe { position: absolute; top: 0; left: 0; width: 1440px; height: 900px; border: 0; transform-origin: 0 0; pointer-events: none; }
+.meta { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.k { font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+.meta h2 { margin: 0; color: var(--ink); font-size: 20px; }
+.meta h2 em { font-style: normal; color: var(--accent-ink); }
+.meta p { margin: 0; color: var(--dim); font-size: 13.5px; }
+.mix { display: grid; gap: 4px; font-size: 13px; }
+.mix div { display: grid; grid-template-columns: 96px 1fr; gap: 10px; }
+.mix span:first-child { color: var(--dim); }
+.bar { display: flex; height: 8px; border: 1px solid var(--rule2); }
+.bar i:nth-child(1) { background: var(--ink); } .bar i:nth-child(2) { background: var(--accent); } .bar i:nth-child(3) { background: repeating-linear-gradient(90deg, var(--dim) 0 2px, transparent 2px 6px); }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; color: var(--dim); }
+.open { align-self: flex-start; margin-top: auto; border: 1px solid var(--rule); padding: 8px 14px; color: var(--ink); text-decoration: none; }
+.open:hover, .open:focus-visible { color: var(--accent-ink); border-color: var(--accent); outline: none; }
+</style>
+
+<div class="wrap">
+  <h1>Cage motion ideas</h1>
+  <p class="intro">Four ways to make "every agent gets a cage" move. Each one animates a real sandbox behaviour, so the motion explains the product instead of decorating it. All four use the same tokens and components as the combined directions, so any of them drops into Combo A, B, C or D.</p>
+  <div class="recipe">
+    <div><b>Show the lifecycle</b><span>a fresh cage per task, thrown away after</span></div>
+    <div><b>Show the policy</b><span>what passes through the bars and what bounces</span></div>
+    <div><b>Show it at scale</b><span>many cages at once, then hands-on configuration</span></div>
+  </div>
+  <div class="opts">
+    <article class="opt">
+      <div class="shot"><iframe src="cage-1-lifecycle.html" title="Cage preview" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="meta">
+        <span class="k">Cage 1 · storytelling</span>
+        <h2>Cage <em>Lifecycle</em></h2>
+        <p>One cage, five states. OCI layers drop in, the bars build one at a time while a counter runs to 180 ms, the agent works, then lunges at the bars, which rattle and hold with an EPERM spark. Finally the cage falls apart and only the git branch slides out.</p>
+        <div class="mix"><div><span>motion</span><span>state machine with staggered bar build, lunge and rattle keyframes, falling bars, synced log</span></div><div><span>goes on</span><span>home hero, agent card hover (steps 2–3), docs architecture</span></div></div>
+        <a class="open" href="cage-1-lifecycle.html">open full size →</a>
+      </div>
+    </article>
+    <article class="opt">
+      <div class="shot"><iframe src="cage-2-firewall.html" title="Cage preview" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="meta">
+        <span class="k">Cage 2 · security made visible</span>
+        <h2>Cage <em>Firewall</em></h2>
+        <p>Each call the agent makes is a dot. Allowlisted traffic (github.com, pypi.org, /work) passes through green gates in the bars; mount(), ptrace and curl evil.sh bounce off with sparks. A live ALLOW/DENY feed and counters sit alongside, and one button simulates a prompt-injection burst.</p>
+        <div class="mix"><div><span>motion</span><span>canvas particles, bounce + spark physics, live feed, burst trigger</span></div><div><span>goes on</span><span>home section under the terminal demo, docs/security hero</span></div></div>
+        <a class="open" href="cage-2-firewall.html">open full size →</a>
+      </div>
+    </article>
+    <article class="opt">
+      <div class="shot"><iframe src="cage-3-rack.html" title="Cage preview" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="meta">
+        <span class="k">Cage 3 · multi-agent at scale</span>
+        <h2>Cage <em>Rack</em></h2>
+        <p>The multi-agent TUI as a rack of live cages. Each one shows its own CPU sparkline and changing log line. A new cage builds its bars in with a boot bar; killing one slams the bars shut, shakes it and removes it while the rack reflows smoothly. Click a cage to expand it.</p>
+        <div class="mix"><div><span>motion</span><span>FLIP reflow, bar build and slam, live sparklines, auto spawn/kill when idle</span></div><div><span>goes on</span><span>agents page header, web preview of the TUI, later bound to nanosb ps --json</span></div></div>
+        <a class="open" href="cage-3-rack.html">open full size →</a>
+      </div>
+    </article>
+    <article class="opt">
+      <div class="shot"><iframe src="cage-4-configurator.html" title="Cage preview" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="meta">
+        <span class="k">Cage 4 · hands-on</span>
+        <h2>Cage <em>Configurator</em></h2>
+        <p>Drag an agent into an empty cage: the bars drop with a bounce and a boot ring fills. Drag images, MCP servers and skills onto it and they scan through the bars. Unsafe items like docker.sock or host-shell get rejected, the cage shakes and the token flies back. The nanosb run command updates live.</p>
+        <div class="mix"><div><span>motion</span><span>pointer drag, bouncy bar drop, scan-through, reject + fly-back, click/keyboard fallback</span></div><div><span>goes on</span><span>front end for the existing Agents configurator (same catalog data)</span></div></div>
+        <a class="open" href="cage-4-configurator.html">open full size →</a>
+      </div>
+    </article>
+  </div>
+</div>
+
+<script>
+function fit() { document.querySelectorAll('.shot').forEach(s => { s.querySelector('iframe').style.transform = `scale(${s.clientWidth / 1440})`; }); }
+addEventListener('resize', fit); fit();
+</script>

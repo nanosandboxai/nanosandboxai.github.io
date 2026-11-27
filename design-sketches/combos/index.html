@@ -1,0 +1,110 @@
+<title>Nanosandbox Combined Directions</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: review board in the site's own mono language. One row per combination: live preview + what it borrows from where. */
+:root {
+  --bg: #f5f5f5; --card: #fafafa; --ink: #111; --text: #1a1a1a; --dim: #777; --rule: #ccc; --rule2: #ddd; --accent: #ff6b6b; --accent-ink: #d9363b;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #0a0a0a; --card: #000; --ink: #fff; --text: #e0e0e0; --dim: #888; --rule: #444; --rule2: #333; --accent-ink: #ff6b6b; color-scheme: dark; } }
+:root[data-theme="dark"] { --bg: #0a0a0a; --card: #000; --ink: #fff; --text: #e0e0e0; --dim: #888; --rule: #444; --rule2: #333; --accent-ink: #ff6b6b; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: var(--mono); font-size: 14px; line-height: 1.6; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 64px; }
+h1 { font-size: clamp(22px, 3.4vw, 32px); color: var(--accent); margin: 0 0 10px; text-wrap: balance; }
+h1::before { content: "$ "; }
+.intro { color: var(--dim); max-width: 78ch; margin: 0 0 20px; }
+.recipe { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--rule); background: var(--card); margin-bottom: 36px; }
+.recipe div { padding: 12px 14px; border-right: 1px solid var(--rule2); min-width: 0; }
+.recipe div:last-child { border-right: 0; }
+.recipe b { color: var(--ink); display: block; font-weight: 600; }
+.recipe span { color: var(--dim); font-size: 12.5px; }
+@media (max-width: 700px) { .recipe { grid-template-columns: 1fr; } .recipe div { border-right: 0; border-bottom: 1px solid var(--rule2); } }
+.opts { display: grid; gap: 24px; }
+.opt { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 24px; border: 1px solid var(--rule); background: var(--card); padding: 16px; }
+@media (max-width: 860px) { .opt { grid-template-columns: 1fr; } }
+.shot { position: relative; aspect-ratio: 16 / 10; max-width: 100%; overflow: hidden; border: 1px solid var(--rule2); background: var(--bg); }
+.shot iframe { position: absolute; top: 0; left: 0; width: 1440px; height: 900px; border: 0; transform-origin: 0 0; pointer-events: none; }
+.meta { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.k { font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+.meta h2 { margin: 0; color: var(--ink); font-size: 20px; }
+.meta h2 em { font-style: normal; color: var(--accent-ink); }
+.meta p { margin: 0; color: var(--dim); font-size: 13.5px; }
+.mix { display: grid; gap: 4px; font-size: 13px; }
+.mix div { display: grid; grid-template-columns: 96px 1fr; gap: 10px; }
+.mix span:first-child { color: var(--dim); }
+.bar { display: flex; height: 8px; border: 1px solid var(--rule2); }
+.bar i:nth-child(1) { background: var(--ink); } .bar i:nth-child(2) { background: var(--accent); } .bar i:nth-child(3) { background: repeating-linear-gradient(90deg, var(--dim) 0 2px, transparent 2px 6px); }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; color: var(--dim); }
+.open { align-self: flex-start; margin-top: auto; border: 1px solid var(--rule); padding: 8px 14px; color: var(--ink); text-decoration: none; }
+.open:hover, .open:focus-visible { color: var(--accent-ink); border-color: var(--accent); outline: none; }
+</style>
+
+<div class="wrap">
+  <h1>Combined directions</h1>
+  <p class="intro">Four ways to keep today's site and add two borrowed ideas. All four use the current tokens, the monospace type, the header with the typing nav and the bottom status bar. Previews are live; open one full size and scroll to see the motion.</p>
+  <div class="recipe">
+    <div><b>Current site</b><span>boxed mono sections, "$ Heading" titles, coral accent, terminal demo</span></div>
+    <div><b>+ Isolation Layers motion</b><span>3D layer stack that spreads on scroll or hover and lights one wall at a time</span></div>
+    <div><b>+ Agent Arena sections</b><span>cage cards with drop-down bars, agent ticker, tournament leaderboard, bento</span></div>
+  </div>
+
+  <div class="opts">
+    <article class="opt">
+      <div class="shot"><iframe src="combo-a-layered-hero.html" title="Combo A preview" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="meta">
+        <span class="k">Combo A · smallest change</span>
+        <h2>Layered <em>Hero</em></h2>
+        <p>Today's page, section for section. The hero gets the layer stack on the right, which spreads as you scroll past it and cycles its highlight. One new Agents box adds a ticker and a row of cage cards.</p>
+        <div class="bar" aria-hidden="true"><i style="flex:70"></i><i style="flex:18"></i><i style="flex:12"></i></div>
+        <div class="legend"><span>■ current 70%</span><span style="color:var(--accent-ink)">■ layers 18%</span><span>▥ arena 12%</span></div>
+        <div class="mix"><div><span>motion</span><span>scroll spread, idle cycling, hover to light a layer</span></div><div><span>effort</span><span>Low. Two new components dropped into Home.tsx</span></div></div>
+        <a class="open" href="combo-a-layered-hero.html">open full size →</a>
+      </div>
+    </article>
+
+    <article class="opt">
+      <div class="shot"><iframe src="combo-b-scroll-walls.html" title="Combo B preview" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="meta">
+        <span class="k">Combo B · storytelling</span>
+        <h2>Scroll Through <em>the Walls</em></h2>
+        <p>The hero stays as it is today. Features are regrouped by layer: a pinned stack on the left, step boxes on the right, and the wall you're reading lights up. Below that, an arena bento with cages, a boot counter and the tournament leaderboard.</p>
+        <div class="bar" aria-hidden="true"><i style="flex:50"></i><i style="flex:30"></i><i style="flex:20"></i></div>
+        <div class="legend"><span>■ current 50%</span><span style="color:var(--accent-ink)">■ layers 30%</span><span>▥ arena 20%</span></div>
+        <div class="mix"><div><span>motion</span><span>sticky stack, scroll-linked step highlight, counter + leaderboard fill</span></div><div><span>effort</span><span>Medium. Features copy needs regrouping by layer</span></div></div>
+        <a class="open" href="combo-b-scroll-walls.html">open full size →</a>
+      </div>
+    </article>
+
+    <article class="opt">
+      <div class="shot"><iframe src="combo-c-console-bento.html" title="Combo C preview" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="meta">
+        <span class="k">Combo C · dashboard feel</span>
+        <h2>Console <em>Bento</em></h2>
+        <p>Same boxes, same mono, laid out as an arena-style bento instead of one long column. The layer stack is its own tile and opens on hover. Agent cages, stat tiles, terminal and leaderboard sit side by side.</p>
+        <div class="bar" aria-hidden="true"><i style="flex:40"></i><i style="flex:20"></i><i style="flex:40"></i></div>
+        <div class="legend"><span>■ current 40%</span><span style="color:var(--accent-ink)">■ layers 20%</span><span>▥ arena 40%</span></div>
+        <div class="mix"><div><span>motion</span><span>hover-to-open stack, cage bars, counter, typing terminal</span></div><div><span>effort</span><span>Low to medium. Mostly a grid change</span></div></div>
+        <a class="open" href="combo-c-console-bento.html">open full size →</a>
+      </div>
+    </article>
+
+    <article class="opt">
+      <div class="shot"><iframe src="combo-d-zoom-out.html" title="Combo D preview" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="meta">
+        <span class="k">Combo D · boldest moment</span>
+        <h2>Zoom Out of <em>the Cage</em></h2>
+        <p>The layer idea redrawn in today's flat box style: nested dashed boxes instead of a 3D stack. A pinned scene starts on a caged agent and zooms out layer by layer as you scroll, with a depth list and captions alongside. Arena cages and leaderboard follow.</p>
+        <div class="bar" aria-hidden="true"><i style="flex:45"></i><i style="flex:35"></i><i style="flex:20"></i></div>
+        <div class="legend"><span>■ current 45%</span><span style="color:var(--accent-ink)">■ layers 35%</span><span>▥ arena 20%</span></div>
+        <div class="mix"><div><span>motion</span><span>scroll-driven zoom, depth meter, cage locks at the start</span></div><div><span>effort</span><span>Medium. One scroll scene component</span></div></div>
+        <a class="open" href="combo-d-zoom-out.html">open full size →</a>
+      </div>
+    </article>
+  </div>
+</div>
+
+<script>
+function fit() { document.querySelectorAll('.shot').forEach(s => { s.querySelector('iframe').style.transform = `scale(${s.clientWidth / 1440})`; }); }
+addEventListener('resize', fit); fit();
+</script>
