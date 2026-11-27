@@ -47,19 +47,45 @@ const allAvailableSkills = [
   ...publicSkills.map((s) => ({ name: s.name, description: s.description, tags: s.tags, source: 'public' as const })),
 ]
 
-const AGENTS = [
-  { id: 'claude', label: 'Claude Code', icon: '>' },
-  { id: 'cursor', label: 'Cursor', icon: '>' },
-  { id: 'codex', label: 'Codex', icon: '>' },
-  { id: 'goose', label: 'Goose', icon: '>' },
+// Preferred display order; unknown catalog keys are appended after these.
+const AGENT_ORDER = [
+  'claude',
+  'goose',
+  'codex',
+  'cursor',
+  'opencode',
+  'aider',
+  'gemini',
+  'crush',
+  'oh-my-openagent',
+  'oh-my-codex',
+  'oh-my-claude',
 ]
 
-const ENV_VAR_MAP: Record<string, string> = {
-  claude: 'ANTHROPIC_API_KEY',
-  cursor: 'CURSOR_API_KEY',
-  codex: 'OPENAI_API_KEY',
-  goose: 'OPENAI_API_KEY',
+const AGENT_META: Record<string, { label: string; envVar: string }> = {
+  claude: { label: 'Claude Code', envVar: 'ANTHROPIC_API_KEY' },
+  goose: { label: 'Goose', envVar: 'OPENAI_API_KEY' },
+  codex: { label: 'Codex', envVar: 'OPENAI_API_KEY' },
+  cursor: { label: 'Cursor', envVar: 'CURSOR_API_KEY' },
+  opencode: { label: 'OpenCode', envVar: 'ANTHROPIC_API_KEY' },
+  aider: { label: 'Aider', envVar: 'OPENAI_API_KEY' },
+  gemini: { label: 'Gemini CLI', envVar: 'GEMINI_API_KEY' },
+  crush: { label: 'Crush', envVar: 'OPENAI_API_KEY' },
+  'oh-my-openagent': { label: 'Oh-My-OpenAgent', envVar: 'OPENAI_API_KEY' },
+  'oh-my-codex': { label: 'Oh-My-Codex', envVar: 'OPENAI_API_KEY' },
+  'oh-my-claude': { label: 'Oh-My-Claude', envVar: 'ANTHROPIC_API_KEY' },
 }
+
+const catalogAgentIds = Object.keys(registry.models ?? {})
+const orderedIds = AGENT_ORDER.filter((id) => catalogAgentIds.includes(id))
+const unknownIds = catalogAgentIds.filter((id) => !AGENT_ORDER.includes(id))
+const agentIds = orderedIds.length > 0 ? [...orderedIds, ...unknownIds] : [...AGENT_ORDER]
+
+const AGENTS = agentIds.map((id) => ({
+  id,
+  label: AGENT_META[id]?.label ?? id,
+  icon: '>',
+}))
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false)
@@ -145,7 +171,7 @@ export default function AgentsPage() {
   const generatedYaml = useMemo(() => {
     if (!selectedAgent) return ''
     const agentDef = AGENTS.find((a) => a.id === selectedAgent)
-    const envVar = ENV_VAR_MAP[selectedAgent] || 'API_KEY'
+    const envVar = AGENT_META[selectedAgent]?.envVar ?? 'API_KEY'
     const lines: string[] = [
       `# Nanosandbox agent configuration`,
       `# Generated for ${agentDef?.label ?? selectedAgent}`,
@@ -162,7 +188,7 @@ export default function AgentsPage() {
     ]
 
     if (selectedModel) {
-      lines.push(`    model: ${selectedModel}`)
+      lines.push(`    model: ${JSON.stringify(selectedModel)}`)
     }
 
     lines.push(`    env:`)
@@ -203,7 +229,7 @@ export default function AgentsPage() {
         {/* Step 1: Select Agent */}
         <div className="mb-6 border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 font-mono">
           <h2 className="text-sm font-bold text-[var(--accent)] mb-3">1. Select Agent</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2">
             {AGENTS.map((agent) => (
               <button
                 key={agent.id}
@@ -215,7 +241,7 @@ export default function AgentsPage() {
                 }`}
               >
                 <span className="text-[var(--accent)] mr-1">{agent.icon}</span>
-                <span className="text-sm font-bold">{agent.label}</span>
+                <span className="text-sm font-bold leading-tight break-words">{agent.label}</span>
                 {registry.models?.[agent.id] && (
                   <div className="text-[var(--text-muted)] text-xs mt-1">
                     {registry.models[agent.id].models?.length ?? 0} models

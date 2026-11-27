@@ -30,12 +30,15 @@ jobs:
           ref: main
           path: articles
 
-      - name: Checkout agents-registry
+      - name: Checkout nanosandbox
         uses: actions/checkout@v4
         with:
-          repository: nanosandboxai/agents-registry
+          repository: nanosandboxai/nanosandbox
           ref: main
-          path: agents-registry
+          path: nanosandbox
+          sparse-checkout: |
+            registries/models
+            registries/mcps
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -52,7 +55,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: web/.generated/data
-          key: ${{ runner.os }}-generated-data-${{ steps.cache-date.outputs.date }}-${{ hashFiles('web/vite.config.ts', 'web/content/docs/**', 'articles/**', 'agents-registry/**') }}
+          key: ${{ runner.os }}-generated-data-${{ steps.cache-date.outputs.date }}-${{ hashFiles('web/vite.config.ts', 'web/content/docs/**', 'articles/**', 'nanosandbox/registries/**', 'web/local-skills/**') }}
           restore-keys: |
             ${{ runner.os }}-generated-data-${{ steps.cache-date.outputs.date }}-
             ${{ runner.os }}-generated-data-
