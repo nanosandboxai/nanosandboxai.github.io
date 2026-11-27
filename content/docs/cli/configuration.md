@@ -502,7 +502,7 @@ custom image, or using an out-of-band script.
 sandboxes:
   omo-openrouter:
     type: oh-my-openagent
-    image: oh-my-openagent:rc2
+    image: oh-my-openagent:0.3.0
     interactive: true
     env:
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}

@@ -127,7 +127,7 @@ Type a slash command in any active panel to control the TUI.
 | Option | Description |
 |---|---|
 | `--image <image>` | Use a custom image instead of the built-in agent shortcut. |
-| `--tag <version>` | Override tag for shortcut agents (for example `claude:rc11`). Ignored when `--image` is set. |
+| `--tag <version>` | Override tag for shortcut agents (for example `claude:0.3.0`). Ignored when `--image` is set. |
 | `--model <model>` | Set the model id for the new panel. |
 | `--project <path>` | Mount a specific project directory for this panel. |
 | `--branch <name>` | Set project clone branch name for this panel. |
@@ -145,7 +145,7 @@ Examples:
 
 ```bash
 /add claude                                      # Add with default settings
-/add claude --tag rc11                           # Use a non-latest agent tag
+/add claude --tag 0.3.0                         # Use a non-latest agent tag
 /add claude --model claude-sonnet-4-5-20250929   # Specify model
 /add claude --project ~/myapp --branch feat/auth # Mount project + custom branch
 /add claude --name my-sandbox                    # Custom sandbox name

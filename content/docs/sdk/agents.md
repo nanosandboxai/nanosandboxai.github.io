@@ -32,7 +32,7 @@ from `/dev/null`.
 
 ## Codex (verified)
 
-This program was run against `v0.3.0-rc2`; the final JSON event contains the
+This program was run against `v0.3.0`; the final JSON event contains the
 agent message `ok`.
 
 ```python
