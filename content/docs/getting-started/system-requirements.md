@@ -9,7 +9,7 @@ order: 3
 | Platform                    | Hypervisor        | Status             |
 | --------------------------- | ----------------- | ------------------ |
 | macOS Apple Silicon (arm64) | HVF               | **Stable**         |
-| Linux (x86_64 / arm64)     | KVM               | **Stable**         |
+| Linux (x86_64 / arm64)     | KVM               | **Supported** (x86_64 live-verified; arm64 built) |
 
 ## macOS Requirements
 
@@ -61,6 +61,9 @@ The following environment variables can be used to configure installation and ru
 | ------------------ | ---------------------------------------------------- | ----------------- |
 | `NANOSB_VERSION`   | Pin a specific CLI version for the installer script  | `latest`          |
 | `INSTALL_DIR`      | Override the binary installation directory            | `~/.nanosandbox/bin` |
+
+See [Environment Variables](../cli/environment.md) for the full list, including
+`NANOSANDBOX_HOME`, `DEPS_VERSION`, `NANOSB_BINARY`, and `NANOSB_EXEC_AGENT`.
 
 ### Examples
 

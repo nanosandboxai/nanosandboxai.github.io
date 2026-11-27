@@ -63,6 +63,7 @@ The `defaults` section sets baseline values applied to every sandbox unless over
 | `timeout` | integer | Maximum runtime in seconds (runtime default: 0, unlimited) |
 | `disk` | integer | Per-sandbox disk quota in MB (0 = unlimited) |
 | `max_pids` | integer | Maximum processes in the guest (0 = runtime default 512) |
+| `run_as_root` | boolean | Run agent commands as root inside the guest (default: `false`) |
 | `env` | map | Environment variables injected into every sandbox |
 | `env_file` | string | Path to a file containing `KEY=VALUE` environment variables |
 | `network` | object | Network configuration (see [network](#network)) |
@@ -76,9 +77,16 @@ The `defaults` section sets baseline values applied to every sandbox unless over
 | `permissions` | string | Permission level: `default`, `accept_edits`, or `allow_all` |
 | `prompt` | string | Prompt text for the agent (required when `auto_mode: true`) |
 | `model` | string | Model to use (enforced at config load against the built-in catalog; extendable via `~/.nanosandbox/models.json`) |
+| `claude` | object | Claude-specific settings (`theme`) |
+| `workspace` | object | Host project sharing: `mode` (`isolated`/`shared`) and `fresh_rootfs` |
+| `workdir` | string | Guest working directory (default: the guest home) |
 | `agent_config` | map | Inline agent-native config files (see [`agent_config`](#agent_config)) |
 
-All fields are optional. When omitted, the runtime's built-in defaults are used.
+All fields are optional. When omitted, the runtime's built-in defaults are used:
+`cpus: 1`, `memory: 512`, and `timeout: 0` (unlimited). `nanosb run` supplies its
+own flag defaults (`--cpus 2`, `--memory 4096`, `--timeout 600`) unless you
+override them; a `type:` agent also supplies its per-agent compute defaults (see
+[Compute Defaults](#compute-defaults)).
 For how resource limits (`cpus`, `memory`, `disk`, `max_pids`) are enforced and
 how host admission budgets work, see
 [Resource Management](../architecture/resource-management.md).
@@ -95,6 +103,12 @@ sandboxes:
     type: <agent-type>       # claude, codex, goose, cursor, opencode, aider, gemini, crush, oh-my-openagent|omo, oh-my-codex|omx, oh-my-claude|omc
     model: <model-id>        # model for this agent type
     interactive: <bool>      # run the agent's own TUI on a PTY
+    claude:
+      theme: <theme>         # dark | light | dark-ansi | light-ansi | dark-colorblind | light-colorblind
+    workspace:
+      mode: <isolated|shared>
+      fresh_rootfs: <bool>
+    workdir: <path>          # guest working directory
     agent_config:            # inline agent-native config files
       .omo/omo.jsonc: |
         { "[native]": { "model_profile": "openrouter/deepseek/deepseek-v4.1-flash-1017" } }
@@ -243,7 +257,7 @@ env:
   DATABASE_URL: ${DATABASE_URL}
 ```
 
-All environment variables are encrypted before entering the VM. See [Secrets Management](/docs/security/secrets) for details.
+Values are resolved on the host and injected into the guest at boot; they are not written to the sandbox state. See [Secrets Management](/docs/security/secrets) for details.
 
 If a referenced host variable is not set, sandbox creation **fails with an error**.
 
@@ -320,7 +334,7 @@ mounts:
 | `host` | string | *(required)* | Host directory path |
 | `container` | string | *(required)* | Mount point inside the sandbox |
 | `readonly` | boolean | `false` | Mount as read-only |
-| `type` | string | `bind` | Mount type: `bind` or `virtiofs` |
+| `type` | string | `bind` | Mount type: `bind`, `virtiofs`, or `tmpfs` (`tmpfs` ignores `host`) |
 
 Per-sandbox mounts **replace** defaults mounts entirely (no merge).
 
@@ -406,6 +420,9 @@ Controls what the agent can do without asking for confirmation.
 | `accept_edits` | Auto-accepts file edits, asks for other operations |
 | `allow_all` | Fully autonomous, no confirmation |
 
+The kebab-case spellings `accept-edits` and `allow-all` (used by the CLI flag)
+are also accepted.
+
 The concrete CLI flag differs per agent and is applied in both interactive and
 headless modes:
 
@@ -440,6 +457,28 @@ sandboxes:
     env:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
 ```
+
+### workspace
+
+Controls how the host project is shared with the sandbox.
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `mode` | string | `isolated` | `isolated` works on a host-owned clone (review changes before applying); `shared` mounts the source directory read-write (legacy) |
+| `fresh_rootfs` | boolean | `false` | Give each boot a CoW clone of the rootfs |
+
+### workdir
+
+Guest working directory for the agent command. Defaults to the guest home
+(`/home/developer`); `nanosb run --workdir` overrides it for a single run.
+
+### claude
+
+Claude Code UI settings.
+
+| Key | Type | Description |
+|---|---|---|
+| `theme` | string | `dark`, `light`, `dark-ansi`, `light-ansi`, `dark-colorblind`, or `light-colorblind` |
 
 ### agent_config
 

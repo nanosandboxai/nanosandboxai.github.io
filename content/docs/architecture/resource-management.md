@@ -14,6 +14,8 @@ Nanosandbox separates two ideas that are easy to conflate:
 Requests describe one sandbox. The budget protects the host. Both apply to every
 front door: the TUI, `nanosb run`, `nanosb apply`, and the headless supervisor.
 
+Full variable reference: [Environment Variables](../cli/environment.md).
+
 ## Per-sandbox requests
 
 | Setting | Unit | Default | Meaning |
@@ -23,6 +25,11 @@ front door: the TUI, `nanosb run`, `nanosb apply`, and the headless supervisor.
 | `timeout` | seconds | 600 | Maximum sandbox lifetime before it is stopped |
 | `disk` | MB | 0 (unlimited) | Disk quota for the sandbox state dir + rootfs |
 | `max_pids` | processes | 0 (runtime default 512) | Guest process cap (fork-bomb guard) |
+
+The `2 / 4096 / 600` defaults are the `nanosb run` flag defaults. A
+`sandbox.yml` entry that omits a value uses the runtime defaults (`1` CPU,
+`512` MB, unlimited timeout), and a `type:` agent supplies its per-agent compute
+defaults (see [Configuration → Compute Defaults](../cli/configuration.md#compute-defaults)).
 
 Set them in three places, in precedence order (highest first):
 

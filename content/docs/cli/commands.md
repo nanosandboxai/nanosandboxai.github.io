@@ -42,37 +42,37 @@ List images cached locally.
 nanosb images
 ```
 
-Displays image name, tag, size, and pull date for every cached image.
-
-**Examples:**
-
-```bash
-nanosb images
-nanosb images --format json
-```
+Displays image name, tag, size, and pull date for every cached image. Use the
+global `--format json` flag for machine-readable output.
 
 ## nanosb run
 
 Run a command inside a new sandbox.
 
 ```bash
-nanosb run <image> [cmd]
+nanosb run <image> [cmd...]
 ```
 
-Creates a sandbox from the specified image and executes `cmd`. If `cmd` is omitted, the image's default entrypoint is used.
+Creates a sandbox from the specified image and executes `cmd`. If `cmd` is
+omitted, the image's default entrypoint is used.
 
 | Flag | Description |
 |---|---|
 | `--name <name>` | Name for the sandbox (optional) |
 | `--cpus <n>` | CPU cores (default: 2) |
 | `--memory <mb>` | Memory in MB (default: 4096) |
+| `-e KEY=VALUE` | Inject an environment variable (repeatable) |
+| `--env-file <path>` | Load env vars from a file (single file; the global `--env-file` is repeatable) |
+| `-p, --port <spec>` | Forward a host port to the guest: `HOST:GUEST` or `PORT` (repeatable) |
 | `--timeout <secs>` | Maximum runtime in seconds (default: 600) |
 | `--disk <mb>` | Per-sandbox disk quota in MB (default: 0 = unlimited) |
 | `--max-pids <n>` | Guest process cap (default: 0 = 512) |
-| `-e KEY=VALUE` | Inject environment variable (repeatable) |
-| `--env-file <path>` | Load env vars from file (single file; use the global `--env-file` flag for multiple files) |
 | `--run-as-root` | Run the agent command as root inside the guest (default: non-root user) |
-| `--buffered` | Buffer output instead of streaming (useful with `--format json`) |
+| `--user <user>` | Run the guest command as this user (UID, UID:GID, or username) |
+| `--home <path>` | Guest home directory (default: `/home/<user>`) |
+| `--workdir <path>` | Guest working directory (default: the guest home) |
+| `--exec` | Enable the host↔guest exec channel so `nanosb exec` can attach later |
+| `-f, --follow` | Stream the sandbox console to stdout (like `tail -f`) |
 
 **Examples:**
 
@@ -83,38 +83,52 @@ nanosb run claude
 # Run a specific command
 nanosb run claude "echo hello"
 
-# Run with resource limits and env vars
+# Resource limits and env vars
 nanosb run --cpus 4 --memory 8192 -e ANTHROPIC_API_KEY=sk-... claude
 
-# Name the sandbox
-nanosb run --name my-claude claude
+# Name the sandbox and forward Claude's OAuth callback port
+nanosb run --name my-claude -p 1455 claude
 
-# Run as root inside the guest (system package installs, etc.)
+# Keep the exec channel open for later `nanosb exec`
+nanosb run --exec --name dev alpine sleep infinity
+
+# Run as root inside the guest (system package installs)
 nanosb run --run-as-root claude "apt-get install -y graphviz"
 ```
 
-> **About `--run-as-root`.** By default the agent runs as a non-root user inside the guest (typically `uid 1000`) because some agents — for example Claude Code — refuse to start as root. `--run-as-root` overrides that. It is useful when a workflow needs root inside the guest to write outside the user-owned tree (for example system package installs or build scripts that touch `/etc`). Keep the default off unless a specific workflow requires it.
+> **`--exec` is opt-in.** `nanosb exec` can only attach to a sandbox that was
+> started with `--exec`; the exec agent is injected and a host socket is created
+> under `~/.nanosandbox/sandboxes/<name>/exec.sock`.
+
+> **About `--run-as-root`.** By default the agent runs as a non-root user inside
+> the guest (typically `uid 1000`) because some agents — for example Claude Code
+> — refuse to start as root. `--run-as-root` overrides that. It is useful when a
+> workflow needs root inside the guest to write outside the user-owned tree (for
+> example system package installs or build scripts that touch `/etc`). Keep the
+> default off unless a specific workflow requires it.
 
 ## nanosb exec
 
-Execute a command in a running sandbox.
+Execute a command in a running sandbox. The sandbox must have been started with
+`nanosb run --exec`.
 
 ```bash
-nanosb exec <sandbox> <cmd>
+nanosb exec [flags] <sandbox> <cmd...>
 ```
-
-The `<sandbox>` argument is the sandbox name or ID returned by `nanosb ps`.
 
 | Flag | Description |
 |---|---|
-| `--buffered` | Buffer output instead of streaming |
+| `--shell` | Run through `/bin/sh -c` (interpret shell syntax) |
+| `-t, --tty` | Allocate a PTY for interactive programs (implies streaming) |
+| `-f, --follow` | Stream output as it is produced |
 
 **Examples:**
 
 ```bash
 nanosb exec my-sandbox "ls /home/developer"
 nanosb exec my-sandbox "cat /tmp/output.log"
-nanosb exec --buffered my-sandbox "npm test"
+nanosb exec --shell my-sandbox "npm test && echo done"
+nanosb exec -t my-sandbox "bash"
 ```
 
 ## nanosb ps
@@ -127,22 +141,10 @@ nanosb ps [-a]
 
 | Flag | Description |
 |---|---|
-| `-a` | Show all sandboxes, including stopped ones |
+| `-a, --all` | Show all sandboxes, including stopped ones |
 
-By default only running sandboxes are listed. Use `-a` to include stopped and exited sandboxes.
-
-**Examples:**
-
-```bash
-# List running sandboxes
-nanosb ps
-
-# List all sandboxes
-nanosb ps -a
-
-# JSON output
-nanosb ps -a --format json
-```
+By default only running sandboxes are listed. Use `-a` to include stopped and
+exited sandboxes.
 
 ## nanosb stop
 
@@ -152,69 +154,37 @@ Stop a running sandbox.
 nanosb stop <sandbox>
 ```
 
-Sends a graceful shutdown signal. The sandbox process is given time to exit before being forcefully terminated.
-
-**Examples:**
-
-```bash
-nanosb stop my-sandbox
-```
-
 ## nanosb pause
 
-Pause a running sandbox by freezing the guest. The microVM keeps its state and
-`exec` calls stall until it is resumed.
+Freeze a running sandbox.
 
 ```bash
 nanosb pause <sandbox>
 ```
 
-**Examples:**
-
-```bash
-nanosb pause my-sandbox
-```
-
 ## nanosb resume
 
-Resume a paused sandbox.
+Thaw a paused sandbox.
 
 ```bash
 nanosb resume <sandbox>
 ```
 
-**Examples:**
-
-```bash
-nanosb resume my-sandbox
-```
-
 ## nanosb restart
 
-Re-boot a sandbox while keeping its name and state directory.
+Restart a sandbox from its saved config (recreate).
 
 ```bash
-nanosb restart <sandbox>
+nanosb restart <sandbox> [--allow-no-env]
 ```
-
-A running sandbox is restarted in place (same supervisor and control socket, a
-new VM process). A stopped sandbox is started again from its persisted spec. If
-the engine cannot serve the restart, the CLI falls back to respawning the
-supervisor from `deploy.json` and says so.
 
 | Flag | Description |
 |---|---|
-| `--allow-no-env` | Fall back to booting without re-resolved env/secrets |
-
-**Examples:**
-
-```bash
-nanosb restart my-sandbox
-```
+| `--allow-no-env` | Restart even when env/secrets cannot be re-resolved (boots keyless) |
 
 ## nanosb rm
 
-Remove a sandbox.
+Remove a sandbox. Alias: `nanosb delete`.
 
 ```bash
 nanosb rm [-f] <sandbox>
@@ -222,110 +192,107 @@ nanosb rm [-f] <sandbox>
 
 | Flag | Description |
 |---|---|
-| `-f` | Force removal, even if the sandbox is still running |
+| `-f, --force` | Force removal (stop it first if running) |
 
-A sandbox must be stopped before removal unless `-f` is provided.
+## nanosb logs
 
-**Examples:**
+View a sandbox's console logs.
 
 ```bash
-# Remove a stopped sandbox
-nanosb rm my-sandbox
+nanosb logs <sandbox> [--tail <bytes>] [-f]
+```
 
-# Force-remove a running sandbox
-nanosb rm -f my-sandbox
+| Flag | Description |
+|---|---|
+| `--tail <bytes>` | Show only the last N bytes |
+| `-f, --follow` | Follow the log (like `tail -f`) |
+
+## nanosb attach
+
+Attach to a sandbox console.
+
+```bash
+nanosb attach <sandbox>
+```
+
+## nanosb apply
+
+Apply a `sandbox.yml` manifest declaratively (create or recreate sandboxes).
+
+```bash
+nanosb apply [-f <file|dir>] [--prune] [--force] [--dry-run] [--sandbox <name>]
+```
+
+| Flag | Description |
+|---|---|
+| `-f, --file <path>` | Path to `sandbox.yml` or a directory containing one (default: `sandbox.yml`) |
+| `--prune` | Delete sandboxes that are no longer in the manifest |
+| `--force` | Recreate sandboxes even when their config is unchanged |
+| `--dry-run` | Show what would change without applying |
+| `--sandbox <name>` | Apply only the named sandbox |
+
+## nanosb describe
+
+Show a sandbox's state, resolved config, and mounts.
+
+```bash
+nanosb describe <sandbox>
 ```
 
 ## nanosb doctor
 
-Check that all runtime prerequisites are satisfied.
+Check runtime prerequisites.
 
 ```bash
 nanosb doctor
 ```
 
-Verifies the host environment: kernel support, runtime availability, network connectivity to the default registry, and any other dependencies required by `nanosb`.
-
-**Examples:**
-
-```bash
-nanosb doctor
-nanosb doctor --format json
-```
+Exits non-zero when a required check fails, so it can be wired into CI. Use
+`--format json` for machine-readable output. See
+[Doctor Command](../troubleshooting/doctor-command.md).
 
 ## nanosb capacity
 
-Show detected host capacity, the resolved admission budget, and current resource usage.
+Show host capacity, the admission budget, and current resource usage.
 
 ```bash
 nanosb capacity
-nanosb capacity --format json
 ```
 
-Prints host CPU/RAM/disk, the admission budget (auto-derived, or from the
-`NANOSB_MAX_VMS` / `NANOSB_MEMORY_BUDGET_MB` / `NANOSB_CPU_BUDGET` /
-`NANOSB_DISK_BUDGET_MB` / `NANOSB_SANDBOX_DISK_MB` environment variables),
-aggregate usage across live supervisors and in-flight spawn reservations, and a
-per-sandbox list. Admission control is enabled by default and can be disabled
-with `NANOSB_ADMISSION=off`.
+Use `--format json` for machine-readable output. See
+[Resource Management](../architecture/resource-management.md).
 
 ## nanosb cleanup
 
-Clean up stale project clones.
+Clean up stale project clones and list `nanosb` branches.
 
 ```bash
-nanosb cleanup [--project PATH]
+nanosb cleanup [--project <path>] [--dry-run]
 ```
 
 | Flag | Description |
 |---|---|
-| `--project <path>` | Limit cleanup to a specific project directory |
-
-Removes temporary project clones that are no longer associated with a running sandbox.
-
-**Examples:**
-
-```bash
-# Clean all stale clones
-nanosb cleanup
-
-# Clean clones for a specific project
-nanosb cleanup --project ./my-repo
-```
+| `--project <path>` | Project directory (defaults to the current directory) |
+| `--dry-run` | Show what would be cleaned without removing anything |
 
 ## nanosb sessions
 
-List saved TUI sessions for a project.
+List saved sessions for a project.
 
 ```bash
-nanosb sessions [--project PATH]
+nanosb sessions [--project <path>]
 ```
 
 | Flag | Description |
 |---|---|
-| `--project <path>` | List sessions for a specific project directory (defaults to current directory) |
+| `--project <path>` | Project directory (defaults to the current directory) |
 
-Shows session id, last updated time, panel count, and summary.
-
-**Examples:**
-
-```bash
-# List sessions for current project
-nanosb sessions
-
-# List sessions for another project
-nanosb sessions --project ~/work/my-repo
-
-# Resume latest from listed sessions
-nanosb -r
-
-# Resume a specific session id
-nanosb --session 20260509121030-ab12cd34
-```
+Resume a session with the global `-r`/`--resume` (most recent) or
+`--session <id>` flags.
 
 ## nanosb cache prune
 
-Reclaim disk space by removing unused cached data.
+Remove unused cache data to reclaim disk space.
 
 ```bash
 nanosb cache prune [--all]
@@ -333,16 +300,52 @@ nanosb cache prune [--all]
 
 | Flag | Description |
 |---|---|
-| `--all` | Remove all cached data, not just unreferenced layers |
+| `--all` | Remove ALL cached data including blobs (full cache reset) |
 
-Without `--all`, only dangling and unreferenced layers are pruned.
+## nanosb projects
 
-**Examples:**
+List registered projects.
 
 ```bash
-# Prune unreferenced cache entries
-nanosb cache prune
-
-# Prune everything
-nanosb cache prune --all
+nanosb projects
 ```
+
+## nanosb projects-forget
+
+Remove a project from the registry.
+
+```bash
+nanosb projects-forget <path>
+```
+
+## nanosb gc
+
+Reclaim disk: dead supervisor directories, unreferenced clones, and expired
+sessions.
+
+```bash
+nanosb gc [--dry-run]
+```
+
+| Flag | Description |
+|---|---|
+| `--dry-run` | Show what would be removed without deleting anything |
+
+## nanosb supervise
+
+Spawn a supervisor for a `SandboxSpec` in the caller's process tree. This is the
+host/shim entrypoint used by the cloud node agent and containerd shim; local
+users normally run `nanosb run` or the TUI.
+
+```bash
+nanosb supervise --name <name> --spec <spec.json|-> [--foreground]
+```
+
+| Flag | Description |
+|---|---|
+| `--name <name>` | Sandbox name |
+| `--spec <path>` | Path to a `SandboxSpec` JSON file, or `-` to read stdin |
+| `--foreground` | Keep the supervisor in the caller's process tree (do not daemonize) |
+
+In detached mode it prints the child supervisor pid and returns immediately.
+With `--foreground` it owns and reaps the supervisor as a child of the caller.

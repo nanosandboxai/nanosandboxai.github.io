@@ -63,19 +63,12 @@ Skills are available from two sources: the **public registry** (community-mainta
 | `documentation` | Documentation writing guidelines | docs, writing |
 | `security-best-practices` | Security-focused development practices | security, best-practices |
 
-## Config vs Commands
+## Declarative configuration
 
-> **sandbox.yml** and **TUI commands** are two ways to manage skills. They behave differently:
->
-> | | `sandbox.yml` | TUI `/skills add` |
-> |---|---|---|
-> | **When applied** | Every time the sandbox starts (bootstrap) | Immediately, once |
-> | **Source tag** | `config` | `runtime` |
-> | **On sandbox restart** | Re-applied from config (always fresh) | Preserved — survives restarts |
-> | **On sandbox.yml change** | Old config skills replaced with new ones | Untouched — runtime skills kept |
-> | **Persisted where** | In your `sandbox.yml` file | In `~/.nanosandbox/state.json` inside the VM |
->
-> **In short:** `sandbox.yml` is your declarative baseline. TUI commands are for ad-hoc additions that persist alongside the config without interfering with it. If a config skill and a runtime skill share the same name, the config version wins on next bootstrap.
+> Skill configuration is **declarative**: list skills in `sandbox.yml` and run
+> `nanosb apply` (or restart the sandbox). The TUI only lists them
+> (`/skills`, `/skills list`, `/skills show`); there are no `/skills add` or
+> `/skills remove` commands.
 
 ## Configuring Skills in sandbox.yml
 
@@ -104,47 +97,19 @@ Per-sandbox skills **replace** defaults skills (they are not merged). In this ex
 
 Skills defined in `sandbox.yml` are tagged as **config-sourced**. They are re-applied on every bootstrap (sandbox restart).
 
-## Using Skills in TUI
-
-The TUI provides slash commands for managing skills interactively:
+## Using Skills in the TUI
 
 ```text
-/skills list                              List all available skills
-/skills add <name>                        Add a skill to the focused sandbox
-/skills add --all <name>                  Add a skill to all sandboxes
-/skills add --sandbox <name> <skill>      Add a skill to a specific sandbox
-/skills remove <name>                     Remove a skill from the focused sandbox
-/skills remove --all <name>               Remove a skill from all sandboxes
-/skills show <name>                       Show the content of a skill
+/skills             List skills configured in sandbox.yml
+/skills list        Same as /skills
+/skills show <name> Show a skill's details
 ```
 
-### Example Session
-
-```bash
-$ nanosb
-
-# Inside the TUI, in any panel:
-/skills list
-# NAME                     DESCRIPTION
-# git-workflow              Git workflow best practices...
-# code-review               Code review practices...
-# tdd                       Test-driven development...
-# documentation             Documentation writing guidelines
-# security-best-practices   Security-focused development...
-
-/skills add git-workflow
-# Added skill: git-workflow
-
-/skills add --all tdd
-# Added skill 'tdd' to all sandboxes
-
-/skills show git-workflow
-# (displays the full markdown content of the skill)
-```
+To change skills, edit `sandbox.yml`, run `nanosb apply`, then `/reconnect`.
 
 ## How Skills Work
 
-When a skill is added to a sandbox, nanosb generates agent-specific config files. Each agent reads skills in a different format:
+When a sandbox declares skills in `sandbox.yml`, nanosb generates agent-specific config files. Each agent reads skills in a different format:
 
 | Agent | Skill Format | Location |
 |---|---|---|
@@ -169,18 +134,12 @@ Files the user places in the mounted project directory (default `/home/developer
 
 Both layers are read by the agent — they complement each other.
 
-## Source Tracking: Config vs Runtime
+## Lifecycle
 
-Skills have a **source** that determines their lifecycle:
-
-| Source | Origin | Survives bootstrap? |
-|---|---|---|
-| `config` | Defined in `sandbox.yml` | Replaced with fresh version on every bootstrap |
-| `runtime` | Added via TUI (`/skills add`) | Preserved across bootstrap cycles |
-
-When you modify `sandbox.yml` and restart, config-sourced skills are refreshed from the new config, but runtime-added skills (from TUI) are preserved. This means you can add skills interactively without losing them on restart.
-
-State is persisted in the sandbox's per-agent state mounts (generated host-side from the sandbox configuration), which survive VM restarts.
+Skills are configuration: they are regenerated from `sandbox.yml` on every
+`nanosb apply` or restart. The TUI only lists them; it cannot add or remove
+skills at runtime. State lives in the sandbox's per-agent state mounts, which
+persist across VM restarts.
 
 ## Skill Sources
 

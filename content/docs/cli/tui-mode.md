@@ -119,7 +119,7 @@ Type a slash command in any active panel to control the TUI.
 `/add` syntax:
 
 ```bash
-/add <agent> [--tag <version>] [--model <model>] [--auto-mode -p <prompt>] [--image <image>] [--project <path>] [--branch <name>] [--name <name>] [--permissions <default|accept-edits|allow-all>] [--env-file <path>] [--use-env <KEY>]...
+/add <agent> [--tag <version>] [--model <model>] [--auto-mode -p <prompt>] [--image <image>] [--project <path>] [--branch <name>] [--name <name>] [--timeout <secs>] [--permissions <default|accept-edits|allow-all>] [--env-file <path>] [--use-env <KEY>]... [--run-as-root]
 ```
 
 `/add` options:
@@ -132,6 +132,7 @@ Type a slash command in any active panel to control the TUI.
 | `--project <path>` | Mount a specific project directory for this panel. |
 | `--branch <name>` | Set project clone branch name for this panel. |
 | `--name <name>` | Set a custom sandbox name. |
+| `--timeout <secs>` | Set the sandbox timeout for this panel. |
 | `--env-file <path>` | Load `KEY=VALUE` pairs from a file for this panel only. |
 | `--auto-mode` | Start in headless autonomous mode. |
 | `-p`, `--prompt <prompt>` | Prompt text for autonomous mode. Required with `--auto-mode`; it consumes the rest of the command line. |
@@ -253,9 +254,9 @@ Set both explicitly to use a different model.
 
 | Command | Description |
 |---|---|
-| `/agent show` | Show current agent definition |
+| `/agent` | Show the current agent definition |
 | `/agent list` | List available agents |
-| `/agent set` | Set the agent for the focused panel |
+| `/agent show <name>` | Show an agent's details |
 | `/env` | Set or list environment variables for the focused panel |
 
 ### MCP Servers
@@ -263,46 +264,53 @@ Set both explicitly to use a different model.
 | Command | Description |
 |---|---|
 | `/mcp` | Toggle the MCP sidebar |
-| `/mcp list` | List configured MCP servers |
-| `/mcp add <name> <command> [args...]` | Add an MCP server to the focused sandbox |
-| `/mcp add --all <name> <command> [args...]` | Add an MCP server to all sandboxes |
-| `/mcp add --sandbox <name> <server> <cmd> [args...]` | Add to a specific sandbox |
-| `/mcp remove <name>` | Remove an MCP server from the focused sandbox |
-| `/mcp remove --all <name>` | Remove from all sandboxes |
-| `/mcp enable <name>` | Enable a disabled MCP server |
-| `/mcp disable <name>` | Disable an MCP server |
+| `/mcp list` | List MCP servers configured in `sandbox.yml` |
+
+> MCP configuration is **declarative**: edit `sandbox.yml` and run `nanosb apply`.
+> The TUI only lists it; there are no `/mcp add` or `/mcp remove` commands.
 
 ### Skills
 
 | Command | Description |
 |---|---|
-| `/skills` | Toggle the skills sidebar |
-| `/skills list` | List available skills |
-| `/skills add <name>` | Add a skill to the focused sandbox |
-| `/skills add --all <name>` | Add a skill to all sandboxes |
-| `/skills add --sandbox <name> <skill>` | Add to a specific sandbox |
-| `/skills remove <name>` | Remove a skill from the focused sandbox |
-| `/skills remove --all <name>` | Remove from all sandboxes |
-| `/skills show <name>` | Show the content of a skill |
+| `/skills` or `/skills list` | List skills configured in `sandbox.yml` |
+| `/skills show <name>` | Show a skill's details |
+
+> Skill configuration is **declarative**: edit `sandbox.yml` and run `nanosb apply`.
+> The TUI only lists it; there are no `/skills add` or `/skills remove` commands.
 
 ### Git & Files
 
 | Command | Description |
 |---|---|
-| `/gitsync` | Show git sync status |
-| `/gitsync on` | Enable automatic git sync |
-| `/gitsync off` | Disable automatic git sync |
-| `/gitsync now` | Trigger a manual git sync |
+| `/sync [--dry-run] [on\|off\|now]` | Sync agent changes to `refs/nanosb/<id>` (alias: `/gitsync`) |
+| `/diff [--stat]` | Show agent changes vs the base commit |
+| `/status` | Show the clone branch, dirty files, and sync state |
+| `/discard` | Reset the clone to its base commit |
+| `/apply [--force]` | Fast-forward-merge agent commits into your branch |
 | `/branches` | List git branches created by nanosb sandboxes |
-| `/upload <host-path>` | Upload a file from the host into the sandbox VM |
-| `/paste-image` | Paste an image from the system clipboard into the sandbox VM |
+
+> Paste a clipboard image or file path with `Ctrl+V` (or `Cmd+V`) in a panel;
+> there are no `/upload` or `/paste-image` slash commands.
+
+### Sandbox & Files
+
+| Command | Description |
+|---|---|
+| `/exec <command>` | Run a command in the sandbox via the exec channel |
+| `/logs [n]` | Show the sandbox console log tail |
+| `/mounts` | Show the focused panel's mounts |
+| `/disk` | Show nanosb state disk usage |
+| `/gc [--dry-run]` | Reclaim disk (dead dirs, orphan clones) |
 
 ### Session & UI
 
 | Command | Description |
 |---|---|
-| `/sandboxes` | Toggle the sandbox sidebar |
-| `/edit [tool]` | Open clone directory in an external tool |
+| `/sandboxes` | Toggle the sandbox sidebar (alias `/sb`) |
+| `/project [n\|path]` | Switch the active project (or list projects) |
+| `/projects` | List registered projects |
+| `/projects forget <path>` | Remove a project from the registry |
 | `/theme [name]` | Switch or list TUI colour themes |
 | `/clearhistory` | Clear the command history |
 | `/help` | Show help text |
@@ -364,15 +372,29 @@ nanosb stop <sandbox>
 
 ## Command History
 
-The TUI maintains a command history per panel. Use the up and down arrow keys to navigate previous commands within a Terminal-mode panel.
+The TUI maintains a command history in the input bar. Use the up and down arrow
+keys to navigate previous commands.
 
 ## Keyboard Reference
 
 | Key | Action |
 |---|---|
-| `Tab` | Switch to the next agent tab |
-| `Shift+Tab` | Switch to the previous agent tab |
-| `Ctrl+C` | Send interrupt to the focused sandbox |
-| `Ctrl+D` | Detach from the focused panel (switches to Headless mode) |
-| `/` | Begin a slash command |
-| Up / Down | Navigate command history (Terminal mode) |
+| `Tab` | Switch to the next panel |
+| `Shift+Tab` | Switch to the previous panel |
+| `Ctrl+F` | Toggle zoom for the focused panel |
+| `Ctrl+G` | Focus the global input bar |
+| `Ctrl+V` (or `Cmd+V`) | Paste a clipboard image or file path into the focused panel |
+| `Esc` | Dismiss a popup/autocomplete, return to the global bar, or close the MCP sidebar |
+| `Shift+Enter` or `Alt+Enter` | Insert a newline in the command input |
+| Up / Down | Navigate command history |
+| `/` | Start a slash command in the global input |
+
+In the **global input bar**, `Ctrl+C` clears the current input.
+
+In a **terminal panel**, keystrokes are forwarded to the guest: `Ctrl+C`
+interrupts the running command, `Ctrl+D` sends EOF, and
+`Shift+PageUp`/`Shift+PageDown`/`Shift+Home`/`Shift+End` scroll the terminal
+history.
+
+In a **headless panel**, `Up`/`Down` or `j`/`k` scroll the output,
+`PageUp`/`PageDown` scroll a page, and `Home`/`End` jump to the start/live view.

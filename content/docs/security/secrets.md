@@ -1,10 +1,10 @@
 ---
 title: "Secrets Management"
-description: "Encrypted secrets pipeline for AI agent sandboxes"
+description: "How secrets are resolved and injected into agent sandboxes"
 order: 4
 ---
 
-Nanosandbox encrypts all environment variables before they enter the VM. Every value, whether declared in `env:`, passed via `--env`, or loaded from an `env_file`, is encrypted on the host and decrypted only inside the guest. Credentials are never exposed in plaintext outside the agent process.
+Nanosandbox resolves environment variables on the host and injects them into the guest at boot without writing them to the sandbox config or state files. Provider values become process environment variables of the agent inside a disposable VM.
 
 ## Configuration
 
@@ -20,25 +20,47 @@ sandboxes:
       CUSTOM_FLAG: "true"
 ```
 
-All values are encrypted before transmission to the VM. If a referenced host variable is not set, sandbox creation fails with an error.
+Resolved values are injected at boot (see [How secrets reach the VM](#how-secrets-reach-the-vm)) and are never written to the sandbox state on disk. If a referenced host variable is not set, sandbox creation fails with an error.
 
 Environment variables can also be injected at runtime via the `-e` flag or `--env-file` flag. These take precedence over values defined in `sandbox.yml`.
 
-In TUI mode, env values loaded from `./.env` and `/add --env-file` follow the same encrypted pipeline. See [Global Flags](/docs/cli/global-flags#env-precedence) for env source resolution order.
+In TUI mode, env values loaded from `./.env` and `/add --env-file` follow the same host-side resolution and boot-env injection. See [Global Flags](/docs/cli/global-flags#env-precedence) for env source resolution order.
 
-## Encryption Pipeline
+## How secrets reach the VM
 
-The encryption pipeline uses modern cryptographic primitives to protect secrets in transit between the host and the VM.
+Environment values are resolved on the host at deploy time. `${VAR}` references
+read the host environment; values passed with `-e`, a sandbox `env_file`, or a
+TUI env source are included too. A referenced host variable that is not set
+fails sandbox creation.
 
-A fresh X25519 keypair is generated for each sandbox session. The host encrypts environment variables using the gateway's public key with AES-256-GCM authenticated encryption. The encrypted payload is transmitted to the gateway inside the VM, which decrypts it using the corresponding private key. Decrypted values are injected into agent processes via the operating system's process environment mechanism, never through shell export or `.env` files on disk.
+Resolved values are passed to the supervisor out-of-band in its boot
+environment (`NANOSB_BOOT_ENV`) and injected into the guest at boot with
+`krun_set_env`. They are deliberately **not** written into the sandbox's
+`config.json`/`deploy.json`, so they never land on disk in the sandbox state
+directory. Inside the guest they are ordinary process environment variables of
+the agent process.
 
-After decryption, key material is zeroed in memory immediately. The keypair is ephemeral and is destroyed when the sandbox shuts down.
+Legacy gateway images: for images that still ship the in-VM `agent-gateway`,
+the SDK can encrypt the payload with an ephemeral X25519 keypair and
+AES-256-GCM and let the gateway decrypt it in the guest. Current next-mode agent
+images use the boot-env/`krun_set_env` path above.
 
-## Security Guarantees
+## Security guarantees
 
-All environment variables are encrypted in transit between the host and the VM. A fresh keypair is generated for each sandbox session, so compromising one session does not affect others. Secrets are injected at the process level via `execve`, which means they never appear in shell history, `.env` files, or process command lines. Private key material is zeroed in memory immediately after decryption to minimize the window of exposure.
+- **No secrets in `sandbox.yml`** — configuration carries `${VAR}` references,
+  not values.
+- **No secrets in sandbox state** — the resolved boot env is not written to
+  `config.json`, `deploy.json`, or logs.
+- **Process-level injection** — secrets are environment variables of the agent
+  process, not shell exports or `.env` files written inside the guest.
+- **`/proc` is mounted with `hidepid=2`**, so other guest processes cannot read
+  the agent's environment.
+- **Disposable lifetime** — the VM and its secrets exist only for the sandbox
+  session.
 
-Inside the VM, the `/proc` filesystem is mounted with `hidepid=2`, which prevents processes from reading other processes' environment variables. This ensures that even within the VM, secrets are only visible to the agent process that owns them.
+Prefer `env_file`, a `.env` reference, or the TUI env flow over `-e KEY=VALUE`:
+command-line arguments can be captured in shell history or process listings.
+Treat the host account as part of the trust boundary.
 
 ## Best Practices
 

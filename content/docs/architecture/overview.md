@@ -1,33 +1,75 @@
 ---
 title: "Architecture Overview"
-description: "How nanosb builds a sandbox across macOS and Linux"
+description: "How nanosb builds and runs a sandbox across macOS and Linux"
 order: 1
 ---
 
-## How a Sandbox Is Built
+## Components
 
-Nanosandbox uses the same high-level flow on every host OS. The CLI starts a microVM through `libkrun`, the platform hypervisor provides hardware isolation, and a Linux guest kernel runs the workload.
+| Layer | Component | Role |
+|---|---|---|
+| Host | `nanosb` CLI/TUI | User surface; builds a deploy plan and spawns the supervisor |
+| Host | supervisor (`nanosb __supervise`, or `nanosb supervise --foreground`) | Owns one sandbox: state, console, exec channel, lifecycle |
+| Host | `nanosb-runtime` helper | Protocol endpoint the language SDKs talk to; starts a supervisor |
+| Host | `runtime` crate + libkrun | Boots the microVM through the platform hypervisor |
+| Host | gvproxy | User-space networking (TSI by default, optional bridge) |
+| Guest | exec-agent | PID 1 in next mode; serves exec, filesystem, console and streams |
+| Guest | agent process | The coding agent (Claude, Codex, OmO, …) |
+| Guest | project + state mounts | The mounted project and per-agent state directories |
 
-```mermaid
-graph LR
-    A["nanosb CLI"] --> B["libkrun"]
-    B --> C["Host hypervisor\n(HVF / KVM)"]
-    C --> D["Isolated microVM\nLinux guest kernel"]
-    D --> E["Agent runtime + project workspace"]
-```
+The runtime state root is `~/.nanosandbox` (`NANOSB_HOME`): sandbox state,
+console logs, sockets, bundles and guest binaries live there.
 
-This keeps the isolation boundary consistent while still using each platform's native virtualization backend.
+## Boot and lifecycle
 
-## Workspace Sharing Across Platforms
+1. The CLI/TUI/helper writes a deploy plan and spawns the supervisor.
+2. The supervisor pulls the image, extracts the rootfs, starts gvproxy, and
+   hands the VM to libkrun (`krun_*` FFI).
+3. The guest init mounts the project and per-agent state virtio-fs devices,
+   configures the guest network, and starts the exec agent.
+4. The sandbox reaches `running`; `nanosb ps`/`status` report the state and pid.
 
-Your project directory is mounted into the sandbox so the agent can read and edit files directly.
+States are `starting → running → (stopped | error)`; a terminal state carries an
+exit code. `restart` re-boots in place on the same sandbox identity, `pause`
+freezes the guest and `resume` thaws it, and `stop`/`kill` tear the VM down.
+Each supervisor persists a `state.json` in its sandbox directory.
+
+## Networking
+
+`gvproxy` provides user-space networking so the guest needs no host bridge:
+
+- **TSI** (default) — user-mode TCP/IP; outbound networking works without host
+  configuration. Set `network.mode: bridge` for a host bridge.
+- **Scope** — `any` (default), `public`, `group`, or `none` controls egress.
+- **Ports/DNS** — `network.ports` forwards host ports to the guest;
+  `network.dns` overrides resolvers.
+
+Agent OAuth callbacks that bind `localhost` are forwarded from the host browser
+into the guest through gvproxy.
+
+## Workspace sharing
+
+Your project directory is mounted into the sandbox so the agent can read and
+edit files directly. The default mount point is the guest home
+(`/home/developer`); `project.mount_point`/`--project` can change it.
 
 | Platform | Workspace mount | Permissions behavior | Extended attributes | Directory listings |
 | --- | --- | --- | --- | --- |
 | macOS | virtio-fs (direct) | POSIX-style | Supported | Stable |
 | Linux | virtio-fs (direct) | POSIX-style | Supported | Stable |
 
-For most users, this means package installs, builds, tests, and normal project cleanup work the same way on macOS and Linux.
+In the default `workspace.mode: isolated`, the agent works on a host-owned
+clone; changes are reviewed and applied explicitly (`/diff`, `/apply`,
+`/sync`). `workspace.mode: shared` mounts the source directory read-write for
+legacy workflows.
+
+## Isolation boundary
+
+The guest runs its own Linux kernel inside a libkrun microVM on Apple
+Hypervisor.framework (macOS) or KVM (Linux). The agent cannot see other
+sandboxes or the host filesystem outside the mounts it was given. See
+[Security Overview](../security/overview.md) and
+[Resource Management](./resource-management.md) for the host admission model.
 
 ## Related Reading
 

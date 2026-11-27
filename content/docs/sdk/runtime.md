@@ -44,6 +44,10 @@ The runtime is controlled by environment variables:
 | `NANOSB_OFFLINE`        | Set to `1` to disable download/install; fail if the runtime is not already present |
 | `NANOSB_PROVISIONER`    | Path to an explicit `ensure-runtime.sh` provisioner                         |
 | `NANOSB_RUNTIME_BIN`    | Path to an existing `nanosb-runtime` helper (skips discovery)               |
+| `NANOSB_VERIFY_COSIGN`  | Set to `1` to verify the cosign signature when `cosign` is installed        |
+
+The complete list across the CLI and SDKs is in
+[Environment Variables](../cli/environment.md).
 
 ## Offline / air-gapped usage
 

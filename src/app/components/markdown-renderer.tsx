@@ -69,6 +69,27 @@ interface MarkdownRendererProps {
   variant?: 'default' | 'docs'
 }
 
+function resolveDocHref(href: string, basePath?: string): string {
+  if (!basePath || !href) return href
+  if (href.startsWith('#') || href.startsWith('/') || href.startsWith('http') || href.startsWith('mailto:')) {
+    return href
+  }
+  const [rawPath, hash] = href.split('#')
+  if (!rawPath.endsWith('.md')) return href
+  const baseDir = basePath.split('/').slice(0, -1).join('/')
+  const segments = [...(baseDir ? baseDir.split('/') : []), ...rawPath.split('/')]
+  const out: string[] = []
+  for (const segment of segments) {
+    if (!segment || segment === '.') continue
+    if (segment === '..') out.pop()
+    else out.push(segment)
+  }
+  const last = out.pop()
+  if (!last) return href
+  out.push(last.endsWith('.md') ? last.slice(0, -3) : last)
+  return `/docs/${out.join('/')}${hash ? `#${hash}` : ''}`
+}
+
 function createComponents(basePath?: string, variant: 'default' | 'docs' = 'default'): Components {
   const docs = variant === 'docs'
   return {
@@ -100,22 +121,17 @@ function createComponents(basePath?: string, variant: 'default' | 'docs' = 'defa
         </h3>
       )
     },
-    h4: ({ children }) => (
-      <h4 className="text-base font-bold text-[var(--text-secondary)] mt-4 mb-2 font-mono">{children}</h4>
-    ),
+    h4: ({ children }) => {
+      const id = slugify(extractTextFromChildren(children))
+      return (
+        <h4 id={id} className="text-base font-bold text-[var(--text-secondary)] mt-4 mb-2 font-mono">{children}</h4>
+      )
+    },
     p: ({ children }) => (
       <p className={`text-[var(--text-secondary)] mb-4 ${docs ? 'text-[14.5px] leading-7' : 'text-sm leading-relaxed'}`}>{children}</p>
     ),
     a: ({ href, children }) => {
-      let resolvedHref = href ?? ''
-
-      // Fix relative .md links in docs: ./foo.md -> /docs/section/foo
-      if (resolvedHref.startsWith('./') && resolvedHref.endsWith('.md') && basePath) {
-        const section = basePath.split('/')[0]
-        const target = resolvedHref.slice(2, -3) // strip ./ and .md
-        resolvedHref = `/docs/${section}/${target}`
-      }
-
+      const resolvedHref = resolveDocHref(href ?? '', basePath)
       const isExternal = resolvedHref.startsWith('http')
       return (
         <a

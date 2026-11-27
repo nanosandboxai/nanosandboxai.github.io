@@ -176,15 +176,23 @@ nanosb run -e OPENAI_API_KEY=$OPENAI_API_KEY oh-my-codex
 nanosb run -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY oh-my-claude
 ```
 
-### How the oh-my-* agents are launched
+### How agents are launched
 
 The TUI's `/add` and `sandbox.yml` share one command builder, so the same
 invocation is used whether you start from the TUI or the CLI:
 
-| Agent type | Interactive | Headless (`--headless -p "…"`) |
+| Agent | Interactive | Headless (`--headless -p "…"`) |
 |---|---|---|
+| Claude Code | `claude` | `claude --print <prompt> --verbose --output-format stream-json --include-partial-messages` |
+| Codex | `codex` | `codex exec --skip-git-repo-check --json <prompt>` |
+| Goose | `goose session` | `goose run --text <prompt>` |
+| Cursor | `cursor-agent` | `cursor-agent --message <prompt>` |
+| OpenCode | `opencode` | `opencode run <prompt>` |
+| Aider | `aider` | `aider --message <prompt> --yes --no-auto-commits` |
+| Gemini CLI | `gemini` | `gemini -p <prompt>` |
+| Crush | `crush` | `crush run <prompt>` |
 | `oh-my-openagent` | `omo` | `omo -p --no-session "<prompt>"` |
-| `oh-my-codex` | `omx` | `omx exec --skip-git-repo-check --json "<prompt>"` |
+| `oh-my-codex` | `omx --direct` | `omx exec --skip-git-repo-check --json "<prompt>"` |
 | `oh-my-claude` | `omc launch` | `omc ask claude "<prompt>"` |
 
 Permission flags follow the same `--permissions` levels as the built-in agents,
@@ -256,7 +264,7 @@ The `oh-my-*` agents have no browser sign-in flow, so the TUI blocks `/add` for
 them until one of their credentials is present (see
 [Prerequisite validation](/docs/cli/tui-mode#prerequisite-validation)).
 
-API keys are injected into the sandbox as environment variables. All environment variables are encrypted before entering the VM and are never written to disk inside the guest. See [Secrets Management](/docs/security/secrets) for details.
+API keys are injected into the sandbox as environment variables. Values are resolved on the host and injected at boot; they are not written to the sandbox state on disk. See [Secrets Management](/docs/security/secrets) for details.
 
 When adding an agent in the TUI with `/add`, these requirements are validated
 **before** the sandbox is created. Most built-in agents support **browser
@@ -344,7 +352,7 @@ git log --oneline -10
 The TUI provides slash commands for managing agents interactively:
 
 ```text
-/agent show      Show current agent definition
+/agent           Show the current agent definition
 /agent list      List available agents
-/agent set       Set the agent for the focused panel
+/agent show <name>  Show an agent's details
 ```

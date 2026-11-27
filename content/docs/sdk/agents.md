@@ -13,14 +13,22 @@ sandbox.
 | Agent | Image | Headless command | Environment |
 |---|---|---|---|
 | Claude Code | `ghcr.io/nanosandboxai/nanosandbox/claude:latest` | `claude --print "<prompt>"` | `ANTHROPIC_API_KEY` |
-| Codex | `ghcr.io/nanosandboxai/nanosandbox/codex:latest` | `codex exec --skip-git-repo-check --json "<prompt>" < /dev/null` | `CODEX_API_KEY` (and `OPENAI_API_KEY`) |
+| Codex | `ghcr.io/nanosandboxai/nanosandbox/codex:latest` | `codex exec --skip-git-repo-check --json "<prompt>" < /dev/null` | `OPENAI_API_KEY` and `CODEX_API_KEY` (API-key auth) |
 | Gemini CLI | `ghcr.io/nanosandboxai/nanosandbox/gemini:latest` | `gemini -p "<prompt>"` | `GEMINI_API_KEY` |
 | Goose | `ghcr.io/nanosandboxai/nanosandbox/goose:latest` | `goose run --text "<prompt>"` | `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` |
 | Aider | `ghcr.io/nanosandboxai/nanosandbox/aider:latest` | `aider --message "<prompt>" --yes --no-auto-commits` | provider key |
 | OpenCode | `ghcr.io/nanosandboxai/nanosandbox/opencode:latest` | `opencode run "<prompt>"` | provider key |
 | Crush | `ghcr.io/nanosandboxai/nanosandbox/crush:latest` | `crush run "<prompt>"` | provider key |
+| Cursor | `ghcr.io/nanosandboxai/nanosandbox/cursor:latest` | `cursor-agent --message "<prompt>"` | browser sign-in (no key declared) |
+| Oh-My-OpenAgent | `ghcr.io/nanosandboxai/nanosandbox/oh-my-openagent:latest` | `omo -p --no-session "<prompt>"` | `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `OPENROUTER_API_KEY` |
+| Oh-My-Codex | `ghcr.io/nanosandboxai/nanosandbox/oh-my-codex:latest` | `omx exec --skip-git-repo-check --json "<prompt>"` | `OPENAI_API_KEY` or `CODEX_API_KEY` |
+| Oh-My-Claude | `ghcr.io/nanosandboxai/nanosandbox/oh-my-claude:latest` | `omc ask claude "<prompt>"` | `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` |
 
-All images are published under `ghcr.io/nanosandboxai/nanosandbox/`.
+All images are published under `ghcr.io/nanosandboxai/nanosandbox/`. The built-in
+sandbox adds Claude's `--verbose --output-format stream-json
+--include-partial-messages` flags for structured events; `claude --print` alone
+returns plain text. Codex waits for stdin when it is not a TTY, so redirect it
+from `/dev/null`.
 
 ## Codex (verified)
 

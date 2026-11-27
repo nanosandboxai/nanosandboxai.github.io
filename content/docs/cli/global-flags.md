@@ -23,6 +23,8 @@ These flags can be used with any `nanosb` subcommand.
 | `--permissions <level>` | string | `default` | Agent permission level: `default`, `accept-edits`, or `allow-all`. |
 | `-e KEY=VALUE` | string (repeatable) | *(none)* | Inject an environment variable into the sandbox. Can be specified multiple times. |
 | `--env-file <path>` | string (repeatable) | *(none)* | Load environment variables from a file. Can be specified multiple times. |
+| `-r, --resume` | boolean | `false` | Resume the most recent saved session for this project. Conflicts with `--session`. |
+| `--session <id>` | string | *(none)* | Resume a specific saved session id from history. |
 
 ## Repeatable Flags
 
