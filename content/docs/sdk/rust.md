@@ -1,7 +1,7 @@
 ---
 title: "Rust SDK"
 description: "Install the Rust SDK and run a microVM sandbox"
-order: 3
+order: 4
 ---
 
 # Rust SDK
@@ -29,7 +29,12 @@ fn main() -> Result<()> {
     let rt = ManagedRuntime::start().unwrap();
     let client = SandboxClient::connect(rt.socket())?;
     let sandbox = client
-        .create_with(SandboxBuilder::new("library/alpine:latest").name("demo"))?;
+        .create_with(
+            SandboxBuilder::new("library/alpine:latest")
+                .name("demo")
+                .cpus(1)
+                .memory_mb(512),
+        )?;
 
     sandbox.start()?;
     let out = sandbox.exec("echo", &["hello from a microVM"])?;
@@ -50,6 +55,26 @@ hello from a microVM
 `ManagedRuntime::start()` locates or provisions `nanosb-runtime`,
 `sandbox.remove(true)` stops and deletes the sandbox, and dropping `rt` shuts
 the helper down.
+
+## Headless code agent
+
+Use a coding-agent image and its headless command instead of Alpine. Full table
+and a verified Codex example: [Headless Code Agents](./agents.md). With the
+`client` from the quickstart:
+
+```rust
+let sandbox = client.create_with(
+    SandboxBuilder::new("ghcr.io/nanosandboxai/nanosandbox/claude:latest")
+        .name("claude-agent")
+        .env("ANTHROPIC_API_KEY", std::env::var("ANTHROPIC_API_KEY").unwrap())
+        .cpus(2)
+        .memory_mb(2048),
+)?;
+sandbox.start()?;
+let out = sandbox.exec("claude", &["--print", "Reply with exactly: ok"])?;
+print!("{}", out.stdout);
+sandbox.remove(true)?;
+```
 
 ## Errors
 

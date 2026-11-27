@@ -1,7 +1,7 @@
 ---
 title: "Python SDK"
 description: "Install the Python SDK and run a microVM sandbox"
-order: 4
+order: 5
 ---
 
 # Python SDK
@@ -28,7 +28,7 @@ from nanosandbox import ManagedRuntime, SandboxBuilder, SandboxClient
 with ManagedRuntime() as rt:
     client = SandboxClient.connect(str(rt.socket))
     box = client.create_with(
-        SandboxBuilder("library/alpine:latest").with_name("demo")
+        SandboxBuilder("library/alpine:latest").with_name("demo").with_resources(1, 512)
     )
     box.start()
 
@@ -45,6 +45,26 @@ hello from a microVM
 
 `ManagedRuntime()` starts the helper and the context manager closes it;
 `box.remove(force=True)` stops and deletes the sandbox.
+
+## Headless code agent
+
+Use a coding-agent image and its headless command instead of Alpine. Full table
+and a verified Codex example: [Headless Code Agents](./agents.md). With the
+`client` from the quickstart:
+
+```python
+import os
+
+box = client.create_with(
+    SandboxBuilder("ghcr.io/nanosandboxai/nanosandbox/claude:latest")
+    .with_name("claude-agent")
+    .with_env("ANTHROPIC_API_KEY", os.environ["ANTHROPIC_API_KEY"])
+    .with_resources(2, 2048)
+)
+box.start()
+print(box.exec("claude", ["--print", "Reply with exactly: ok"])["stdout"], end="")
+box.remove(force=True)
+```
 
 ## Errors
 

@@ -69,3 +69,6 @@ helper, boots an Alpine microVM, runs a command, and cleans up:
 The common shape is: start `ManagedRuntime` → connect `SandboxClient` → create
 and start a sandbox → exec → remove the sandbox → close the runtime. Full API
 reference lives in each SDK's README under `sdk/<lang>/` in the repository.
+
+To run a real coding agent instead of Alpine — Claude, Codex, Gemini, and
+others — see [Headless Code Agents](./agents.md).

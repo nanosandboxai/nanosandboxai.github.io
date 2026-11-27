@@ -1,7 +1,7 @@
 ---
 title: "Ruby SDK"
 description: "Install the Ruby SDK and run a microVM sandbox"
-order: 7
+order: 8
 ---
 
 # Ruby SDK
@@ -29,7 +29,7 @@ require "nanosandbox/runtime"
 Nanosandbox::ManagedRuntime.open do |rt|
   client = Nanosandbox::SandboxClient.connect(rt.socket)
   box = client.create(
-    Nanosandbox::SandboxBuilder.new("library/alpine:latest").with_name("demo").build
+    Nanosandbox::SandboxBuilder.new("library/alpine:latest").with_name("demo").with_resources(1, 512).build
   )
   box.start
 
@@ -47,6 +47,24 @@ hello from a microVM
 
 `ManagedRuntime.open` starts the helper and closes it when the block exits;
 `box.remove(true)` stops and deletes the sandbox.
+
+## Headless code agent
+
+Use a coding-agent image and its headless command instead of Alpine. Full table
+and a verified Codex example: [Headless Code Agents](./agents.md). With the
+`client` from the quickstart:
+
+```ruby
+box = client.create(
+  Nanosandbox::SandboxBuilder.new("ghcr.io/nanosandboxai/nanosandbox/claude:latest")
+    .with_name("claude-agent")
+    .with_env("ANTHROPIC_API_KEY", ENV.fetch("ANTHROPIC_API_KEY"))
+    .with_resources(2, 2048).build
+)
+box.start
+print box.exec("claude", ["--print", "Reply with exactly: ok"])["stdout"]
+box.remove(true)
+```
 
 ## Errors
 

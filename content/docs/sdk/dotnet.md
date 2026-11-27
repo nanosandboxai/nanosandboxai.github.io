@@ -1,7 +1,7 @@
 ---
 title: "C#/.NET SDK"
 description: "Install the C#/.NET SDK and run a microVM sandbox"
-order: 10
+order: 11
 ---
 
 # C#/.NET SDK
@@ -28,7 +28,7 @@ using System.Collections.Generic;
 
 using var rt = ManagedRuntime.start();
 var client = SandboxClient.connect(rt.Socket);
-var box = client.createWith(new SandboxBuilder("library/alpine:latest").withName("demo"));
+var box = client.createWith(new SandboxBuilder("library/alpine:latest").withName("demo").withResources(1, 512));
 
 box.start();
 Console.Write(box.exec("echo", new List<string> { "hello from a microVM" }).str("stdout"));
@@ -43,6 +43,23 @@ hello from a microVM
 
 `ManagedRuntime` is `IDisposable`, so `using var` stops the helper at the end of
 the program; `box.remove(true)` stops and deletes the sandbox.
+
+## Headless code agent
+
+Use a coding-agent image and its headless command instead of Alpine. Full table
+and a verified Codex example: [Headless Code Agents](./agents.md). With the
+`client` from the quickstart:
+
+```csharp
+var box = client.createWith(
+    new SandboxBuilder("ghcr.io/nanosandboxai/nanosandbox/claude:latest")
+        .withName("claude-agent")
+        .withEnv("ANTHROPIC_API_KEY", Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY"))
+        .withResources(2, 2048));
+box.start();
+Console.Write(box.exec("claude", new List<string> { "--print", "Reply with exactly: ok" }).str("stdout"));
+box.remove(true);
+```
 
 ## Errors
 

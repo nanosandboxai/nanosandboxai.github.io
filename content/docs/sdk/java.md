@@ -1,7 +1,7 @@
 ---
 title: "Java SDK"
 description: "Install the Java SDK and run a microVM sandbox"
-order: 8
+order: 9
 ---
 
 # Java SDK
@@ -47,7 +47,7 @@ public class Demo {
     try (ManagedRuntime rt = ManagedRuntime.start()) {
       SandboxClient client = SandboxClient.connect(rt.socket.toString());
       Sandbox sandbox = client.createWith(
-          new SandboxBuilder("library/alpine:latest").withName("demo"));
+          new SandboxBuilder("library/alpine:latest").withName("demo").withResources(1, 512));
       sandbox.start();
 
       System.out.print(sandbox.exec("echo", new String[]{"hello from a microVM"}).getStr("stdout"));
@@ -66,6 +66,23 @@ hello from a microVM
 
 `ManagedRuntime` is `AutoCloseable`, so try-with-resources stops the helper;
 `sandbox.remove(true)` stops and deletes the sandbox.
+
+## Headless code agent
+
+Use a coding-agent image and its headless command instead of Alpine. Full table
+and a verified Codex example: [Headless Code Agents](./agents.md). With the
+`client` from the quickstart:
+
+```java
+Sandbox box = client.createWith(
+    new SandboxBuilder("ghcr.io/nanosandboxai/nanosandbox/claude:latest")
+        .withName("claude-agent")
+        .withEnv("ANTHROPIC_API_KEY", System.getenv("ANTHROPIC_API_KEY"))
+        .withResources(2, 2048));
+box.start();
+System.out.print(box.exec("claude", new String[]{"--print", "Reply with exactly: ok"}).getStr("stdout"));
+box.remove(true);
+```
 
 ## Errors
 

@@ -1,7 +1,7 @@
 ---
 title: "TypeScript SDK"
 description: "Install the TypeScript/Node SDK and run a microVM sandbox"
-order: 5
+order: 6
 ---
 
 # TypeScript SDK
@@ -28,9 +28,9 @@ import { ManagedRuntime, SandboxBuilder, SandboxClient } from "nanosandbox-sdk";
 
 const rt = await ManagedRuntime.start();
 try {
-  const client = SandboxClient.connect(rt.socket);
-  const box = client.create(
-    new SandboxBuilder("library/alpine:latest").withName("demo").build(),
+  const client = await SandboxClient.connect(rt.socket);
+  const box = await client.create(
+    new SandboxBuilder("library/alpine:latest").withName("demo").withResources(1, 512).build(),
   );
   await box.start();
 
@@ -51,6 +51,26 @@ hello from a microVM
 
 `ManagedRuntime.start()` starts the helper, `await rt.close()` stops it, and
 `await box.remove(true)` stops and deletes the sandbox.
+
+## Headless code agent
+
+Use a coding-agent image and its headless command instead of Alpine. Full table
+and a verified Codex example: [Headless Code Agents](./agents.md). With the
+`client` from the quickstart:
+
+```javascript
+const box = await client.create(
+  new SandboxBuilder("ghcr.io/nanosandboxai/nanosandbox/claude:latest")
+    .withName("claude-agent")
+    .withEnv("ANTHROPIC_API_KEY", process.env.ANTHROPIC_API_KEY)
+    .withResources(2, 2048)
+    .build(),
+);
+await box.start();
+const out = await box.exec("claude", ["--print", "Reply with exactly: ok"]);
+process.stdout.write(out.stdout);
+await box.remove(true);
+```
 
 ## Errors
 

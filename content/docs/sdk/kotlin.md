@@ -1,7 +1,7 @@
 ---
 title: "Kotlin SDK"
 description: "Install the Kotlin SDK and run a microVM sandbox"
-order: 9
+order: 10
 ---
 
 # Kotlin SDK
@@ -36,6 +36,8 @@ fun main() {
         val spec = KtJson.obj()
         spec.set("image", KtJson.str("library/alpine:latest"))
         spec.set("name", KtJson.str("demo"))
+        spec.set("cpus", KtJson.num(1))
+        spec.set("memory_mb", KtJson.num(512))
 
         val box = client.create(spec)
         box.start()
@@ -57,6 +59,28 @@ hello from a microVM
 
 Kotlin reuses the Java SDK's `ManagedRuntime`; `finally { rt.close() }` stops the
 helper and `box.remove(true)` stops and deletes the sandbox.
+
+## Headless code agent
+
+Use a coding-agent image and its headless command instead of Alpine. Full table
+and a verified Codex example: [Headless Code Agents](./agents.md). With the
+`client` from the quickstart:
+
+```kotlin
+val spec = KtJson.obj()
+spec.set("image", KtJson.str("ghcr.io/nanosandboxai/nanosandbox/claude:latest"))
+spec.set("name", KtJson.str("claude-agent"))
+spec.set("cpus", KtJson.num(2.0))
+spec.set("memory_mb", KtJson.num(2048.0))
+val env = KtJson.obj()
+env.set("ANTHROPIC_API_KEY", KtJson.str(System.getenv("ANTHROPIC_API_KEY")))
+spec.set("env", env)
+
+val box = client.create(spec)
+box.start()
+print(box.exec("claude", arrayOf("--print", "Reply with exactly: ok")).getStr("stdout"))
+box.remove(true)
+```
 
 ## Errors
 

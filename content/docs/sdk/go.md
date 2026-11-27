@@ -1,7 +1,7 @@
 ---
 title: "Go SDK"
 description: "Install the Go SDK and run a microVM sandbox"
-order: 6
+order: 7
 ---
 
 # Go SDK
@@ -46,7 +46,9 @@ func main() {
 	}
 
 	box, err := client.CreateWith(
-		nanosandbox.NewSandboxBuilder("library/alpine:latest").WithName("demo"),
+		nanosandbox.NewSandboxBuilder("library/alpine:latest").
+			WithName("demo").
+			WithResources(1, 512),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -76,6 +78,38 @@ hello from a microVM
 
 `StartRuntime` starts the helper, `defer rt.Close()` stops it, and
 `box.Remove(true)` stops and deletes the sandbox.
+
+## Headless code agent
+
+Use a coding-agent image and its headless command instead of Alpine. Full table
+and a verified Codex example: [Headless Code Agents](./agents.md). With the
+`client` from the quickstart:
+
+```go
+box, err := client.CreateWith(
+    nanosandbox.NewSandboxBuilder("ghcr.io/nanosandboxai/nanosandbox/claude:latest").
+        WithName("claude-agent").
+        WithEnv("ANTHROPIC_API_KEY", os.Getenv("ANTHROPIC_API_KEY")).
+        WithResources(2, 2048),
+)
+if err != nil {
+    log.Fatal(err)
+}
+if err := box.Start(); err != nil {
+    log.Fatal(err)
+}
+out, err := box.Exec("claude", []string{"--print", "Reply with exactly: ok"})
+if err != nil {
+    log.Fatal(err)
+}
+stdout, _ := out.Str("stdout")
+fmt.Print(stdout)
+if err := box.Remove(true); err != nil {
+    log.Fatal(err)
+}
+```
+
+Add `os` to the import block for `os.Getenv`.
 
 ## Errors
 
