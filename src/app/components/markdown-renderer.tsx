@@ -147,7 +147,7 @@ function createComponents(basePath?: string, variant: 'default' | 'docs' = 'defa
       const isInline = !className
       if (isInline) {
         return (
-          <code className="bg-[var(--bg-elevated)] text-[var(--accent)] px-1.5 py-0.5 text-xs font-mono border border-[var(--border-secondary)]">
+          <code className="bg-[var(--bg-elevated)] text-[var(--accent)] px-1.5 py-0.5 text-xs font-mono border border-[var(--border-secondary)] [overflow-wrap:anywhere]">
             {children}
           </code>
         )
