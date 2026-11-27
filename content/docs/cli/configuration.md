@@ -30,7 +30,6 @@ sandboxes:
     image: claude
     type: claude
     model: claude-sonnet-4-5-20250929
-    agent: rust-developer
     permissions: accept_edits
     env:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
@@ -70,7 +69,7 @@ The `defaults` section sets baseline values applied to every sandbox unless over
 | `mounts` | list | Host directory mounts (see [mounts](#mounts)) |
 | `mcp` | map | MCP server definitions (see [mcp](#mcp)) |
 | `project` | object | Project directory configuration (see [project](#project)) |
-| `agent` | string | Agent definition name from the agents registry (`python-developer`, `rust-developer`, `react-developer`, `devops-engineer`; see [Agents Overview](../agents/overview.md#agent-definitions-roles)) |
+| `agent` | string | Optional agent definition name from a local registry |
 | `skills` | list | Skill names to load (see [skills](#skills)) |
 | `auto_mode` | boolean | Run the agent fully autonomously (default: `false`) |
 | `interactive` | boolean | Run the agent interactively on a TTY (default: `false`); mutually exclusive with `auto_mode` |

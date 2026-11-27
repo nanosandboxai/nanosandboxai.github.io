@@ -34,36 +34,6 @@ built-in agents.
 > License 1.0 (source-available, non-commercial), not an OSI license. Review the
 > upstream terms before commercial use. `oh-my-codex` and `oh-my-claude` are MIT.
 
-## Agent definitions (roles)
-
-`type:` selects the agent **CLI** (one of the 11 images above). `agent:` selects
-an **agent definition** from the agents registry — a persona prompt plus skills
-and MCP servers applied on top of the CLI.
-
-| Definition | Description | Skills | MCP servers |
-|---|---|---|---|
-| `python-developer` | Senior Python developer following PEP8 and modern best practices | git-workflow, tdd, code-review, security-best-practices | server-github, context7 |
-| `rust-developer` | Rust developer focused on safety, performance, and idiomatic code | git-workflow, tdd, code-review, security-best-practices, documentation | server-github, context7 |
-| `react-developer` | React/TypeScript developer building accessible, performant UIs | git-workflow, tdd, code-review, security-best-practices | server-github, context7 |
-| `devops-engineer` | DevOps engineer specializing in CI/CD, containers, and infrastructure | git-workflow, code-review, security-best-practices, documentation | server-github, context7 |
-
-Use a definition in `sandbox.yml`:
-
-```yaml
-sandboxes:
-  api:
-    type: claude
-    image: claude
-    agent: python-developer
-    env:
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-```
-
-The definitions are read from the agents registry (`index.json`): set
-`NANOSB_REGISTRY_PATH` to a local clone or install it at
-`~/.nanosandbox/registries`. The same definitions are available in the TUI's
-`/agent list` and `/agent show <name>` commands.
-
 ## Base Image
 
 All agent images are built on a common base:
