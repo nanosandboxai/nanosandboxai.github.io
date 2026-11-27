@@ -1,7 +1,7 @@
 ---
 title: "Headless Code Agents"
 description: "Run Claude, Codex, and other coding agents headlessly from an SDK"
-order: 3
+order: 4
 ---
 
 # Headless Code Agents

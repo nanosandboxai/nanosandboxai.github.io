@@ -1,7 +1,7 @@
 ---
 title: "Kotlin SDK"
 description: "Install the Kotlin SDK and run a microVM sandbox"
-order: 10
+order: 11
 ---
 
 # Kotlin SDK
@@ -84,8 +84,24 @@ box.remove(true)
 
 ## Errors
 
-The JVM `NanosbError` is shared with the Java SDK; use `code()` and
-`isNotFound()`.
+The JVM `NanosbError` is shared with the Java SDK; branch on `code()` and
+re-throw unknown errors. See [Error Codes](./errors.md) for the full table and
+retry policy.
+
+```kotlin
+import nanosandbox.NanosbError
+
+try {
+    box.exec("echo", arrayOf("hi"))
+} catch (e: NanosbError) {
+    when (e.code()) {
+        "not_found" -> println("sandbox was removed")
+        "invalid_state" -> println("sandbox is stopped or paused")
+        "timeout", "transport" -> throw e // retry with backoff
+        else -> throw e
+    }
+}
+```
 
 ## Runtime and API reference
 

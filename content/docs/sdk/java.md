@@ -1,7 +1,7 @@
 ---
 title: "Java SDK"
 description: "Install the Java SDK and run a microVM sandbox"
-order: 9
+order: 10
 ---
 
 # Java SDK
@@ -86,14 +86,25 @@ box.remove(true);
 
 ## Errors
 
-Calls throw `NanosbError`; use `code()` and `isNotFound()`.
+Calls throw `NanosbError`; branch on `code()` and re-throw unknown errors.
+See [Error Codes](./errors.md) for the full table and retry policy.
 
 ```java
 try {
-  client.get("missing");
+  box.exec("echo", new String[]{"hi"});
 } catch (NanosbError err) {
-  if (err.isNotFound()) {
-    System.out.println("no such sandbox");
+  switch (err.code()) {
+    case "not_found":
+      System.out.println("sandbox was removed");
+      break;
+    case "invalid_state":
+      System.out.println("sandbox is stopped or paused");
+      break;
+    case "timeout":
+    case "transport":
+      throw err; // retry with backoff
+    default:
+      throw err;
   }
 }
 ```

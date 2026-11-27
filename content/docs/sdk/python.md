@@ -1,7 +1,7 @@
 ---
 title: "Python SDK"
 description: "Install the Python SDK and run a microVM sandbox"
-order: 5
+order: 6
 ---
 
 # Python SDK
@@ -68,17 +68,26 @@ box.remove(force=True)
 
 ## Errors
 
-Calls raise `NanosbError`; use `err.code` and `err.is_not_found()` to branch on
-protocol errors.
+Calls raise `NanosbError` with a stable `code`; never swallow an unknown one.
+See [Error Codes](./errors.md) for the full table and retry policy.
 
 ```python
 from nanosandbox import NanosbError
 
 try:
-    client.get("missing")
+    out = box.exec("echo", ["hi"])
 except NanosbError as err:
-    if err.is_not_found():
-        print("no such sandbox")
+    if err.code == "not_found":
+        print("sandbox was removed")
+    elif err.code == "invalid_state":
+        print("sandbox is stopped or paused")
+    elif err.code in ("timeout", "transport"):
+        raise  # retry the idempotent call with backoff
+    else:
+        raise
+else:
+    if out["exit_code"] != 0:
+        print(out["stderr"])
 ```
 
 ## Runtime and API reference

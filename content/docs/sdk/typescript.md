@@ -1,7 +1,7 @@
 ---
 title: "TypeScript SDK"
 description: "Install the TypeScript/Node SDK and run a microVM sandbox"
-order: 6
+order: 7
 ---
 
 # TypeScript SDK
@@ -74,17 +74,21 @@ await box.remove(true);
 
 ## Errors
 
-Calls throw `NanosbError`; branch on `err.code` and `err.isNotFound()`.
+Calls throw `NanosbError` with a stable `code`; re-throw unknown errors.
+See [Error Codes](./errors.md) for the full table and retry policy.
 
 ```javascript
 import { NanosbError } from "nanosandbox-sdk";
 
 try {
-  client.get("missing");
+  const out = await box.exec("echo", ["hi"]);
+  if (out.exit_code !== 0) console.error(out.stderr);
 } catch (err) {
-  if (err instanceof NanosbError && err.isNotFound()) {
-    console.log("no such sandbox");
-  }
+  if (!(err instanceof NanosbError)) throw err;
+  if (err.code === "not_found") console.log("sandbox was removed");
+  else if (err.code === "invalid_state") console.log("sandbox is stopped or paused");
+  else if (err.code === "timeout" || err.code === "transport") throw err; // retry
+  else throw err;
 }
 ```
 

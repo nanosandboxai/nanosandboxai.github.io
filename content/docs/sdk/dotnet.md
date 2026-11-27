@@ -1,7 +1,7 @@
 ---
 title: "C#/.NET SDK"
 description: "Install the C#/.NET SDK and run a microVM sandbox"
-order: 11
+order: 12
 ---
 
 # C#/.NET SDK
@@ -63,16 +63,34 @@ box.remove(true);
 
 ## Errors
 
-Calls throw `NanosbError`; use `errorCode` and `isNotFound()`.
+Calls throw `NanosbError`; branch on `errorCode` and re-throw unknown errors.
+See [Error Codes](./errors.md) for the full table and retry policy.
 
 ```csharp
 try
 {
-    client.get("missing");
+    var outv = box.exec("echo", new List<string> { "hi" });
+    if (outv.intVal("exit_code") != 0)
+    {
+        Console.Error.WriteLine(outv.str("stderr"));
+    }
 }
-catch (NanosbError err) when (err.isNotFound())
+catch (NanosbError err)
 {
-    Console.WriteLine("no such sandbox");
+    switch (err.errorCode)
+    {
+        case "not_found":
+            Console.WriteLine("sandbox was removed");
+            break;
+        case "invalid_state":
+            Console.WriteLine("sandbox is stopped or paused");
+            break;
+        case "timeout":
+        case "transport":
+            throw; // retry with backoff
+        default:
+            throw;
+    }
 }
 ```
 

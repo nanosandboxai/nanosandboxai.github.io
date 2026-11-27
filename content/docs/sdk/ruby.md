@@ -1,7 +1,7 @@
 ---
 title: "Ruby SDK"
 description: "Install the Ruby SDK and run a microVM sandbox"
-order: 8
+order: 9
 ---
 
 # Ruby SDK
@@ -68,14 +68,21 @@ box.remove(true)
 
 ## Errors
 
-Calls raise `Nanosandbox::NanosbError`; branch on `err.code` and
-`err.is_not_found?`.
+Calls raise `Nanosandbox::NanosbError`; branch on `code` and re-raise unknown
+errors. See [Error Codes](./errors.md) for the full table and retry policy.
 
 ```ruby
 begin
-  client.get("missing")
+  out = box.exec("echo", ["hi"])
 rescue Nanosandbox::NanosbError => err
-  puts "no such sandbox" if err.is_not_found?
+  case err.code
+  when "not_found"    then puts "sandbox was removed"
+  when "invalid_state" then puts "sandbox is stopped or paused"
+  when "timeout", "transport" then raise # retry the idempotent call
+  else raise
+  end
+else
+  puts out["stderr"] if out["exit_code"] != 0
 end
 ```
 

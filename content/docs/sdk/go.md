@@ -1,7 +1,7 @@
 ---
 title: "Go SDK"
 description: "Install the Go SDK and run a microVM sandbox"
-order: 7
+order: 8
 ---
 
 # Go SDK
@@ -113,13 +113,31 @@ Add `os` to the import block for `os.Getenv`.
 
 ## Errors
 
-Protocol errors are `*nanosandbox.NanosbError`; use `errors.As` and
-`err.IsNotFound()`.
+Protocol errors are `*nanosandbox.NanosbError`; use `errors.As` and re-throw
+unknown errors. See [Error Codes](./errors.md) for the full table and retry
+policy.
 
 ```go
-var ne *nanosandbox.NanosbError
-if errors.As(err, &ne) && ne.IsNotFound() {
-    fmt.Println("no such sandbox")
+out, err := box.Exec("echo", []string{"hi"})
+if err != nil {
+    var ne *nanosandbox.NanosbError
+    if errors.As(err, &ne) {
+        switch ne.Code {
+        case "not_found":
+            fmt.Println("sandbox was removed")
+        case "invalid_state":
+            fmt.Println("sandbox is stopped or paused")
+        case "timeout", "transport":
+            fmt.Printf("retryable: %v\n", err)
+        default:
+            log.Fatal(err)
+        }
+    } else {
+        log.Fatal(err)
+    }
+} else if code, _ := out.Int("exit_code"); code != 0 {
+    stderr, _ := out.Str("stderr")
+    fmt.Println(stderr)
 }
 ```
 

@@ -1,7 +1,7 @@
 ---
 title: "Rust SDK"
 description: "Install the Rust SDK and run a microVM sandbox"
-order: 4
+order: 5
 ---
 
 # Rust SDK
@@ -78,9 +78,22 @@ sandbox.remove(true)?;
 
 ## Errors
 
-Client calls return `nanosandbox_sdk::Result<T>` with
-`nanosandbox_sdk::Error`; use `?` as in the example, or handle the error
-explicitly.
+Client calls return `nanosandbox_sdk::Result<T>`. Branch on the stable code and
+return unknown errors. See [Error Codes](./errors.md) for the full table and
+retry policy.
+
+```rust
+match sandbox.exec("echo", &["hi"]) {
+    Ok(out) if out.exit_code != 0 => eprintln!("agent failed: {}", out.stderr),
+    Ok(_) => {}
+    Err(err) if err.is_not_found() => println!("sandbox was removed"),
+    Err(err) => match err.code().map(|c| c.as_str()) {
+        Some("invalid_state") => println!("sandbox is stopped or paused"),
+        Some("timeout") | Some("transport") => { /* retry with backoff */ }
+        _ => return Err(err),
+    },
+}
+```
 
 ## Runtime and API reference
 
