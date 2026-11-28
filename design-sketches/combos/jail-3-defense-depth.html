@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Defense in Depth</title>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="jail.css">
+</head>
+<body>
+<main class="container">
+  <section class="box inv">
+    <h2>Defense in Depth</h2>
+    <p class="muted" style="margin:0 0 14px;max-width:76ch">Assume the agent is smart and gets lucky. It sprints at the bars and bounces off. Then a guest exploit bends the bars, but the guest-kernel force field stops it. Then a kernel exploit drops the field, and it slams into the hypervisor dome, which holds. Then <span class="head">nanosb rm</span> rebuilds everything fresh.</p>
+    <div class="stage3d" id="st">
+      <div class="hud"><div class="ttl">threat model · claude in vm-a1f3</div><div class="hud-log"></div></div>
+      <div class="score"><span>layers breached <b id="br">0</b>/3</span><span class="esc">escapes <b>0</b></span></div>
+      <div class="steps3d" id="steps"><span>L2 bars</span><span>L3 guest kernel</span><span>L1 hypervisor</span><span>nanosb rm</span></div>
+      <span class="tip">drag to orbit · scroll to zoom</span>
+    </div>
+  </section>
+  <section class="box"><h2>Where it goes</h2><p class="muted" style="margin:0">The "Scroll Through the Walls" section (Combo B) or docs/architecture. It shows the honest security story: no single layer has to be perfect, and the hardware boundary is the one that matters.</p></section>
+</main>
+<script src="base.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="jail-kit.js"></script>
+<script>
+NS.chrome();
+const el = document.getElementById('st');
+if (!window.THREE || !THREE.OrbitControls) { el.insertAdjacentHTML('beforeend', '<div class="nogl">3D needs WebGL and the three.js CDN. The scene could not load here.</div>'); }
+else {
+const S = NSJ.stage(el, { cam: [9, 7, 11], target: [0, 1.2, 0], rotSpeed: 0.3, fogNear: 22, fogFar: 50, minD: 8, maxD: 30 });
+const { scene, camera } = S, C = NSJ.C, V = (x, y, z) => new THREE.Vector3(x, y, z);
+const ground = new THREE.Mesh(new THREE.CircleGeometry(16, 64), NSJ.mat(0x050607, { r: 1 })); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+const grid = new THREE.PolarGridHelper(6.5, 16, 6, 64, 0x2a2f36, 0x1f2329); grid.position.y = 0.01; scene.add(grid);
+// L2: ring of bars
+const R1 = 1.7, R2 = 3.4, R3 = 5.6, barMat = NSJ.mat(C.steel, { r: 0.3, m: 0.85 }), bars = [];
+for (let i = 0; i < 28; i++) { const a = (i / 28) * Math.PI * 2, b = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.6, 8), barMat); b.position.set(Math.cos(a) * R1, 1.3, Math.sin(a) * R1); b.userData.a = a; b.castShadow = true; scene.add(b); bars.push(b); }
+[0.05, 2.6].forEach(y => { const r = new THREE.Mesh(new THREE.TorusGeometry(R1, 0.05, 8, 64), barMat); r.rotation.x = Math.PI / 2; r.position.y = y; scene.add(r); });
+// L3: guest-kernel force field (cylinder)
+const fieldMat = new THREE.MeshBasicMaterial({ color: C.blue, transparent: true, opacity: 0.1, side: THREE.DoubleSide, depthWrite: false });
+const field = new THREE.Mesh(new THREE.CylinderGeometry(R2, R2, 3.2, 64, 1, true), fieldMat); field.position.y = 1.6; scene.add(field);
+const fieldWire = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.CylinderGeometry(R2, R2, 3.2, 32, 4, true)), new THREE.LineBasicMaterial({ color: C.blue, transparent: true, opacity: 0.35 })); fieldWire.position.y = 1.6; scene.add(fieldWire);
+// L1: hypervisor dome
+const domeMat = new THREE.MeshBasicMaterial({ color: C.coral, transparent: true, opacity: 0.06, side: THREE.DoubleSide, depthWrite: false });
+const dome = new THREE.Mesh(new THREE.SphereGeometry(R3, 48, 24, 0, Math.PI * 2, 0, Math.PI / 2), domeMat); scene.add(dome);
+const domeWire = new THREE.LineSegments(new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(R3, 2)), new THREE.LineBasicMaterial({ color: C.coral, transparent: true, opacity: 0.18 }));
+domeWire.material.clippingPlanes = []; scene.add(domeWire);
+// hide lower half of the wire dome under the ground by squashing a clone below y=0
+domeWire.geometry = (() => { const g = domeWire.geometry, p = g.attributes.position; for (let i = 0; i < p.count; i++) if (p.getY(i) < 0) p.setY(i, 0); return g; })();
+// layer labels on the ground
+const tagLabel = (text, color, r, a) => { const c = document.createElement('canvas'); c.width = 512; c.height = 64; const g = c.getContext('2d'); g.fillStyle = color; g.font = 'bold 34px ui-monospace, Menlo, monospace'; g.fillText(text, 6, 44); const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; const m = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 0.33), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.rotation.z = a; m.position.set(Math.cos(a) * (r + 0.35), 0.02, -Math.sin(a) * (r + 0.35)); scene.add(m); };
+tagLabel('L2 · microVM bars', '#a7b0ba', R1 + 0.2, 0.6); tagLabel('L3 · guest kernel', '#6ea2ff', R2 + 0.2, 0.6); tagLabel('L1 · hypervisor', '#ff6b6b', R3 + 0.1, 0.6);
+// ripples
+const ripples = [];
+function ripple(pos, color, r = 1.2) { const m = new THREE.Mesh(new THREE.RingGeometry(0.05, 0.12, 48), new THREE.MeshBasicMaterial({ color, transparent: true, side: THREE.DoubleSide, depthWrite: false })); m.position.copy(pos); m.lookAt(0, pos.y, 0); m.userData = { life: 1, r }; scene.add(m); ripples.push(m); }
+const bot = NSJ.robot({ tag: 'VM-A1F3', name: 'claude' }); scene.add(bot);
+const sp = NSJ.sparks(scene, 400), lab = NSJ.label(scene), hud = NSJ.hud(el), brEl = document.getElementById('br');
+let ang = 0, bend = 0, fieldOn = 1, domeFlash = 0, fieldFlash = 0, breached = 0;
+const dir = () => V(Math.cos(ang), 0, Math.sin(ang));
+function pickAngle() { const az = Math.atan2(camera.position.z, camera.position.x); ang = az + Math.PI / 2 + (Math.random() - 0.5) * 0.6; }
+// run from r0 to r1 along ang, then bounce back to rb
+function dash(r0, r1, rb, onHit) {
+  return { tick(p, dt, t) {
+    const u = bot.userData;
+    if (p < 0.55) { const q = NSJ.ease(p / 0.55), r = NSJ.lerp(r0, r1, q); bot.position.copy(dir().multiplyScalar(r)); bot.position.y = 0; bot.rotation.y = Math.atan2(Math.cos(ang), Math.sin(ang)); NSJ.walk(bot, t, 1.2, 13); u.armL.rotation.x = u.armR.rotation.x = -0.6; }
+    else { if (!this.hit) { this.hit = 1; onHit(); } const q = (p - 0.55) / 0.45, r = NSJ.lerp(r1, rb, NSJ.ease(q)); bot.position.copy(dir().multiplyScalar(r)); bot.position.y = Math.sin(q * Math.PI) * 0.9; NSJ.rest(bot); u.hips.rotation.x = -0.5 * Math.sin(q * Math.PI); u.armL.rotation.z = 0.9; u.armR.rotation.z = -0.9; }
+  }, enter() { this.hit = 0; } };
+}
+const hitAt = r => { const p = dir().multiplyScalar(r); p.y = 1.3; return p; };
+const steps = [
+  { d: 1.4, enter() { NSJ.rest(bot); bot.position.set(0, 0, 0); bot.scale.setScalar(1); pickAngle(); bot.userData.face.set('scheme'); hud('claude> sprint through the bars', 'w'); }, tick(p, dt, t) { bot.rotation.y = Math.atan2(Math.cos(ang), Math.sin(ang)); bot.userData.hips.position.y = 0.62 - Math.sin(p * Math.PI) * 0.1; } },
+  { d: 1.6, ...dash(0, R1 - 0.35, 0.6, () => { bot.userData.face.set('blocked'); sp.emit(hitAt(R1), 30, C.amber, 3); ripple(hitAt(R1), C.amber); lab.show('L2 microVM bars hold', '#a7b0ba', V(0, 3.3, 0)); hud('✗ bars hold (EPERM)', 'x'); }) },
+  { d: 1.6, enter() { bot.userData.face.set('scheme'); hud('claude> exploit CVE in guest userland → bars bend', 'w'); breached = 1; brEl.textContent = breached; }, tick(p) { bend = NSJ.ease(p); bot.rotation.y = Math.atan2(Math.cos(ang), Math.sin(ang)); } },
+  { d: 1.8, ...dash(0.6, R2 - 0.35, R1 + 0.6, () => { fieldFlash = 1; bot.userData.face.set('blocked'); sp.emit(hitAt(R2), 40, C.blue, 3.5); ripple(hitAt(R2), C.blue, 2); lab.show('L3 guest kernel holds', '#6ea2ff', V(0, 3.8, 0)); hud('✗ guest kernel: seccomp + namespaces', 'b'); }) },
+  { d: 1.8, enter() { bot.userData.face.set('scheme'); hud('claude> kernel exploit → force field down', 'w'); breached = 2; brEl.textContent = breached; }, tick(p, dt, t) { fieldOn = 1 - NSJ.ease(p); if (Math.random() < 0.3) fieldOn *= 0.3; bot.rotation.y = Math.atan2(Math.cos(ang), Math.sin(ang)); } },
+  { d: 2.2, ...dash(R1 + 0.6, R3 - 0.4, R2 + 0.3, () => { domeFlash = 1; bot.userData.face.set('blocked'); sp.emit(hitAt(R3 - 0.1), 70, C.coral, 4.5); ripple(hitAt(R3 - 0.1), C.coral, 3.2); lab.show('L1 hypervisor holds · 0 escapes', '#ff6b6b', V(0, 4.6, 0), 2.6); hud('✗ KVM / HVF: VM exit trapped, host untouched', 'x'); }) },
+  { d: 1.6, enter() { bot.userData.face.set('sad'); NSJ.rest(bot); bot.position.y = 0; hud('$ nanosb rm vm-a1f3', ''); }, tick(p) { bot.scale.setScalar(Math.max(0.001, 1 - NSJ.ease(p))); bot.rotation.y += 0.25; } },
+  { d: 1.8, enter() { hud('$ nanosb run python:3.12 --agent claude', ''); bot.position.set(0, 0, 0); bot.userData.face.set('work'); }, tick(p) { bend = 1 - NSJ.ease(p); fieldOn = NSJ.ease(p); bot.scale.setScalar(Math.max(0.001, NSJ.ease(NSJ.clamp((p - 0.4) / 0.6)))); if (p >= 1) { breached = 0; brEl.textContent = 0; hud('✓ fresh sandbox in 180ms', 'ok'); } } }
+];
+const stepEls = [...document.querySelectorAll('#steps span')], tag = [0, 0, 1, 1, 2, 2, 3, 3];
+S.onTick(NSJ.seq(steps, i => stepEls.forEach((s, j) => s.classList.toggle('on', j === tag[i]))));
+S.onTick((dt, t) => {
+  // bend the two bars nearest the escape angle apart
+  bars.forEach(b => { let d = Math.atan2(Math.sin(b.userData.a - ang), Math.cos(b.userData.a - ang)); const near = Math.abs(d) < 0.25 ? 1 : 0; const a = b.userData.a + Math.sign(d || 1) * 0.16 * bend * near; b.position.set(Math.cos(a) * R1, 1.3, Math.sin(a) * R1); b.rotation.set(0, 0, 0); if (near) { b.rotation.x = Math.sin(a) * 0.25 * bend; b.rotation.z = -Math.cos(a) * 0.25 * bend; } });
+  barMat.emissive.setHex(C.amber); barMat.emissiveIntensity = bend * 0.25;
+  fieldFlash *= Math.pow(0.2, dt); domeFlash *= Math.pow(0.3, dt);
+  fieldMat.opacity = (0.08 + fieldFlash * 0.35) * fieldOn; fieldWire.material.opacity = (0.3 + fieldFlash * 0.6) * fieldOn; fieldWire.rotation.y += dt * 0.1;
+  domeMat.opacity = 0.05 + domeFlash * 0.3; domeWire.material.opacity = 0.16 + domeFlash * 0.7;
+  ripples.forEach(m => { m.userData.life -= dt * 0.9; const s = 1 + (1 - m.userData.life) * 10 * m.userData.r; m.scale.set(s, s, s); m.material.opacity = Math.max(0, m.userData.life); });
+  for (let i = ripples.length - 1; i >= 0; i--) if (ripples[i].userData.life <= 0) { scene.remove(ripples[i]); ripples.splice(i, 1); }
+  bot.userData.bulb.material.color.setHex(Math.sin(t * 6) > 0 ? C.coral : 0x441c1c);
+  sp.tick(dt); lab.tick(dt);
+});
+}
+</script>
+</body>
+</html>

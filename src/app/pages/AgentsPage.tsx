@@ -1,9 +1,11 @@
 import { useState, useMemo, useCallback } from 'react'
+import PageHero from '@/app/components/page-hero'
 import { MobileDetailPanel } from '../components/mobile-detail-panel'
 import agentsRegistry from '@data/agents-registry.json'
 import mcpData from '@data/mcp-registry.json'
 import localSkillsData from '@data/skills-local.json'
 import publicSkillsData from '@data/skills-public.json'
+import { resolveSandboxEnv, gooseModelValue } from '@/app/lib/agent-env.mjs'
 
 interface McpServer {
   name: string
@@ -31,8 +33,29 @@ interface PublicSkill {
   owner: string
 }
 
+interface AgentRule {
+  mode?: 'single' | 'collapse' | 'derived'
+  case_sensitive?: boolean
+  default?: string | null
+  alt?: string[]
+  collapse?: Record<string, string>
+  collapse_default?: string | null
+  overrides?: Record<string, string[] | { keys?: string[]; oauth?: boolean }>
+  no_env?: string[]
+  extra_keys?: string[]
+  providers?: string[]
+  accepted_keys?: string[]
+}
+
+interface ProviderCatalog {
+  canonical: Record<string, string>
+  credentials: Record<string, string[]>
+  agents: Record<string, AgentRule>
+}
+
 interface AgentRegistryData {
   models: Record<string, { models: string[] }>
+  providerCatalog?: ProviderCatalog
 }
 
 const registry = agentsRegistry as AgentRegistryData
@@ -40,25 +63,83 @@ const mcpServers = mcpData as McpServer[]
 const registrySkills = localSkillsData as LocalSkill[]
 const publicSkills = publicSkillsData as PublicSkill[]
 
+// Provider/env resolution lives in the shared module `@/app/lib/agent-env.mjs`.
+function buildEnvBlock(
+  agent: string,
+  model: string,
+  catalog: ProviderCatalog
+): { lines: string[]; oauthComment?: string } | null {
+  const resolved = resolveSandboxEnv(catalog, agent, model)
+  if (!resolved) return null
+  const alt = resolved.alt ?? []
+  const primaryKeys = resolved.keys.filter((k) => !alt.includes(k))
+
+  if (resolved.oauth && primaryKeys.length === 0) {
+    return {
+      lines: [],
+      oauthComment: `# OAuth provider (${resolved.provider}); authenticate inside the agent; no env var.`,
+    }
+  }
+
+  const lines: string[] = []
+  if (agent === 'goose' && resolved.provider) {
+    lines.push(`      GOOSE_PROVIDER: "${resolved.provider}"`)
+    lines.push(`      GOOSE_MODEL: "${gooseModelValue(resolved.provider, model)}"`)
+  }
+  for (const key of primaryKeys) {
+    lines.push(`      ${key}: \${${key}}`)
+  }
+  if (alt.length > 0 && primaryKeys.length > 0) {
+    lines.push(`      # Alternative: ${alt.join(', ')}`)
+  }
+  return { lines }
+}
+
 // Combine all skills for selection
 const allAvailableSkills = [
   ...registrySkills.map((s) => ({ name: s.name, description: s.description, tags: s.tags, source: 'registry' as const })),
   ...publicSkills.map((s) => ({ name: s.name, description: s.description, tags: s.tags, source: 'public' as const })),
 ]
 
-const AGENTS = [
-  { id: 'claude', label: 'Claude Code', icon: '>' },
-  { id: 'cursor', label: 'Cursor', icon: '>' },
-  { id: 'codex', label: 'Codex', icon: '>' },
-  { id: 'goose', label: 'Goose', icon: '>' },
+// Preferred display order; unknown catalog keys are appended after these.
+const AGENT_ORDER = [
+  'claude',
+  'goose',
+  'codex',
+  'cursor',
+  'opencode',
+  'aider',
+  'gemini',
+  'crush',
+  'oh-my-openagent',
+  'oh-my-codex',
+  'oh-my-claude',
 ]
 
-const ENV_VAR_MAP: Record<string, string> = {
-  claude: 'ANTHROPIC_API_KEY',
-  cursor: 'CURSOR_API_KEY',
-  codex: 'OPENAI_API_KEY',
-  goose: 'OPENAI_API_KEY',
+const AGENT_META: Record<string, { label: string; envVar: string }> = {
+  claude: { label: 'Claude Code', envVar: 'ANTHROPIC_API_KEY' },
+  goose: { label: 'Goose', envVar: 'OPENAI_API_KEY' },
+  codex: { label: 'Codex', envVar: 'OPENAI_API_KEY' },
+  cursor: { label: 'Cursor', envVar: 'CURSOR_API_KEY' },
+  opencode: { label: 'OpenCode', envVar: 'ANTHROPIC_API_KEY' },
+  aider: { label: 'Aider', envVar: 'OPENAI_API_KEY' },
+  gemini: { label: 'Gemini CLI', envVar: 'GEMINI_API_KEY' },
+  crush: { label: 'Crush', envVar: 'OPENAI_API_KEY' },
+  'oh-my-openagent': { label: 'Oh-My-OpenAgent', envVar: 'OPENAI_API_KEY' },
+  'oh-my-codex': { label: 'Oh-My-Codex', envVar: 'OPENAI_API_KEY' },
+  'oh-my-claude': { label: 'Oh-My-Claude', envVar: 'ANTHROPIC_API_KEY' },
 }
+
+const catalogAgentIds = Object.keys(registry.models ?? {})
+const orderedIds = AGENT_ORDER.filter((id) => catalogAgentIds.includes(id))
+const unknownIds = catalogAgentIds.filter((id) => !AGENT_ORDER.includes(id))
+const agentIds = orderedIds.length > 0 ? [...orderedIds, ...unknownIds] : [...AGENT_ORDER]
+
+const AGENTS = agentIds.map((id) => ({
+  id,
+  label: AGENT_META[id]?.label ?? id,
+  icon: '>',
+}))
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false)
@@ -144,7 +225,6 @@ export default function AgentsPage() {
   const generatedYaml = useMemo(() => {
     if (!selectedAgent) return ''
     const agentDef = AGENTS.find((a) => a.id === selectedAgent)
-    const envVar = ENV_VAR_MAP[selectedAgent] || 'API_KEY'
     const lines: string[] = [
       `# Nanosandbox agent configuration`,
       `# Generated for ${agentDef?.label ?? selectedAgent}`,
@@ -161,11 +241,25 @@ export default function AgentsPage() {
     ]
 
     if (selectedModel) {
-      lines.push(`    model: ${selectedModel}`)
+      lines.push(`    model: ${JSON.stringify(selectedModel)}`)
     }
 
-    lines.push(`    env:`)
-    lines.push(`      ${envVar}: \${${envVar}}`)
+    const catalog = registry.providerCatalog
+    let envBlock: { lines: string[]; oauthComment?: string } | null = null
+    if (selectedModel && catalog?.agents?.[selectedAgent]) {
+      envBlock = buildEnvBlock(selectedAgent, selectedModel, catalog)
+    }
+
+    if (envBlock && envBlock.lines.length > 0) {
+      lines.push(`    env:`)
+      lines.push(...envBlock.lines)
+    } else if (envBlock?.oauthComment) {
+      lines.push(`    ${envBlock.oauthComment}`)
+    } else {
+      const envVar = AGENT_META[selectedAgent]?.envVar ?? 'API_KEY'
+      lines.push(`    env:`)
+      lines.push(`      ${envVar}: \${${envVar}}`)
+    }
 
     if (selectedSkills.size > 0) {
       lines.push(`    skills:`)
@@ -192,17 +286,17 @@ export default function AgentsPage() {
     <div className="flex flex-col md:flex-row gap-4">
       {/* Left: configurator */}
       <div className="flex-1 min-w-0">
-        <div className="mb-6 font-mono">
-          <h1 className="text-2xl font-bold text-[var(--accent)] mb-2">Agent Configurator</h1>
-          <p className="text-[var(--text-tertiary)] text-sm">
-            Configure an AI coding agent with MCP servers and skills, then generate a sandbox.yml.
-          </p>
-        </div>
+        <PageHero
+          command="nanosb init --agent"
+          title="Pick an agent."
+          accent="We build the cell."
+          description={<p>Configure an AI coding agent with MCP servers and skills, then generate a sandbox.yml.</p>}
+        />
 
         {/* Step 1: Select Agent */}
         <div className="mb-6 border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 font-mono">
           <h2 className="text-sm font-bold text-[var(--accent)] mb-3">1. Select Agent</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2">
             {AGENTS.map((agent) => (
               <button
                 key={agent.id}
@@ -214,7 +308,7 @@ export default function AgentsPage() {
                 }`}
               >
                 <span className="text-[var(--accent)] mr-1">{agent.icon}</span>
-                <span className="text-sm font-bold">{agent.label}</span>
+                <span className="text-sm font-bold leading-tight break-words">{agent.label}</span>
                 {registry.models?.[agent.id] && (
                   <div className="text-[var(--text-muted)] text-xs mt-1">
                     {registry.models[agent.id].models?.length ?? 0} models

@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cage Configurator</title>
+<link rel="stylesheet" href="base.css">
+<style>
+/* Cage idea 4: the web agent configurator as a physical act. Drag an agent into an empty cage and the bars drop; drag MCP servers and skills through the bars; unsafe items are rejected and bounce back. */
+.cfg { display: grid; grid-template-columns: minmax(0, 250px) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 820px) { .cfg { grid-template-columns: 1fr; } }
+.palette { display: grid; gap: 14px; align-content: start; }
+.group { display: flex; flex-wrap: wrap; gap: 6px; }
+.tok { font: 12.5px var(--mono); border: 1px solid var(--border-primary); background: var(--bg-elevated); color: var(--text-heading); padding: 6px 10px; cursor: grab; user-select: none; touch-action: none; display: inline-flex; gap: 6px; align-items: center; transition: transform .15s, border-color .15s; }
+.tok:hover { transform: translateY(-2px); border-color: var(--accent); }
+.tok.agent { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
+.tok.danger { border-style: dashed; color: var(--text-tertiary); }
+.tok.sel { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tok.used { opacity: .35; pointer-events: none; }
+.drag { position: fixed; z-index: 100; pointer-events: none; transform: rotate(-4deg) scale(1.05); box-shadow: 0 10px 24px rgba(0,0,0,.18); }
+.cages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 620px) { .cages { grid-template-columns: 1fr; } }
+.slot { position: relative; min-height: 250px; border: 1px dashed var(--border-primary); background: var(--bg-inverse); padding: 12px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; transition: border-color .2s, background .2s; }
+.slot.hot { border-color: var(--accent); background: var(--bg-selected); }
+.slot .empty { margin: auto; color: var(--text-muted); font-size: 12px; text-align: center; }
+.slot.full { border-style: solid; border-color: var(--border-secondary); }
+.slot .sb { position: absolute; inset: 0; pointer-events: none; display: flex; justify-content: space-between; padding: 0 3px; }
+.slot .sb i { width: 3px; background: var(--text-heading); opacity: .55; transform: translateY(-101%); transition: transform .5s cubic-bezier(.6,1.7,.4,1); transition-delay: calc(var(--k) * 35ms); }
+.slot.full .sb i { transform: none; }
+.slot.full .sb::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 5px; background: var(--text-heading); }
+.slot .scan { position: absolute; left: 0; right: 0; height: 26px; top: -30px; background: linear-gradient(transparent, var(--accent-wash), transparent); pointer-events: none; }
+.slot.scanning .scan { animation: scan .6s ease-in-out; }
+.slot.reject { animation: shake .35s; }
+.slot .hd { display: flex; gap: 10px; align-items: center; position: relative; z-index: 1; background: var(--bg-inverse); }
+.slot .av { width: 40px; height: 40px; font-size: 14px; }
+.ring { width: 40px; height: 40px; margin-left: auto; }
+.ring circle { fill: none; stroke-width: 3; }
+.ring .bg { stroke: var(--bg-tertiary); } .ring .fg { stroke: var(--green); stroke-dasharray: 100; stroke-dashoffset: 100; transform: rotate(-90deg); transform-origin: center; transition: stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1) .4s; }
+.slot.full .ring .fg { stroke-dashoffset: 0; }
+.ring text { font: 8px var(--mono); fill: var(--text-tertiary); }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; position: relative; z-index: 1; }
+.chip { font-size: 11px; padding: 2px 7px; border: 1px solid var(--border-secondary); background: var(--bg-elevated); color: var(--text-secondary); animation: drop .45s cubic-bezier(.5,1.8,.4,1); }
+.chip.mcp::before { content: "mcp:"; color: var(--text-muted); } .chip.skill::before { content: "skill:"; color: var(--text-muted); } .chip.img::before { content: "img:"; color: var(--text-muted); }
+.toast { position: absolute; left: 12px; right: 12px; bottom: 12px; font-size: 11.5px; padding: 6px 8px; border: 1px solid var(--accent); color: var(--accent-ink); background: var(--bg-elevated); z-index: 2; opacity: 0; transform: translateY(8px); transition: all .25s; }
+.toast.on { opacity: 1; transform: none; }
+.out { margin-top: 14px; }
+.out .code code { white-space: pre; }
+.hint { font-size: 12px; color: var(--text-muted); margin: 8px 0 0; }
+@keyframes scan { from { top: -30px; } to { top: 100%; } }
+@keyframes drop { from { transform: translateY(-40px) scale(.7); opacity: 0; } }
+@keyframes shake { 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
+</style>
+</head>
+<body>
+<main class="container">
+  <section class="box inv">
+    <h2>Cage Configurator</h2>
+    <p class="muted" style="margin:0 0 16px;max-width:74ch">Drag an agent into an empty cage. The bars drop and it boots. Then drag images, MCP servers and skills onto it: allowed ones scan through the bars, unsafe ones bounce off. On touch or keyboard, select a token, then select a cage.</p>
+    <div class="cfg">
+      <div class="palette" id="pal">
+        <div><div class="kicker">agents</div><div class="group">
+          <span class="tok agent" tabindex="0" data-t="agent" data-v="claude" data-m="Cl">claude</span><span class="tok agent" tabindex="0" data-t="agent" data-v="codex" data-m="Cx">codex</span><span class="tok agent" tabindex="0" data-t="agent" data-v="goose" data-m="Go">goose</span>
+        </div></div>
+        <div><div class="kicker">images</div><div class="group">
+          <span class="tok" tabindex="0" data-t="img" data-v="python:3.12-slim">python:3.12-slim</span><span class="tok" tabindex="0" data-t="img" data-v="node:22-slim">node:22-slim</span>
+        </div></div>
+        <div><div class="kicker">mcp servers</div><div class="group">
+          <span class="tok" tabindex="0" data-t="mcp" data-v="github">github</span><span class="tok" tabindex="0" data-t="mcp" data-v="postgres">postgres</span><span class="tok" tabindex="0" data-t="mcp" data-v="playwright">playwright</span>
+          <span class="tok danger" tabindex="0" data-t="mcp" data-v="docker.sock" data-bad="mounts the host Docker socket">docker.sock</span>
+        </div></div>
+        <div><div class="kicker">skills</div><div class="group">
+          <span class="tok" tabindex="0" data-t="skill" data-v="pdf">pdf</span><span class="tok" tabindex="0" data-t="skill" data-v="xlsx">xlsx</span><span class="tok" tabindex="0" data-t="skill" data-v="frontend-design">frontend-design</span>
+          <span class="tok danger" tabindex="0" data-t="skill" data-v="host-shell" data-bad="needs a shell on your host">host-shell</span>
+        </div></div>
+      </div>
+      <div>
+        <div class="cages" id="cages"></div>
+        <div class="out"><div class="code"><code id="cmd"># drop an agent into a cage to generate the command</code><button class="copy" type="button">[copy]</button></div></div>
+        <p class="hint">Archived or deprecated MCP servers and skills never appear in the palette, same rule as the real configurator.</p>
+      </div>
+    </div>
+  </section>
+  <section class="box"><h2>Where it goes</h2><p class="muted" style="margin:0">A playful front end for the existing Agents page configurator: same catalog data, same generated <span class="head">nanosb run</span> command, with the cage making the isolation rules visible.</p></section>
+</main>
+<script src="base.js"></script>
+<script>
+NS.chrome();
+const cagesEl = document.getElementById('cages'), cmd = document.getElementById('cmd');
+const slots = [0, 1, 2].map(i => {
+  const s = document.createElement('div'); s.className = 'slot'; s.tabIndex = 0; s.dataset.i = i;
+  s.innerHTML = `<div class="sb">${Array.from({ length: 10 }, (_, k) => `<i style="--k:${k}"></i>`).join('')}</div><div class="scan"></div><span class="empty">empty cage<br>drop an agent here</span><div class="toast"></div>`;
+  s.cfg = null; cagesEl.append(s); return s;
+});
+let sel = null, drag = null;
+function toast(s, msg) { const t = s.querySelector('.toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2200); }
+function place(tok, s) {
+  const t = tok.dataset.t, v = tok.dataset.v;
+  if (t === 'agent') {
+    if (s.cfg) { s.classList.remove('reject'); void s.offsetWidth; s.classList.add('reject'); return toast(s, 'This cage already has an agent. One agent per cage.'); }
+    s.cfg = { agent: v, img: 'python:3.12-slim', mcp: [], skill: [] };
+    s.querySelector('.empty').remove();
+    s.insertAdjacentHTML('beforeend', `<div class="hd"><div class="av">${tok.dataset.m}</div><div><b class="head">${v}</b><br><small class="muted">vm-${Math.random().toString(16).slice(2, 6)}</small></div><svg class="ring" viewBox="0 0 40 40"><circle class="bg" cx="20" cy="20" r="16"/><circle class="fg" cx="20" cy="20" r="16" pathLength="100"/><text x="20" y="23" text-anchor="middle">180ms</text></svg></div><div class="chips"><span class="chip img">python:3.12-slim</span></div>`);
+    requestAnimationFrame(() => s.classList.add('full'));
+    tok.classList.add('used');
+  } else {
+    if (!s.cfg) { s.classList.remove('reject'); void s.offsetWidth; s.classList.add('reject'); return toast(s, 'Put an agent in this cage first.'); }
+    if (tok.dataset.bad) { s.classList.remove('reject'); void s.offsetWidth; s.classList.add('reject'); bounce(tok, s); return toast(s, `✗ ${v} blocked: ${tok.dataset.bad}.`); }
+    if (t === 'img') { s.cfg.img = v; s.querySelector('.chip.img').textContent = v; }
+    else { if (s.cfg[t].includes(v)) return toast(s, `${v} is already in this cage.`); s.cfg[t].push(v); s.querySelector('.chips').insertAdjacentHTML('beforeend', `<span class="chip ${t}">${v}</span>`); }
+    s.classList.remove('scanning'); void s.offsetWidth; s.classList.add('scanning');
+  }
+  render();
+}
+function bounce(tok, s) {
+  if (NS.reduce) return;
+  const a = s.getBoundingClientRect(), b = tok.getBoundingClientRect(), g = tok.cloneNode(true);
+  g.classList.add('drag'); g.style.left = (a.left + a.width / 2 - b.width / 2) + 'px'; g.style.top = (a.top + 30) + 'px'; document.body.append(g);
+  g.animate([{ transform: 'translate(0,0) rotate(0)' }, { transform: `translate(0,-40px) rotate(-12deg)`, offset: .3 }, { transform: `translate(${b.left - a.left - a.width / 2 + b.width / 2}px,${b.top - a.top - 30}px) rotate(0)`, opacity: .4 }], { duration: 650, easing: 'cubic-bezier(.3,.7,.4,1)' }).onfinish = () => g.remove();
+}
+function render() {
+  const lines = slots.filter(s => s.cfg).map(s => { const c = s.cfg; return `nanosb run ${c.img} --agent ${c.agent}${c.mcp.map(m => ' --mcp ' + m).join('')}${c.skill.map(k => ' --skill ' + k).join('')}`; });
+  cmd.textContent = lines.length ? lines.join('\n') : '# drop an agent into a cage to generate the command';
+}
+// pointer drag
+const pal = document.getElementById('pal');
+pal.addEventListener('pointerdown', e => {
+  const tok = e.target.closest('.tok'); if (!tok) return;
+  const r = tok.getBoundingClientRect();
+  drag = { tok, ox: e.clientX - r.left, oy: e.clientY - r.top, sx: e.clientX, sy: e.clientY, g: null };
+  tok.setPointerCapture(e.pointerId);
+});
+pal.addEventListener('pointermove', e => {
+  if (!drag) return;
+  if (!drag.g && Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) > 5) { drag.g = drag.tok.cloneNode(true); drag.g.classList.add('drag'); document.body.append(drag.g); }
+  if (!drag.g) return;
+  drag.g.style.left = (e.clientX - drag.ox) + 'px'; drag.g.style.top = (e.clientY - drag.oy) + 'px';
+  const over = document.elementsFromPoint(e.clientX, e.clientY).find(n => n.classList?.contains('slot'));
+  slots.forEach(s => s.classList.toggle('hot', s === over));
+});
+pal.addEventListener('pointerup', e => {
+  if (!drag) return;
+  const d = drag; drag = null; slots.forEach(s => s.classList.remove('hot'));
+  if (!d.g) { select(d.tok); return; }
+  d.g.remove();
+  const over = document.elementsFromPoint(e.clientX, e.clientY).find(n => n.classList?.contains('slot'));
+  if (over) place(d.tok, over);
+});
+// click / keyboard fallback
+function select(tok) { document.querySelectorAll('.tok.sel').forEach(t => t.classList.remove('sel')); sel = sel === tok ? null : tok; if (sel) sel.classList.add('sel'); }
+pal.addEventListener('keydown', e => { const t = e.target.closest('.tok'); if (t && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); select(t); } });
+cagesEl.addEventListener('click', e => { const s = e.target.closest('.slot'); if (s && sel) { place(sel, s); select(sel); } });
+cagesEl.addEventListener('keydown', e => { const s = e.target.closest('.slot'); if (s && sel && e.key === 'Enter') { place(sel, s); select(sel); } });
+// start in a working state: one cage filled
+place(document.querySelector('.tok[data-v="claude"]'), slots[0]);
+place(document.querySelector('.tok[data-v="github"]'), slots[0]);
+place(document.querySelector('.tok[data-v="pdf"]'), slots[0]);
+</script>
+</body>
+</html>

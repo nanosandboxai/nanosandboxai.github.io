@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cage Lifecycle</title>
+<link rel="stylesheet" href="base.css">
+<style>
+/* Cage idea 1: one cage, five states. Image layers drop in, bars build bar by bar, the agent works, rattles the bars, then the cage is thrown away and only the branch survives. */
+.life { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 900px) { .life { grid-template-columns: 1fr; } }
+.stage { position: relative; height: 420px; border: 1px solid var(--border-primary); background: var(--bg-inverse); overflow: hidden; display: grid; place-items: center; }
+.stage::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(var(--border-tertiary) 1px, transparent 1px), linear-gradient(90deg, var(--border-tertiary) 1px, transparent 1px); background-size: 24px 24px; opacity: .7; }
+.cagebox { position: relative; width: min(360px, 86%); height: 270px; }
+.floor, .beam { position: absolute; left: -10px; right: -10px; height: 8px; background: var(--text-heading); transform-origin: left; transition: transform .45s cubic-bezier(.2,.8,.2,1); }
+.floor { bottom: 0; } .beam { top: 0; transform: scaleX(0); }
+.bar { position: absolute; top: 0; bottom: 0; width: 4px; left: calc(var(--k) * (100% - 4px) / 12); background: var(--text-heading); transform-origin: bottom; transform: scaleY(0); transition: transform .35s cubic-bezier(.5,1.6,.4,1) calc(var(--k) * 45ms), opacity .3s; }
+.slab { position: absolute; left: 14%; right: 14%; height: 14px; border: 1px solid var(--border-primary); background: var(--bg-tertiary); font-size: 9.5px; color: var(--text-tertiary); padding-left: 6px; line-height: 12px; opacity: 0; transform: translateY(-260px); transition: transform .5s cubic-bezier(.3,1.4,.5,1), opacity .3s; }
+.slab:nth-of-type(1) { bottom: 10px; } .slab:nth-of-type(2) { bottom: 26px; } .slab:nth-of-type(3) { bottom: 42px; }
+.agent { position: absolute; left: 50%; bottom: 66px; width: 64px; height: 64px; margin-left: -32px; display: grid; place-items: center; background: var(--accent); color: #000; font-weight: 700; font-size: 20px; opacity: 0; transform: scale(.4); transition: transform .45s cubic-bezier(.5,1.8,.4,1), opacity .3s; }
+.agent .typing { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; opacity: 0; }
+.agent .typing i { width: 6px; height: 6px; background: var(--text-heading); animation: dot 1s infinite; }
+.agent .typing i:nth-child(2) { animation-delay: .15s; } .agent .typing i:nth-child(3) { animation-delay: .3s; }
+.spark { position: absolute; right: -6px; bottom: 92px; font-size: 12px; font-weight: 700; color: var(--accent-ink); background: var(--bg-elevated); border: 1px solid var(--accent); padding: 2px 6px; opacity: 0; transform: translateX(30px) scale(.6); transition: all .25s cubic-bezier(.5,1.8,.4,1); white-space: nowrap; }
+.edits { position: absolute; left: 6%; top: 34px; display: grid; gap: 4px; font-size: 11px; color: var(--green); }
+.edits span { opacity: 0; transform: translateX(-10px); transition: all .3s; }
+.branch { position: absolute; left: 50%; bottom: 80px; transform: translate(-50%, 0) scale(.6); opacity: 0; border: 1px solid var(--green); color: var(--green); background: var(--bg-elevated); padding: 6px 10px; font-size: 12px; white-space: nowrap; transition: all .5s cubic-bezier(.5,1.6,.4,1) .35s; z-index: 2; }
+.timer { position: absolute; top: 12px; right: 14px; font-size: 12px; color: var(--text-tertiary); font-variant-numeric: tabular-nums; z-index: 2; }
+.label { position: absolute; top: 12px; left: 14px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink); z-index: 2; }
+
+/* states */
+.s-pull .slab { opacity: 1; transform: none; }
+.s-pull .slab:nth-of-type(2) { transition-delay: .12s; } .s-pull .slab:nth-of-type(3) { transition-delay: .24s; }
+.s-boot .slab, .s-run .slab, .s-attack .slab { opacity: 1; transform: none; }
+.s-boot .bar, .s-run .bar, .s-attack .bar { transform: scaleY(1); }
+.s-boot .beam, .s-run .beam, .s-attack .beam { transform: scaleX(1); transition-delay: .55s; }
+.s-run .agent, .s-attack .agent { opacity: 1; transform: none; }
+.s-run .agent { animation: bob 1.6s ease-in-out infinite; }
+.s-run .agent .typing { opacity: 1; }
+.s-run .edits span { opacity: 1; transform: none; }
+.s-run .edits span:nth-child(2) { transition-delay: .5s; } .s-run .edits span:nth-child(3) { transition-delay: 1s; }
+.s-attack .agent { animation: lunge 1.1s cubic-bezier(.5,0,.3,1) infinite; }
+.s-attack .bar { animation: rattle 1.1s infinite; animation-delay: calc(.36s + (12 - var(--k)) * 12ms); }
+.s-attack .spark { opacity: 1; transform: none; animation: pop 1.1s infinite .3s; }
+.s-attack .stage-flash { animation: flash 1.1s infinite .33s; }
+.s-rm .bar { transform: translateY(var(--fy)) rotate(var(--fr)); opacity: 0; transition: transform .7s cubic-bezier(.5,0,.8,.6) calc(var(--k) * 25ms), opacity .6s calc(var(--k) * 25ms); }
+.s-rm .beam, .s-rm .floor { transform: scaleX(0); transition-delay: .3s; }
+.s-rm .agent { opacity: 0; transform: scale(.2) translateY(40px); }
+.s-rm .branch { opacity: 1; transform: translate(-50%, -20px) scale(1); }
+.stage-flash { position: absolute; inset: 0; background: var(--accent); opacity: 0; pointer-events: none; }
+
+.steps { display: grid; gap: 6px; }
+.stp { display: grid; grid-template-columns: 30px 1fr; gap: 10px; text-align: left; padding: 10px 12px; border: 1px solid var(--border-secondary); background: var(--bg-elevated); color: var(--text-tertiary); cursor: pointer; font: 13px var(--mono); position: relative; overflow: hidden; }
+.stp b { color: var(--text-heading); font-weight: 600; display: block; }
+.stp.on { border-color: var(--accent); color: var(--text-secondary); }
+.stp.on::after { content: ""; position: absolute; left: 0; bottom: 0; height: 2px; background: var(--accent); width: 100%; transform-origin: left; animation: prog var(--dur, 2.8s) linear; }
+.stp.paused.on::after { animation: none; }
+.ctl { display: flex; gap: 8px; margin-top: 8px; }
+.log { margin: 0; padding: 12px; height: 128px; overflow: hidden; background: var(--bg-inverse); border: 1px solid var(--border-secondary); font-size: 12px; color: var(--text-secondary); white-space: pre-wrap; }
+.log .c { color: var(--text-heading); } .log .c::before { content: "$ "; color: var(--accent); } .log .ok { color: var(--green); } .log .x { color: var(--accent-ink); }
+
+@keyframes dot { 50% { opacity: .2; } }
+@keyframes bob { 50% { transform: translateY(-6px); } }
+@keyframes lunge { 0%, 15% { transform: translateX(0); } 32% { transform: translateX(120px) scale(1.05, .92); } 40% { transform: translateX(104px); } 70%, 100% { transform: translateX(0); } }
+@keyframes rattle { 0%, 28%, 60%, 100% { transform: scaleY(1) translateX(0); } 34% { transform: scaleY(1) translateX(3px); } 42% { transform: scaleY(1) translateX(-2px); } 50% { transform: scaleY(1) translateX(1px); } }
+@keyframes pop { 0%, 25% { transform: translateX(30px) scale(.6); opacity: 0; } 35% { transform: none; opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes flash { 0%, 100% { opacity: 0; } 8% { opacity: .12; } }
+@keyframes prog { from { transform: scaleX(0); } }
+</style>
+</head>
+<body>
+<main class="container">
+  <section class="box inv">
+    <h2>Cage Lifecycle</h2>
+    <p class="muted" style="margin:0 0 16px;max-width:70ch">Every sandbox lives five moments. Click a step or let it play. The motion explains the product: the cage is built fresh, the agent can rattle it all it likes, and when you throw it away only the git branch is left.</p>
+    <div class="life">
+      <div class="stage" id="stage">
+        <div class="stage-flash"></div>
+        <span class="label" id="lbl">pull</span><span class="timer" id="tmr">0ms</span>
+        <div class="cagebox" id="cage">
+          <div class="slab">layer 3 · app deps</div><div class="slab">layer 2 · python 3.12</div><div class="slab">layer 1 · debian slim</div>
+          <div class="edits"><span>+ src/auth.ts</span><span>+ tests/auth.spec.ts</span><span>✓ 128 passing</span></div>
+          <div class="agent">Cl<div class="typing"><i></i><i></i><i></i></div></div>
+          <span class="spark">EPERM · mount()</span>
+          <div class="beam"></div><div class="floor"></div>
+          <span class="branch">⎇ agent/claude-1 kept · sandbox gone</span>
+        </div>
+      </div>
+      <div style="display:grid;gap:10px;align-content:start;min-width:0">
+        <div class="steps" id="steps">
+          <button class="stp" type="button" data-s="pull"><span>01</span><span><b>pull</b>OCI layers drop into place</span></button>
+          <button class="stp" type="button" data-s="boot"><span>02</span><span><b>boot</b>bars build in 180 ms</span></button>
+          <button class="stp" type="button" data-s="run"><span>03</span><span><b>run</b>the agent works on a clone</span></button>
+          <button class="stp" type="button" data-s="attack"><span>04</span><span><b>escape attempt</b>it hits the bars, the bars hold</span></button>
+          <button class="stp" type="button" data-s="rm"><span>05</span><span><b>rm</b>cage dissolves, branch survives</span></button>
+        </div>
+        <pre class="log" id="log"></pre>
+        <div class="ctl"><button class="btn" type="button" id="pp">[pause]</button><button class="btn" type="button" id="rs">[restart]</button></div>
+      </div>
+    </div>
+  </section>
+  <section class="box"><h2>Where it goes</h2><p class="muted" style="margin:0">Replaces the static cage cards on the Agents page and in the home hero. Each agent card could play steps 02 and 03 on hover, and the docs "Architecture" page can embed the full five-step version.</p></section>
+</main>
+<script src="base.js"></script>
+<script>
+NS.chrome();
+const order = ['pull', 'boot', 'run', 'attack', 'rm'];
+const logs = {
+  pull: [['c', 'nanosb pull python:3.12-slim'], ['', '  3 layers · 48 MB']],
+  boot: [['c', 'nanosb run python:3.12-slim --agent claude'], ['ok', '  ✓ microVM up · guest kernel 6.6']],
+  run: [['', '  agent> editing src/auth.ts'], ['ok', '  ✓ 128 passing']],
+  attack: [['', '  agent> mount /dev/sda1 /host'], ['x', '  ✗ EPERM: mount() blocked by seccomp'], ['x', '  ✗ curl evil.sh → no egress']],
+  rm: [['c', 'nanosb rm a1f3c9'], ['ok', '  ✓ sandbox destroyed · branch agent/claude-1 kept']]
+};
+const stage = document.getElementById('stage'), cage = document.getElementById('cage'), log = document.getElementById('log'), tmr = document.getElementById('tmr'), lbl = document.getElementById('lbl');
+const bars = [];
+for (let k = 0; k <= 12; k++) { const b = document.createElement('div'); b.className = 'bar'; b.style.setProperty('--k', k); b.style.setProperty('--fy', (160 + Math.random() * 120) + 'px'); b.style.setProperty('--fr', (Math.random() * 80 - 40) + 'deg'); cage.append(b); bars.push(b); }
+let idx = 0, timer, playing = !NS.reduce, raf;
+function count(to, ms) { cancelAnimationFrame(raf); const t0 = performance.now(); (function f(t) { const p = Math.min(1, (t - t0) / ms); tmr.textContent = Math.round(to * p) + 'ms'; if (p < 1) raf = requestAnimationFrame(f); })(t0); }
+function go(i) {
+  idx = i; const s = order[i];
+  stage.className = 'stage s-' + s; lbl.textContent = s === 'attack' ? 'escape attempt' : s;
+  document.querySelectorAll('.stp').forEach((b, j) => { b.classList.toggle('on', j === i); b.classList.toggle('paused', !playing); });
+  if (s === 'pull') { log.textContent = ''; tmr.textContent = '0ms'; }
+  if (s === 'boot') count(180, 900);
+  logs[s].forEach(([k, t]) => { const e = document.createElement('span'); e.className = k; e.textContent = t; log.append(e, '\n'); });
+  while (log.scrollHeight > log.clientHeight && log.firstChild) log.firstChild.remove();
+  clearTimeout(timer);
+  if (playing) timer = setTimeout(() => go((idx + 1) % order.length), s === 'attack' ? 3300 : 2800);
+  document.querySelectorAll('.stp').forEach(b => b.style.setProperty('--dur', (s === 'attack' ? 3.3 : 2.8) + 's'));
+}
+document.getElementById('steps').addEventListener('click', e => { const b = e.target.closest('.stp'); if (b) go(order.indexOf(b.dataset.s)); });
+document.getElementById('pp').onclick = e => { playing = !playing; e.target.textContent = playing ? '[pause]' : '[play]'; go(idx); };
+document.getElementById('rs').onclick = () => go(0);
+if (NS.reduce) { document.getElementById('pp').textContent = '[play]'; go(2); } else go(0);
+</script>
+</body>
+</html>

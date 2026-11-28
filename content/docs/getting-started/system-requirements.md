@@ -9,8 +9,7 @@ order: 3
 | Platform                    | Hypervisor        | Status             |
 | --------------------------- | ----------------- | ------------------ |
 | macOS Apple Silicon (arm64) | HVF               | **Stable**         |
-| Windows 11 (x86_64)         | WHPX              | **Experimental**   |
-| Linux (x86_64 / arm64)     | KVM               | **In Development** |
+| Linux (x86_64 / arm64)     | KVM               | **Supported** (x86_64 live-verified; arm64 built) |
 
 ## macOS Requirements
 
@@ -44,45 +43,15 @@ If building from source, you also need:
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-## Linux Requirements (In Development)
+## Linux Requirements
 
-Linux support targets KVM-based virtualization. The following will be required once available:
+Linux support targets KVM-based virtualization. Requirements:
 
 - Linux kernel 5.10+ with KVM enabled
-- arm64 or x86_64 architecture
+- x86_64 (live-verified) or arm64 architecture
 - libkrun built for your distribution
 
-Linux binaries are not yet published. Check the [releases page](https://github.com/nanosandboxai/cli/releases) for updates.
-
-## Windows Requirements
-
-### Hardware
-
-- 64-bit CPU with virtualization support enabled in BIOS/UEFI
-
-### Software
-
-- Windows 11 (22H2 or later)
-- Hyper-V and Windows Hypervisor Platform (WHPX)
-
-The installer can enable missing Windows features automatically and will prompt for a reboot if needed.
-
-### Runtime Dependencies
-
-The Windows installer places four files in `%USERPROFILE%\.nanosandbox\libs\`. They run inside the Linux guest, so they have no `.exe` extension:
-
-| File | Role |
-| --- | --- |
-| `libkrunfw.dll` | Guest Linux kernel firmware loaded by libkrun |
-| `busybox` | Static Linux ELF used as the guest init shell |
-| `vsock_proxy` | Static Linux ELF that bridges HvSocket and AF_VSOCK |
-| `fuse_mount` | Static Linux ELF that mounts the rootfs and workspace over FUSE-on-vsock |
-
-These dependencies are installed automatically by the [PowerShell installer](./installation.md). You can verify them at any time with:
-
-```powershell
-nanosb doctor
-```
+Linux binaries are published with every release. See the [releases page](https://github.com/nanosandboxai/nanosandbox/releases) for the current version.
 
 ## Environment Variables
 
@@ -91,18 +60,21 @@ The following environment variables can be used to configure installation and ru
 | Variable           | Description                                          | Default           |
 | ------------------ | ---------------------------------------------------- | ----------------- |
 | `NANOSB_VERSION`   | Pin a specific CLI version for the installer script  | `latest`          |
-| `INSTALL_DIR`      | Override the binary installation directory            | `~/.nanosb/bin`   |
+| `INSTALL_DIR`      | Override the binary installation directory            | `~/.nanosandbox/bin` |
+
+See [Environment Variables](../cli/environment.md) for the full list, including
+`NANOSANDBOX_HOME`, `DEPS_VERSION`, `NANOSB_BINARY`, and `NANOSB_EXEC_AGENT`.
 
 ### Examples
 
 Install a specific version:
 
 ```bash
-NANOSB_VERSION=0.3.1 curl -fsSL https://github.com/nanosandboxai/cli/releases/latest/download/install.sh | bash
+NANOSB_VERSION=0.3.0 curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash
 ```
 
 Install to a custom directory:
 
 ```bash
-INSTALL_DIR=/usr/local/bin curl -fsSL https://github.com/nanosandboxai/cli/releases/latest/download/install.sh | bash
+INSTALL_DIR=/usr/local/bin curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash
 ```

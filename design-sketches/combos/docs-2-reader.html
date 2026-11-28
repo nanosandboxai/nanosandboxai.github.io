@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Docs Reader Page</title>
+<link rel="stylesheet" href="base.css">
+<style>
+/* Docs idea 2: a calmer three-pane reading page. Tree with progress, readable column, outline with scroll spy, clear next step. */
+.reader { display: grid; grid-template-columns: 220px minmax(0, 1fr) 200px; gap: 28px; align-items: start; }
+@media (max-width: 1080px) { .reader { grid-template-columns: 200px minmax(0, 1fr); } .outline { display: none; } }
+@media (max-width: 760px) { .reader { grid-template-columns: minmax(0, 1fr); } .tree { display: none; } }
+.tree { position: sticky; top: 56px; font-size: 12.5px; display: grid; gap: 4px; max-height: calc(100vh - 100px); overflow: auto; }
+.tree .vsel { display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-secondary); padding: 6px 8px; margin-bottom: 8px; background: var(--bg-elevated); color: var(--text-secondary); }
+.tree .vsel b { color: var(--accent); font-weight: 600; }
+.tree details { border-bottom: 1px dashed var(--border-secondary); padding: 4px 0; }
+.tree summary { cursor: pointer; color: var(--text-heading); list-style: none; display: flex; justify-content: space-between; padding: 3px 0; }
+.tree summary::-webkit-details-marker { display: none; }
+.tree summary span { color: var(--text-muted); font-size: 11px; }
+.tree a { display: flex; gap: 8px; align-items: center; padding: 3px 0 3px 10px; color: var(--text-tertiary); text-decoration: none; border-left: 2px solid transparent; }
+.tree a i { width: 8px; height: 8px; border-radius: 50%; border: 1px solid var(--border-primary); flex-shrink: 0; }
+.tree a i.done { background: var(--green); border-color: var(--green); }
+.tree a.on { color: var(--accent); border-left-color: var(--accent); background: var(--bg-selected); }
+.page { min-width: 0; max-width: 72ch; }
+.crumb { font-size: 11.5px; color: var(--text-muted); display: flex; gap: 6px; flex-wrap: wrap; }
+.crumb b { color: var(--text-heading); font-weight: 400; }
+.page h1 { font-size: clamp(26px, 3.4vw, 34px); color: var(--text-heading); margin: 8px 0 4px; letter-spacing: -.02em; }
+.lead { color: var(--text-tertiary); margin: 0 0 6px; font-size: 15px; }
+.meta { font-size: 11.5px; color: var(--text-muted); display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 22px; }
+.page h2 { font-size: 19px; color: var(--text-heading); margin: 32px 0 10px; padding-top: 6px; border-top: 1px solid var(--border-secondary); scroll-margin-top: 60px; }
+.page h3 { font-size: 15px; color: var(--text-heading); margin: 22px 0 8px; scroll-margin-top: 60px; }
+.page p { color: var(--text-secondary); font-size: 14px; line-height: 1.75; margin: 0 0 12px; }
+.page code.i { background: var(--bg-elevated); border: 1px solid var(--border-secondary); color: var(--accent-ink); padding: 0 5px; font-size: 12.5px; }
+.cb { border: 1px solid var(--border-secondary); background: var(--bg-secondary); margin: 0 0 14px; }
+.cb .h { display: flex; justify-content: space-between; padding: 5px 10px; border-bottom: 1px solid var(--border-secondary); font-size: 11px; color: var(--text-muted); background: var(--bg-tertiary); }
+.cb pre { margin: 0; padding: 12px; overflow-x: auto; font-size: 12.5px; color: var(--text-primary); }
+.cb pre .p { color: var(--accent); user-select: none; }
+.callout { border-left: 3px solid #6ea2ff; background: var(--bg-secondary); padding: 10px 14px; margin: 0 0 14px; font-size: 13.5px; color: var(--text-secondary); }
+.callout b { color: #6ea2ff; display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 2px; }
+table.t { width: 100%; border-collapse: collapse; font-size: 13px; margin: 0 0 14px; }
+.t th { text-align: left; color: var(--text-muted); font-weight: 400; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; padding: 6px 10px; border-bottom: 1px solid var(--border-primary); }
+.t td { padding: 8px 10px; border-bottom: 1px dashed var(--border-secondary); color: var(--text-secondary); }
+.t td:first-child { color: var(--text-heading); white-space: nowrap; }
+.tw { overflow-x: auto; }
+.next { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 30px; }
+.next a { border: 1px solid var(--border-secondary); padding: 12px 14px; text-decoration: none; font-size: 12px; color: var(--text-muted); transition: border-color .15s; }
+.next a b { display: block; color: var(--text-heading); font-weight: 400; font-size: 14px; }
+.next a:last-child { text-align: right; border-color: var(--accent); }
+.fb { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-secondary); font-size: 12px; color: var(--text-tertiary); }
+.fb button { font: 12px var(--mono); border: 1px solid var(--border-secondary); background: transparent; color: var(--text-secondary); padding: 3px 10px; cursor: pointer; margin-left: 4px; }
+.fb button:hover { border-color: var(--accent); }
+.outline { position: sticky; top: 56px; font-size: 12px; display: grid; gap: 2px; }
+.outline b { color: var(--text-muted); font-weight: 400; text-transform: uppercase; letter-spacing: .08em; font-size: 10.5px; margin-bottom: 6px; }
+.outline a { color: var(--text-tertiary); text-decoration: none; padding: 3px 0 3px 10px; border-left: 2px solid var(--border-secondary); transition: color .15s, border-color .15s; }
+.outline a.sub { padding-left: 20px; }
+.outline a.on { color: var(--accent); border-left-color: var(--accent); }
+.progress { position: fixed; left: 0; top: 0; height: 2px; background: var(--accent); width: 0; z-index: 40; }
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<main class="container">
+  <div class="reader">
+    <nav class="tree" id="tree" aria-label="Docs"></nav>
+
+    <article class="page" id="page">
+      <div class="crumb"><span>docs</span>/<span>Getting Started</span>/<b>Installation</b></div>
+      <h1>Installation</h1>
+      <p class="lead">Install the nanosb CLI on your system.</p>
+      <div class="meta"><span>v0.3.0</span><span>2 min read</span><span>updated 2026-11-26</span></div>
+
+      <h2 id="install">Install on macOS or Linux</h2>
+      <p>The fastest way to install the <code class="i">nanosb</code> CLI on macOS or Linux is with the official shell installer:</p>
+      <div class="cb"><div class="h"><span>bash</span><button class="copy" type="button" data-copy="curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash">[copy]</button></div><pre><span class="p">$ </span>curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash</pre></div>
+      <p>The script detects your platform, downloads the correct binary, and places it on your <code class="i">PATH</code>.</p>
+
+      <h3 id="what">What gets installed</h3>
+      <div class="tw"><table class="t"><thead><tr><th>Component</th><th>Description</th></tr></thead><tbody>
+        <tr><td>nanosb</td><td>CLI binary for creating and running microVM sandboxes</td></tr>
+        <tr><td>libkrunfw</td><td>Guest kernel firmware loaded at VM boot</td></tr>
+        <tr><td>gvproxy</td><td>User-space networking proxy for bridge networking</td></tr>
+        <tr><td>exec-agent</td><td>In-guest exec agent used by <code class="i">nanosb exec</code></td></tr>
+      </tbody></table></div>
+      <div class="callout"><b>Note</b>Binaries are installed to <code class="i">~/.nanosandbox/bin</code>. Set <code class="i">NANOSANDBOX_HOME</code> to install somewhere else.</div>
+      <div class="cb"><div class="h"><span>bash · custom location</span><button class="copy" type="button" data-copy="NANOSANDBOX_HOME=/opt/nanosandbox curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash">[copy]</button></div><pre><span class="p">$ </span>NANOSANDBOX_HOME=/opt/nanosandbox curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash</pre></div>
+
+      <h3 id="verify">Verify the installation</h3>
+      <p>After installing, confirm the CLI is working:</p>
+      <div class="cb"><div class="h"><span>bash</span><button class="copy" type="button" data-copy="nanosb --version">[copy]</button></div><pre><span class="p">$ </span>nanosb --version</pre></div>
+
+      <h2 id="platforms">Platform support</h2>
+      <p>Nanosandbox supports macOS Apple Silicon (stable) and Linux x86_64 (live-verified). See System Requirements for full platform details.</p>
+
+      <div class="next"><a href="#"><span>← previous</span><b>Docs home</b></a><a href="#"><span>next →</span><b>Quick Start</b></a></div>
+      <div class="fb"><span>Was this page helpful? <button type="button" id="yes">yes</button><button type="button" id="no">no</button></span><a href="#" style="color:var(--text-tertiary)">edit this page on GitHub ↗</a></div>
+    </article>
+
+    <aside class="outline" id="outline"><b>On this page</b>
+      <a href="#install" data-id="install">Install on macOS or Linux</a>
+      <a href="#what" data-id="what" class="sub">What gets installed</a>
+      <a href="#verify" data-id="verify" class="sub">Verify the installation</a>
+      <a href="#platforms" data-id="platforms">Platform support</a>
+    </aside>
+  </div>
+</main>
+<script src="base.js"></script>
+<script src="catalog-data.js"></script>
+<script>
+NS.chrome();
+const read = new Set(['System Requirements']);
+document.getElementById('tree').innerHTML = '<div class="vsel"><span>version</span><b>v0.3.0 ▾</b></div>' + CAT.docs.map(s => {
+  const n = s.p.filter(p => read.has(p)).length;
+  return `<details ${s.s === 'Getting Started' ? 'open' : ''}><summary>${s.s}<span>${n}/${s.p.length}</span></summary>${s.p.map(p => `<a href="#" class="${p === 'Installation' ? 'on' : ''}"><i class="${read.has(p) ? 'done' : ''}"></i>${p}</a>`).join('')}</details>`;
+}).join('');
+const ids = ['install', 'what', 'verify', 'platforms'];
+function spy() {
+  let cur = ids[0];
+  ids.forEach(id => { const el = document.getElementById(id); if (el.getBoundingClientRect().top < 140) cur = id; });
+  document.querySelectorAll('#outline a').forEach(a => a.classList.toggle('on', a.dataset.id === cur));
+  const h = document.documentElement.scrollHeight - innerHeight;
+  document.getElementById('prog').style.width = (h > 0 ? scrollY / h * 100 : 0) + '%';
+}
+addEventListener('scroll', spy, { passive: true }); spy();
+['yes', 'no'].forEach(k => document.getElementById(k).onclick = e => { e.target.parentElement.innerHTML = 'Thanks, noted.'; });
+</script>
+</body>
+</html>

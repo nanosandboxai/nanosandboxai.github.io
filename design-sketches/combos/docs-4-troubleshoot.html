@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Docs Troubleshooter</title>
+<link rel="stylesheet" href="base.css">
+<style>
+/* Docs idea 4: troubleshooting as a tool. Paste an error to get its fix; explore what `nanosb doctor` checks per OS. Content from the real Troubleshooting docs. */
+.hero h1 { margin: 0 0 6px; font-size: clamp(24px, 3.6vw, 38px); color: var(--text-heading); letter-spacing: -.02em; line-height: 1.1; }
+.hero h1 span { color: var(--accent); }
+.hero p { margin: 0; color: var(--text-tertiary); max-width: 70ch; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 900px) { .two { grid-template-columns: 1fr; } }
+textarea { width: 100%; min-height: 96px; resize: vertical; font: 12.5px var(--mono); border: 1px solid var(--border-secondary); background: var(--bg-tertiary); color: var(--text-heading); padding: 10px; }
+textarea:focus { outline: none; border-color: var(--accent); }
+.samples { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 12px; font-size: 11.5px; }
+.samples button { font: 11.5px var(--mono); border: 1px solid var(--border-secondary); background: var(--bg-elevated); color: var(--text-tertiary); padding: 3px 8px; cursor: pointer; }
+.samples button:hover { color: var(--accent); border-color: var(--accent); }
+.fix { border: 1px solid var(--accent); background: var(--bg-elevated); animation: fin .3s ease-out; }
+.fix h3 { margin: 0; padding: 10px 14px; border-bottom: 1px solid var(--border-secondary); font-size: 14px; color: var(--text-heading); display: flex; justify-content: space-between; gap: 10px; }
+.fix h3 span { color: var(--accent); font-size: 11px; font-weight: 400; }
+.fix ol { margin: 0; padding: 10px 14px 4px 34px; font-size: 13px; color: var(--text-secondary); }
+.fix li { margin-bottom: 10px; }
+.fix li b { color: var(--text-heading); }
+.fix code { display: block; margin-top: 6px; font-size: 12px; background: var(--bg-tertiary); border: 1px solid var(--border-secondary); padding: 6px 8px; overflow-x: auto; white-space: nowrap; color: var(--text-primary); }
+.fix .src { padding: 8px 14px; border-top: 1px dashed var(--border-secondary); font-size: 11.5px; color: var(--text-muted); }
+.nomatch { border: 1px dashed var(--border-primary); padding: 12px 14px; font-size: 13px; color: var(--text-tertiary); }
+.os { display: flex; border: 1px solid var(--border-primary); width: max-content; margin-bottom: 10px; }
+.os button { font: 12px var(--mono); padding: 6px 14px; border: 0; background: var(--bg-inverse); color: var(--text-tertiary); cursor: pointer; }
+.os button.on { background: var(--accent); color: #000; }
+.term2 { border: 1px solid var(--border-primary); background: var(--bg-inverse); font-size: 12.5px; }
+.term2 .h { padding: 6px 10px; border-bottom: 1px solid var(--border-secondary); color: var(--text-muted); font-size: 11px; }
+.chk { display: grid; grid-template-columns: 34px 1fr; gap: 6px; padding: 7px 10px; border-bottom: 1px dashed var(--border-secondary); cursor: pointer; text-align: left; width: 100%; font: inherit; background: transparent; border-left: 0; border-right: 0; border-top: 0; color: var(--text-secondary); }
+.chk:hover { background: var(--bg-selected); }
+.chk .m { font-weight: 700; }
+.m.ok { color: var(--green); } .m.warn { color: var(--yellow); } .m.bad { color: var(--accent-ink); }
+.chk small { display: block; color: var(--text-muted); font-size: 11.5px; }
+.chk .hint { display: none; margin-top: 6px; color: var(--text-primary); background: var(--bg-tertiary); border: 1px solid var(--border-secondary); padding: 6px 8px; font-size: 11.5px; white-space: normal; }
+.chk.open .hint { display: block; }
+.legend2 { display: flex; gap: 14px; font-size: 11.5px; color: var(--text-tertiary); margin-top: 8px; flex-wrap: wrap; }
+@keyframes fin { from { opacity: 0; transform: translateY(4px); } }
+@media (prefers-reduced-motion: reduce) { .fix { animation: none; } }
+</style>
+</head>
+<body>
+<main class="container">
+  <section class="box inv hero">
+    <p class="kicker" style="margin-bottom:8px">$ nanosb doctor --explain</p>
+    <h1>Something broke? <span>Paste the error.</span></h1>
+    <p>The Troubleshooting docs, turned into a tool. Paste an error message to jump straight to its causes and fixes, or explore what <code>nanosb doctor</code> checks on your system.</p>
+  </section>
+
+  <div class="two">
+    <section class="box">
+      <h2>Paste your error</h2>
+      <label for="err" hidden>Error message</label>
+      <textarea id="err" spellcheck="false"></textarea>
+      <div class="samples" id="samples"><span class="faint">examples:</span></div>
+      <div id="fix"></div>
+    </section>
+
+    <section class="box">
+      <h2>What doctor checks</h2>
+      <div class="os" id="os"></div>
+      <div class="term2"><div class="h">$ nanosb doctor <span id="osl"></span> · click a line</div><div id="checks"></div></div>
+      <div class="legend2"><span><b class="m ok">[✓]</b> passed</span><span><b class="m warn">[!]</b> warning, not fatal</span><span><b class="m bad">[✗]</b> fix before running a sandbox</span></div>
+      <p class="faint" style="font-size:12px;margin:10px 0 0">If anything fails, doctor exits non-zero, so it can gate CI.</p>
+    </section>
+  </div>
+</main>
+<script src="base.js"></script>
+<script>
+NS.chrome();
+const errors = [
+  { k: ['image not found', 'manifest unknown'], t: 'Image Not Found', sample: 'Error: image not found: ghcr.io/nanosandboxai/nanosandbox/claude:latest\n  Caused by: manifest unknown',
+    fixes: [['Typo in image name.', 'Verify the image reference is correct:', 'nanosb pull ghcr.io/nanosandboxai/nanosandbox/claude:latest'], ['Platform mismatch.', 'The image may not support your architecture. Pull with the short name, which resolves the right platform:', 'nanosb pull claude']] },
+  { k: ['krun_create_ctx', 'failed to create sandbox'], t: 'Sandbox Creation Failed', sample: 'Error: failed to create sandbox\n  Caused by: krun_create_ctx failed with code -1',
+    fixes: [['Hypervisor not available.', 'Run the doctor command and fix any [✗] line:', 'nanosb doctor']] },
+  { k: ['/dev/kvm'], t: 'KVM Device missing (Linux)', sample: '[✗] KVM Device: /dev/kvm does not exist',
+    fixes: [['KVM is off or not loaded.', 'Enable KVM in BIOS/UEFI, then load the module:', 'modprobe kvm_intel   # or kvm_amd']] },
+  { k: ['libkrunfw'], t: 'Kernel firmware not found', sample: '[✗] libkrunfw Kernel Firmware: libkrunfw.5.dylib not found',
+    fixes: [['Runtime dependencies are missing.', 'Re-run the installer:', 'bash <(curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh)']] }
+];
+const err = document.getElementById('err'), fix = document.getElementById('fix');
+function match() {
+  const v = err.value.toLowerCase();
+  if (!v.trim()) { fix.innerHTML = ''; return; }
+  const e = errors.find(x => x.k.some(k => v.includes(k)));
+  fix.innerHTML = e ? `<div class="fix"><h3>${e.t}<span>matched</span></h3><ol>${e.fixes.map(([b, d, c]) => `<li><b>${b}</b> ${d}<code>${c.replace(/</g, '&lt;')}</code></li>`).join('')}</ol><div class="src">From: Troubleshooting › Common Errors › ${e.t} →</div></div>`
+    : `<div class="nomatch">No known match. Run <code>nanosb doctor</code>, then read Common Errors: image pull, timeouts, permissions, network, virtio-fs mounts.</div>`;
+}
+errors.forEach(e => { const b = document.createElement('button'); b.type = 'button'; b.textContent = e.t; b.onclick = () => { err.value = e.sample; match(); }; document.getElementById('samples').append(b); });
+err.addEventListener('input', match);
+err.value = errors[1].sample; match();
+
+const checks = {
+  macOS: [['ok', 'Architecture', 'Apple Silicon (aarch64)'], ['bad', 'libkrunfw Kernel Firmware', 'libkrunfw.5.dylib reachable from ~/.nanosandbox/libs, Homebrew prefix, or /usr/local/lib', 'Fix: re-run the installer (install.sh)'], ['ok', 'Hypervisor.framework', 'macOS HVF is available'], ['warn', 'gvproxy', 'Optional bridge-networking helper', 'Only needed for bridge networking']],
+  Linux: [['ok', 'libkrunfw Kernel Firmware', 'libkrunfw.so.5 reachable via the dynamic linker'], ['bad', 'KVM Device', '/dev/kvm exists and is accessible by the current user', 'Fix: enable KVM in BIOS/UEFI and load kvm module: modprobe kvm_intel (or kvm_amd)'], ['warn', 'gvproxy', 'Optional bridge-networking helper', 'Only needed for bridge networking']]
+};
+let os = 'macOS';
+const mk = { ok: '[✓]', warn: '[!]', bad: '[✗]' };
+function renderOs() {
+  document.getElementById('os').innerHTML = Object.keys(checks).map(o => `<button type="button" class="${o === os ? 'on' : ''}" data-o="${o}">${o}</button>`).join('');
+  document.getElementById('osl').textContent = '(' + os + ', ' + checks[os].length + ' checks)';
+  document.getElementById('checks').innerHTML = checks[os].map(([s, n, d, h]) => `<button type="button" class="chk ${s === 'bad' ? 'open' : ''}"><span class="m ${s}">${mk[s]}</span><span>${n}<small>${d}</small>${h ? `<span class="hint">${h}</span>` : ''}</span></button>`).join('');
+}
+document.getElementById('os').onclick = e => { const b = e.target.closest('button'); if (b) { os = b.dataset.o; renderOs(); } };
+document.getElementById('checks').onclick = e => { const b = e.target.closest('.chk'); if (b) b.classList.toggle('open'); };
+renderOs();
+</script>
+</body>
+</html>

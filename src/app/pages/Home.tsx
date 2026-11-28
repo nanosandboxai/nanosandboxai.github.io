@@ -1,5 +1,12 @@
-import { useState, useCallback } from 'react'
+import { lazy, Suspense, useState, useCallback } from 'react'
+import { Link } from 'react-router'
 import TerminalDemo from '@/app/components/terminal-demo'
+import IsolationLayers from '@/app/components/isolation-layers'
+
+// three.js is heavy: load the 3D hero in its own chunk.
+const HypervisorPanopticon = lazy(() => import('@/app/components/hypervisor-panopticon'))
+
+const INSTALL_CMD = 'curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash'
 
 function CopyButton({ text, className = '' }: { text: string; className?: string }) {
   const [copied, setCopied] = useState(false)
@@ -20,145 +27,130 @@ function CopyButton({ text, className = '' }: { text: string; className?: string
   )
 }
 
-type InstallTab = 'unix' | 'windows'
-
-const INSTALL_COMMANDS: Record<InstallTab, string> = {
-  unix: 'curl -fsSL https://github.com/nanosandboxai/cli/releases/latest/download/install.sh | bash',
-  windows: 'irm https://raw.githubusercontent.com/nanosandboxai/cli/latest/scripts/install.ps1 | iex',
-}
-
-const INSTALL_TABS: { id: InstallTab; label: string }[] = [
-  { id: 'unix', label: '[macOS / Linux]' },
-  { id: 'windows', label: '[Windows]' },
-]
-
 export default function Home() {
-  const [installTab, setInstallTab] = useState<InstallTab>('unix')
+  // Opening section: brand, headline and install, shown above the 3D layer stack.
+  const layersIntro = (
+    <div className="mb-5">
+      <div className="mb-4 flex items-center gap-3">
+        <img src="/logo.svg" alt="" className="h-11 w-11 flex-shrink-0" />
+        <div>
+          <p className="text-sm font-bold tracking-wide text-[var(--accent)]">NANOSANDBOX</p>
+          <p className="text-xs text-[var(--text-tertiary)]">VM-isolated sandboxes for AI code agents</p>
+        </div>
+      </div>
+      <h1 className="mb-3 text-3xl font-bold leading-[1.05] tracking-tight text-[var(--text-heading)] md:text-[42px]">
+        Five walls between your agent
+        <br />
+        <span className="text-[var(--accent)]">and your laptop.</span>
+      </h1>
+      <p className="mb-4 max-w-md text-sm leading-relaxed text-[var(--text-tertiary)]">
+        Every AI code agent runs in its own hardware-isolated microVM, with its own kernel, and boots in about 180&nbsp;ms. Scroll
+        to take the stack apart.
+      </p>
+      <div className="flex min-w-0 items-center gap-2 border border-[var(--border-secondary)] bg-[var(--bg-tertiary)] px-3 py-2.5">
+        <span className="text-[var(--accent)]">$</span>
+        <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap text-xs text-[var(--text-primary)]">{INSTALL_CMD}</code>
+        <CopyButton text={INSTALL_CMD} />
+      </div>
+    </div>
+  )
+
+  // Second section: the 3D Panopticon, where the walls get tested.
+  const panopticonCopy = (
+    <div className="bg-[var(--scene-scrim)] p-4 backdrop-blur-[2px] lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+      <p className="mb-2 text-xs uppercase tracking-widest text-[var(--accent-hover)]">$ watch them try</p>
+      <h2 className="mb-3 text-3xl font-bold leading-[1.05] tracking-tight text-[var(--scene-heading)] md:text-5xl">
+        Six agents. Six cells.
+        <br />
+        <span className="text-[var(--accent-hover)]">Zero escapes.</span>
+      </h2>
+      <p className="max-w-md text-sm leading-relaxed text-[var(--scene-text)]">
+        Each agent is boxed in by the same five walls. Every few seconds one tries to break out, and the log names the wall that
+        stopped it. Click a cell to make one try.
+      </p>
+    </div>
+  )
 
   return (
-    <>
-      {/* Hero Section */}
-      <div className="mb-6 border border-[var(--border-primary)] bg-[var(--bg-inverse)] p-6 font-mono">
-        <div className="flex items-center gap-3 md:gap-5 mb-4">
-          <img src="/logo.svg" alt="Nanosandbox" className="w-12 h-12 md:w-18 md:h-18 flex-shrink-0" />
-          <div>
-            <h1 className="text-xl md:text-3xl font-bold text-[var(--accent)] mb-1">NANOSANDBOX</h1>
-            <p className="text-[var(--text-heading)] text-sm md:text-lg">VM-Isolated Sandboxes for AI Code Agents</p>
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-6">
+      {/* 1. Hero: scroll-driven 3D isolation layers */}
+      <IsolationLayers intro={layersIntro} />
+
+      {/* 2. 3D Hypervisor Panopticon */}
+      <Suspense
+        fallback={
+          <div className="panopticon relative p-5 font-mono md:p-8">
+            <div className="max-w-xl">{panopticonCopy}</div>
+            <p className="absolute bottom-5 left-5 text-xs text-[var(--scene-dim)]">booting 6 microVMs…</p>
           </div>
-        </div>
-        <p className="text-[var(--text-tertiary)] text-sm leading-relaxed">
-          Deploy AI agents in hardware-isolated microVMs with sub-second boot times.
-          <br />
-          OCI image support, cross-platform (macOS, Linux, Windows), and built-in
-          <br />
-          multi-agent TUI for concurrent development workflows.
-        </p>
+        }
+      >
+        <HypervisorPanopticon>{panopticonCopy}</HypervisorPanopticon>
+      </Suspense>
+
+      {/* Stats strip */}
+      <div className="grid grid-cols-2 border border-[var(--border-secondary)] bg-[var(--bg-secondary)] font-mono md:grid-cols-4">
+        {[
+          ['180ms', 'median cold boot'],
+          ['1 : 1', 'agent to kernel'],
+          ['HVF · KVM', 'hardware boundary'],
+          ['0', 'escapes, ever'],
+        ].map(([v, k], i) => (
+          <div
+            key={k}
+            className={`p-4 ${i % 2 === 0 ? 'border-r' : 'md:border-r'} ${i < 2 ? 'border-b md:border-b-0' : ''} border-[var(--border-secondary)] last:border-r-0`}
+          >
+            <div className="text-2xl font-bold tabular-nums text-[var(--accent)]">{v}</div>
+            <div className="text-xs text-[var(--text-tertiary)]">{k}</div>
+          </div>
+        ))}
       </div>
 
-      {/* Getting Started */}
-      <div className="mb-6 border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 font-mono">
-        <h2 className="text-lg font-bold text-[var(--accent)] mb-3">$ Getting Started</h2>
-        <div className="flex gap-3 mb-2 text-xs">
-          {INSTALL_TABS.map((tab) => {
-            const isActive = installTab === tab.id
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setInstallTab(tab.id)}
-                className={
-                  isActive
-                    ? 'text-[var(--accent)] border-b border-[var(--accent)] pb-0.5'
-                    : 'text-[var(--text-tertiary)] hover:text-[var(--text-heading)] transition-colors pb-0.5'
-                }
-              >
-                {tab.label}
-              </button>
-            )
-          })}
+      {/* Terminal demo + commands */}
+      <div className="grid gap-6 lg:grid-cols-[1.25fr_1fr]">
+        <div className="min-w-0">
+          <TerminalDemo />
         </div>
-        <div className="text-sm">
-          <div className="flex items-center justify-between mb-1">
-            <p className="text-[var(--text-tertiary)] text-xs"># Install nanosb</p>
-            <CopyButton text={INSTALL_COMMANDS[installTab]} />
-          </div>
-          <div className="bg-[var(--bg-tertiary)] border border-[var(--border-secondary)] p-3 overflow-x-auto">
-            <code className="text-[var(--text-primary)] text-xs md:text-sm whitespace-nowrap">
-              {INSTALL_COMMANDS[installTab]}
-            </code>
-          </div>
-          {installTab === 'windows' && (
-            <div className="mt-2 border border-[var(--border-secondary)] bg-[var(--bg-tertiary)] px-3 py-2 text-xs text-[var(--text-tertiary)]">
-              <span className="text-[var(--accent)] mr-1">[info]</span>
-              Windows support is experimental.
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Terminal Demo */}
-      <div className="mb-6">
-        <TerminalDemo />
-      </div>
-
-      {/* Features */}
-      <div className="mb-6 border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 font-mono">
-        <h2 className="text-lg font-bold text-[var(--accent)] mb-3">$ Features</h2>
-        <div className="space-y-2 text-sm">
-          {[
-            { name: 'VM-Level Isolation', desc: 'Each sandbox runs in its own microVM via libkrun with an independent kernel' },
-            { name: 'Sub-Second Boot Times', desc: 'Optimized libkrun startup for near-instant sandbox creation' },
-            { name: 'OCI Image Support', desc: 'Pull from Docker Hub, GHCR, or any private registry' },
-            { name: 'Multi-Agent TUI', desc: 'Run multiple AI agents concurrently in panel-based terminal UI' },
-            { name: 'Project Mounting', desc: 'VirtioFS mounts with automatic git integration and branch tracking' },
-            { name: 'MCP Server Support', desc: 'Model Context Protocol integration for agent tooling' },
-            { name: 'Cross-Platform', desc: 'macOS Apple Silicon (HVF), Linux (KVM), Windows (HCS)' },
-            { name: 'Streaming I/O', desc: 'Real-time output streaming with backpressure handling' },
-          ].map((f) => (
-            <div key={f.name} className="flex items-start gap-2">
-              <span className="text-[var(--accent)]">&#10003;</span>
-              <div>
-                <span className="text-[var(--text-heading)]">{f.name}</span>
-                <p className="text-[var(--text-tertiary)] text-xs">{f.desc}</p>
+        <div className="min-w-0 border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 font-mono">
+          <h2 className="mb-3 text-lg font-bold text-[var(--accent)]">$ Common Commands</h2>
+          <div className="space-y-1.5 text-xs">
+            {[
+              { cmd: 'nanosb pull <IMAGE>', desc: 'Pull an OCI image from a registry' },
+              { cmd: 'nanosb run <IMAGE> [CMD]', desc: 'Run a command in a new sandbox' },
+              { cmd: 'nanosb exec <ID> <CMD>', desc: 'Execute command in running sandbox' },
+              { cmd: 'nanosb ps', desc: 'List running sandboxes' },
+              { cmd: 'nanosb stop <SANDBOX>', desc: 'Stop a running sandbox' },
+              { cmd: 'nanosb rm <SANDBOX>', desc: 'Remove a sandbox' },
+              { cmd: 'nanosb images', desc: 'List cached images' },
+              { cmd: 'nanosb doctor', desc: 'Check runtime prerequisites' },
+              { cmd: 'nanosb cleanup', desc: 'Clean up stale project clones' },
+            ].map((c) => (
+              <div key={c.cmd} className="group flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-2">
+                <span className="text-[var(--text-heading)] sm:w-44 sm:flex-shrink-0">{c.cmd}</span>
+                <span className="flex-1 text-[var(--text-tertiary)]">{c.desc}</span>
+                <CopyButton text={c.cmd} className="hidden opacity-0 group-hover:opacity-100 sm:inline" />
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Common Commands */}
-      <div className="mb-6 border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 font-mono">
-        <h2 className="text-lg font-bold text-[var(--accent)] mb-3">$ Common Commands</h2>
-        <div className="space-y-1.5 text-xs">
-          {[
-            { cmd: 'nanosb pull <IMAGE>', desc: 'Pull an OCI image from a registry' },
-            { cmd: 'nanosb run <IMAGE> [CMD]', desc: 'Run a command in a new sandbox' },
-            { cmd: 'nanosb exec <ID> <CMD>', desc: 'Execute command in running sandbox' },
-            { cmd: 'nanosb ps', desc: 'List running sandboxes' },
-            { cmd: 'nanosb stop <SANDBOX>', desc: 'Stop a running sandbox' },
-            { cmd: 'nanosb rm <SANDBOX>', desc: 'Remove a sandbox' },
-            { cmd: 'nanosb images', desc: 'List cached images' },
-            { cmd: 'nanosb doctor', desc: 'Check runtime prerequisites' },
-            { cmd: 'nanosb cleanup', desc: 'Clean up stale project clones' },
-          ].map((c) => (
-            <div key={c.cmd} className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2 group">
-              <span className="text-[var(--text-heading)] sm:w-48 sm:flex-shrink-0">{c.cmd}</span>
-              <span className="text-[var(--text-tertiary)] flex-1">{c.desc}</span>
-              <CopyButton text={c.cmd} className="hidden sm:inline opacity-0 group-hover:opacity-100" />
-            </div>
-          ))}
+      {/* What's next */}
+      <div className="grid gap-4 border border-[var(--border-primary)] bg-[var(--bg-inverse)] p-6 font-mono md:grid-cols-[1.2fr_1fr] md:items-center">
+        <div>
+          <h2 className="mb-1 text-lg font-bold text-[var(--accent)]">$ What's next</h2>
+          <p className="text-xs text-[var(--text-tertiary)]">Release notes, deep dives and the roadmap for the desktop app and the agent caging tournament.</p>
+        </div>
+        <div className="flex flex-wrap gap-2 text-sm">
+          <Link to="/articles" className="border border-[var(--accent)] bg-[var(--accent)] px-4 py-2 text-black transition hover:brightness-105">
+            read the articles
+          </Link>
+          <Link to="/coming-soon" className="border border-[var(--border-secondary)] px-4 py-2 text-[var(--text-heading)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]">
+            see the roadmap
+          </Link>
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="border border-[var(--border-primary)] bg-[var(--bg-inverse)] p-4 font-mono text-center">
-        <div className="flex items-center justify-center flex-wrap gap-3 md:gap-8 text-xs text-[var(--text-tertiary)] mb-2">
-          <a href="/docs" className="hover:text-[var(--accent)] transition-colors">Documentation</a>
-          <a href="https://github.com/nanosandboxai" className="hover:text-[var(--accent)] transition-colors" target="_blank" rel="noopener noreferrer">GitHub</a>
-          <a href="/agents" className="hover:text-[var(--accent)] transition-colors">Agents</a>
-          <a href="/mcp" className="hover:text-[var(--accent)] transition-colors">MCP</a>
-        </div>
-        <p className="text-[var(--text-muted)] text-xs">NanoSandbox &copy; 2026 | Open Source Project</p>
-      </div>
-    </>
+    </div>
   )
 }

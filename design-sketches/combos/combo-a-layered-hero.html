@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Layered Hero</title>
+<link rel="stylesheet" href="base.css">
+<style>
+/* Combo A: today's page, section for section. Hero right side becomes the isolation stack; one new Agents box with cages + ticker. */
+.hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center; }
+.hero > * { min-width: 0; }
+.hero .lede { color: var(--text-tertiary); font-size: 14px; margin: 0 0 18px; max-width: 58ch; }
+.hero .sub { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 10px; }
+.stack-wrap { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+.stack-wrap .legend { align-self: start; padding-top: 12px; }
+@media (max-width: 900px) { .hero { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .stack { --stack-h: 280px; } .lyr { --lw: 180px; --lh: 128px; } .stack-wrap { grid-template-columns: 1fr; } .stack-wrap .legend { display: none; } .hero .sub { grid-template-columns: 1fr; } }
+.agents-head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.agents-head a { color: var(--text-tertiary); font-size: 12px; } .agents-head a:hover { color: var(--accent); }
+.agents .ticker { margin: 0 -16px 14px; }
+</style>
+</head>
+<body>
+<main class="container">
+  <section class="box inv hero" id="hero">
+    <div>
+      <div class="brand"><div class="logo"><i></i></div><div><h1>NANOSANDBOX</h1><p>VM-Isolated Sandboxes for AI Code Agents</p></div></div>
+      <p class="lede">Deploy AI agents in hardware-isolated microVMs with sub-second boot times. OCI image support, macOS and Linux, and a built-in multi-agent TUI. Hover the stack to see each wall.</p>
+      <div class="code"><code>curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash</code><button class="copy" type="button">[copy]</button></div>
+      <form class="sub" onsubmit="event.preventDefault(); this.querySelector('button').textContent='subscribed ✓'"><label for="ea" hidden>Email</label><input id="ea" class="form-in" type="email" placeholder="you@company.com" required style="border:1px solid var(--border-secondary);background:var(--bg-tertiary);padding:9px 12px;color:var(--text-heading);font:14px var(--mono);min-width:0"><button class="btn" type="submit">subscribe</button></form>
+    </div>
+    <div class="stack-wrap">
+      <div class="stack" id="stk"><div class="stack-3d">
+        <div class="lyr" style="--i:0" data-l="0"><span>L0 host · macos / linux</span></div>
+        <div class="lyr" style="--i:1" data-l="1"><span>L1 hypervisor · hvf / kvm</span></div>
+        <div class="lyr" style="--i:2" data-l="2"><span>L2 libkrun microvm</span></div>
+        <div class="lyr" style="--i:3" data-l="3"><span>L3 guest kernel</span></div>
+        <div class="lyr core" style="--i:4" data-l="4"><span>agent</span></div>
+      </div></div>
+      <div class="legend"><span data-l="4">agent</span><span data-l="3">guest kernel</span><span data-l="2">microVM</span><span data-l="1">hypervisor</span><span data-l="0">host</span></div>
+    </div>
+  </section>
+
+  <section class="box"><h2>Getting Started</h2>
+    <p class="faint" style="font-size:12px;margin:0 0 4px"># Install nanosb</p>
+    <div class="code"><code>curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash</code><button class="copy" type="button">[copy]</button></div>
+  </section>
+
+  <section class="term"><div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><div class="term-tabs"><span class="on">Run agent</span><span>TUI Mode</span><span>MCP</span></div></div><pre class="term-body" id="term"></pre></section>
+
+  <section class="box agents">
+    <div class="agents-head"><h2>Agents</h2><a href="#">browse all agents →</a></div>
+    <div class="ticker" aria-hidden="true"><div><span><b>▣</b> claude</span><span><b>▣</b> codex</span><span><b>▣</b> goose</span><span><b>▣</b> opencode</span><span><b>▣</b> aider</span><span><b>▣</b> gemini-cli</span><span><b>▣</b> amp</span></div></div>
+    <div class="cages">
+      <div class="cage" tabindex="0"><div class="bars"></div><span class="st">vm-a1 running</span><div class="av">Cl</div><div><b>claude</b><br><small>python:3.12-slim</small></div></div>
+      <div class="cage" tabindex="0"><div class="bars"></div><span class="st">vm-b7 running</span><div class="av">Cx</div><div><b>codex</b><br><small>node:22-slim</small></div></div>
+      <div class="cage" tabindex="0"><div class="bars"></div><span class="st">vm-c2 running</span><div class="av">Go</div><div><b>goose</b><br><small>rust:1.82</small></div></div>
+      <div class="cage" tabindex="0"><div class="bars"></div><span class="st">vm-d4 running</span><div class="av">Oc</div><div><b>opencode</b><br><small>golang:1.23</small></div></div>
+      <div class="cage" tabindex="0"><div class="bars"></div><span class="st">vm-e9 running</span><div class="av">Ai</div><div><b>aider</b><br><small>python:3.12</small></div></div>
+    </div>
+  </section>
+
+  <section class="box"><h2>Features</h2><div class="feats">
+    <div><p style="margin:0"><b>VM-Level Isolation</b><span>Each sandbox runs in its own microVM via libkrun with an independent kernel</span></p></div>
+    <div><p style="margin:0"><b>Sub-Second Boot Times</b><span>Optimized libkrun startup for near-instant sandbox creation</span></p></div>
+    <div><p style="margin:0"><b>OCI Image Support</b><span>Pull from Docker Hub, GHCR, or any private registry</span></p></div>
+    <div><p style="margin:0"><b>Multi-Agent TUI</b><span>Run multiple AI agents concurrently in panel-based terminal UI</span></p></div>
+    <div><p style="margin:0"><b>Project Mounting</b><span>VirtioFS mounts with automatic git integration and branch tracking</span></p></div>
+    <div><p style="margin:0"><b>MCP Server Support</b><span>Model Context Protocol integration for agent tooling</span></p></div>
+  </div></section>
+
+  <section class="box"><h2>Common Commands</h2><div class="cmds">
+    <div><b>nanosb pull &lt;IMAGE&gt;</b><span>Pull an OCI image from a registry</span><button class="copy" type="button">[copy]</button></div>
+    <div><b>nanosb run &lt;IMAGE&gt; [CMD]</b><span>Run a command in a new sandbox</span><button class="copy" type="button">[copy]</button></div>
+    <div><b>nanosb exec &lt;ID&gt; &lt;CMD&gt;</b><span>Execute command in running sandbox</span><button class="copy" type="button">[copy]</button></div>
+    <div><b>nanosb ps</b><span>List running sandboxes</span><button class="copy" type="button">[copy]</button></div>
+    <div><b>nanosb doctor</b><span>Check runtime prerequisites</span><button class="copy" type="button">[copy]</button></div>
+  </div></section>
+
+  <footer class="box inv footer"><nav><a href="#">Documentation</a><a href="#">GitHub</a><a href="#">Agents</a><a href="#">MCP</a></nav><span class="faint">NanoSandbox © 2026 | Open Source Project</span></footer>
+</main>
+<script src="base.js"></script>
+<script>
+NS.chrome();
+NS.term(document.getElementById('term'), NS.demoLines);
+NS.spread(document.getElementById('stk'), document.getElementById('hero'), 30, 64);
+NS.idle();
+NS.extras();
+</script>
+</body>
+</html>

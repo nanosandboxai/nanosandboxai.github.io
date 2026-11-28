@@ -26,7 +26,7 @@ export function getDocsIssueUrl(title: string): string {
     labels: 'documentation',
     body: `Issue with documentation page: ${title}\n\n---\nPlease describe the issue:`,
   })
-  return `https://github.com/nanosandboxai/nanosandbox.ai/issues/new?${params.toString()}`
+  return `https://github.com/nanosandboxai/nanosandboxai.github.io/issues/new?${params.toString()}`
 }
 
 export function getArticleIssueUrl(title: string): string {

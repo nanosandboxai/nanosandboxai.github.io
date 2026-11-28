@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Curated Catalog</title>
+<link rel="stylesheet" href="base.css">
+<style>
+/* Idea 3: Skills and MCP as one curated catalog: start-here shelf, category rail, trust badges, and an add tray that writes sandbox.yml. */
+.hero h1 { margin: 0 0 6px; font-size: clamp(24px, 3.6vw, 38px); color: var(--text-heading); letter-spacing: -.02em; line-height: 1.1; }
+.hero h1 span { color: var(--accent); }
+.hero p { margin: 0; color: var(--text-tertiary); max-width: 72ch; }
+.tabs2 { display: flex; gap: 0; border: 1px solid var(--border-primary); width: max-content; max-width: 100%; }
+.tabs2 button { font: 13px var(--mono); padding: 8px 16px; border: 0; border-right: 1px solid var(--border-secondary); background: var(--bg-inverse); color: var(--text-tertiary); cursor: pointer; }
+.tabs2 button:last-child { border-right: 0; }
+.tabs2 button.on { background: var(--accent); color: #000; }
+.tabs2 b { font-weight: 400; opacity: .7; margin-left: 6px; }
+.shelf { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.layout { display: grid; grid-template-columns: 180px minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+@media (max-width: 1100px) { .layout { grid-template-columns: minmax(0, 1fr) 300px; } .rail { display: none; } }
+@media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
+.rail { display: grid; gap: 2px; font-size: 12px; position: sticky; top: 60px; }
+.rail button { font: 12px var(--mono); text-align: left; display: flex; justify-content: space-between; padding: 5px 8px; border: 0; background: transparent; color: var(--text-tertiary); cursor: pointer; border-left: 2px solid transparent; }
+.rail button.on { color: var(--accent); border-left-color: var(--accent); background: var(--bg-selected); }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+.tools input[type=search] { flex: 1; min-width: 160px; font: 13px var(--mono); padding: 8px 10px; border: 1px solid var(--border-secondary); background: var(--bg-tertiary); color: var(--text-heading); }
+.tools label { font-size: 12px; color: var(--text-tertiary); display: flex; gap: 6px; align-items: center; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.card2 { border: 1px solid var(--border-secondary); background: var(--bg-elevated); padding: 12px; display: flex; flex-direction: column; gap: 8px; min-width: 0; transition: border-color .15s; }
+.card2:hover { border-color: var(--border-primary); }
+.card2.added { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+.card2 .top { display: flex; justify-content: space-between; gap: 8px; align-items: start; }
+.card2 b { color: var(--text-heading); font-size: 13.5px; word-break: break-word; }
+.card2 p { margin: 0; font-size: 12px; color: var(--text-tertiary); flex: 1; }
+.trust { font-size: 10px; padding: 1px 6px; border: 1px solid; white-space: nowrap; }
+.trust.cur { color: var(--green); border-color: var(--green); } .trust.reg { color: var(--text-muted); border-color: var(--border-primary); } .trust.pub { color: #6ea2ff; border-color: #6ea2ff; }
+.card2 .meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); }
+.add { font: 12px var(--mono); border: 1px solid var(--border-primary); background: transparent; color: var(--text-heading); padding: 3px 10px; cursor: pointer; }
+.add:hover { border-color: var(--accent); color: var(--accent); }
+.card2.added .add { background: var(--accent); color: #000; border-color: var(--accent); }
+.tray { position: sticky; top: 60px; border: 1px solid var(--border-primary); background: var(--bg-inverse); }
+.tray h3 { margin: 0; padding: 8px 12px; font-size: 12px; border-bottom: 1px solid var(--border-secondary); color: var(--accent); display: flex; justify-content: space-between; }
+.tray pre { margin: 0; padding: 12px; font-size: 12px; line-height: 1.6; color: var(--text-secondary); white-space: pre; overflow-x: auto; min-height: 160px; }
+.tray pre .k { color: var(--accent-ink); }
+.tray .foot { padding: 8px 12px; border-top: 1px solid var(--border-secondary); display: flex; gap: 8px; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); }
+.dedupe { font-size: 12px; color: var(--text-tertiary); border: 1px dashed var(--border-primary); padding: 8px 10px; }
+.more { border: 1px dashed var(--border-primary); padding: 12px; text-align: center; font-size: 12px; color: var(--text-tertiary); }
+</style>
+</head>
+<body>
+<main class="container">
+  <section class="box inv hero">
+    <p class="kicker" style="margin-bottom:8px">$ nanosb catalog</p>
+    <h1>Tools and skills for your agent, <span>curated first.</span></h1>
+    <p>One catalog for skills and MCP servers. Nine hand-picked servers sit at the top; the 8,232-server registry is one search away. Add what you need and copy a ready <code>sandbox.yml</code>.</p>
+  </section>
+
+  <div class="tabs2" id="tabs"></div>
+
+  <section class="box">
+    <h2 id="shelfTitle">Start here</h2>
+    <div class="shelf" id="shelf"></div>
+  </section>
+
+  <div class="layout">
+    <nav class="rail" id="rail" aria-label="Categories"></nav>
+    <section style="min-width:0">
+      <div class="tools">
+        <label for="s" class="sr-only" hidden>Search</label>
+        <input id="s" type="search" placeholder="search…" aria-label="Search the catalog">
+        <label><input type="checkbox" id="curOnly"> curated only</label>
+      </div>
+      <p class="dedupe" id="dedupe"></p>
+      <div class="grid" id="grid"></div>
+      <div class="more" id="more" style="margin-top:10px"></div>
+    </section>
+    <aside class="tray" aria-label="Your sandbox.yml">
+      <h3>sandbox.yml <span id="count">0 added</span></h3>
+      <pre id="yml"></pre>
+      <div class="foot"><span>paste, then <code>nanosb apply</code></span><button class="btn" type="button" data-copy="">[copy]</button></div>
+    </aside>
+  </div>
+</main>
+<script src="base.js"></script>
+<script src="catalog-data.js"></script>
+<script>
+NS.chrome();
+const C = CAT;
+let tab = 'mcp', cat = 'All', q = '', curOnly = false;
+const added = new Set(['mcp:github', 'skill:pdf']);
+const items = () => tab === 'mcp'
+  ? [...C.mcp.map(m => ({ id: 'mcp:' + m.id, n: m.n, d: m.d, c: 'Curated', trust: 'cur', meta: m.cmd.split(' ')[0] })), ...C.mcpRegistry.map(m => ({ id: 'mcp:' + m.n, n: m.n, d: m.d, c: 'Registry', trust: 'reg', meta: 'registry' }))]
+  : C.skills.map(s => ({ id: 'skill:' + s.n, n: s.n, d: s.d, c: s.c, trust: ['pdf', 'xlsx', 'docx', 'pptx', 'skill-creator', 'mcp-builder', 'frontend-design', 'webapp-testing'].includes(s.n) ? 'cur' : 'pub', meta: s.c }));
+const trustLabel = { cur: 'curated', reg: 'registry', pub: 'public' };
+const card = x => `<div class="card2 ${added.has(x.id) ? 'added' : ''}"><div class="top"><b>${x.n}</b><span class="trust ${x.trust}">${trustLabel[x.trust]}</span></div><p>${x.d}</p><div class="meta"><span>${x.meta}</span><button class="add" type="button" data-id="${x.id}">${added.has(x.id) ? '✓ added' : '+ add'}</button></div></div>`;
+function render() {
+  document.getElementById('tabs').innerHTML = [['mcp', 'MCP servers', C.counts.mcp.toLocaleString()], ['skill', 'Skills', C.counts.skills]].map(([k, l, n]) => `<button type="button" data-k="${k}" class="${k === tab ? 'on' : ''}">${l}<b>${n}</b></button>`).join('');
+  const all = items();
+  document.getElementById('shelfTitle').textContent = tab === 'mcp' ? 'Start here: curated servers' : 'Start here: most useful skills';
+  document.getElementById('shelf').innerHTML = all.filter(x => x.trust === 'cur').slice(0, 6).map(card).join('');
+  const cats = tab === 'mcp' ? [['All', C.counts.mcp], ['Curated', 9], ['Registry', C.counts.mcp - 9]] : [['All', C.counts.skills], ...C.skillCats];
+  document.getElementById('rail').innerHTML = cats.map(([c, n]) => `<button type="button" data-c="${c}" class="${c === cat ? 'on' : ''}"><span>${c}</span><span>${n.toLocaleString()}</span></button>`).join('');
+  const list = all.filter(x => (cat === 'All' || x.c === cat) && (!curOnly || x.trust === 'cur') && (!q || (x.n + x.d).toLowerCase().includes(q)));
+  document.getElementById('grid').innerHTML = list.map(card).join('') || '<p class="faint">no match</p>';
+  document.getElementById('dedupe').innerHTML = tab === 'skill' ? `Duplicates are merged: <b class="head">89 listings → 80 unique skills</b>. Archived entries never appear.` : `Only <b class="head">active, latest</b> registry versions are shown. Curated servers come with tested config.`;
+  document.getElementById('more').textContent = tab === 'mcp' ? `+ ${(C.counts.mcp - 13).toLocaleString()} more registry servers. Search to find them.` : `+ ${C.counts.skills - C.skills.length} more skills`;
+  const mcps = [...added].filter(a => a.startsWith('mcp:')).map(a => C.mcp.find(m => 'mcp:' + m.id === a) || { id: a.slice(4), cmd: '# registry server: see its install notes' });
+  const skills = [...added].filter(a => a.startsWith('skill:')).map(a => a.slice(6));
+  // Same shape as the sandbox.yml reference in the nanosandbox README.
+  const envs = mcps.filter(m => m.env).map(m => `      ${m.env}: \${${m.env}}`);
+  const mcpYml = mcps.map(m => {
+    if (!m.cmd || m.cmd.startsWith('#')) return `      ${m.id.replace(/[^a-z0-9-]/gi, '-')}:  ${m.cmd}`;
+    const [cmd, ...args] = m.cmd.split(' ');
+    return `      ${m.id}:\n        command: ${cmd}\n        args: [${args.map(a => JSON.stringify(a)).join(', ')}]`;
+  });
+  const yml = `<span class="k">sandboxes:</span>\n  claude:\n    image: claude\n`
+    + (envs.length ? `    <span class="k">env:</span>\n${envs.join('\n')}\n` : '')
+    + (skills.length ? `    <span class="k">skills:</span> [${skills.join(', ')}]\n` : '')
+    + (mcps.length ? `    <span class="k">mcp:</span>\n${mcpYml.join('\n')}\n` : '');
+  document.getElementById('yml').innerHTML = yml;
+  document.querySelector('.tray [data-copy]').dataset.copy = document.getElementById('yml').textContent;
+  document.getElementById('count').textContent = added.size + ' added';
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('#tabs button'); if (t) { tab = t.dataset.k; cat = 'All'; render(); return; }
+  const c = e.target.closest('#rail button'); if (c) { cat = c.dataset.c; render(); return; }
+  const a = e.target.closest('.add'); if (a) { added.has(a.dataset.id) ? added.delete(a.dataset.id) : added.add(a.dataset.id); render(); }
+});
+document.getElementById('s').addEventListener('input', e => { q = e.target.value.toLowerCase(); render(); });
+document.getElementById('curOnly').addEventListener('change', e => { curOnly = e.target.checked; render(); });
+render();
+</script>
+</body>
+</html>

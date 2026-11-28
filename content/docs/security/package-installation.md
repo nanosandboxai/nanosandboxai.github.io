@@ -1,47 +1,50 @@
 ---
 title: "Package Installation"
-description: "How code agents install development tools without root access"
+description: "How code agents install development tools"
 order: 3
 ---
 
-# Package Installation
+Code agents frequently need to install development tools such as compilers, language runtimes, and libraries to complete their tasks. Nanosandbox supports this without giving agents unrestricted root access.
 
-Code agents frequently need to install development tools such as compilers, language runtimes, and libraries to complete their tasks. Nanosandbox enables this without giving agents root access.
+## User-space package managers
 
-## How It Works
+Agents run as a non-root user inside the sandbox VM, so language package managers that install into the user's home work normally:
 
-Agents run as a non-root user inside the sandbox VM. When an agent runs a system package command like `apt-get install`, the command is forwarded to a privileged gateway endpoint that executes it with root privileges within the VM.
+- `pip`, `uv`, `uvx`
+- `npm`, `pnpm`, `yarn`
+- `cargo install`
+- `go install`
+- `gem install`
+- `rustup`
 
-```
-agent (non-root)  →  apt-get install python3
-                          │
-                          ▼
-                     gateway endpoint (root)  →  installs the package
-                          │
-                          ▼
-                     package installed  ✓
-```
+No special handling is required for these tools.
 
-The agent never has direct root access. The gateway mediates all system-level package operations through a controlled API with an allowlist of permitted commands. Only `apt-get`, `apt`, and `dpkg` are allowed. Any other command is rejected.
+## System packages
 
-## User-Space Package Managers
+Current next-mode agent images do **not** ship an in-VM privileged package
+gateway. `sudo` is not installed, and setuid/setgid bits are stripped from the
+rootfs, so an unprivileged agent cannot run `apt-get`/`dpkg` directly.
 
-Language-specific package managers work directly without the gateway because they install to the user's home directory by default. Tools like `pip`, `npm`, `cargo`, `go install`, `gem`, and `rustup` all function normally as a non-root user. No special handling is required for these tools.
+If a workflow truly needs system packages:
 
-## Streaming Output
+1. **Run the sandbox with root enabled** — set `run_as_root: true` in
+   `sandbox.yml` or pass `--run-as-root` to `nanosb run`. The agent process then
+   runs as root inside the disposable microVM and can use `apt-get`.
+2. **Build a custom image** with the packages preinstalled and use it as the
+   sandbox image (preferred for repeatable workflows).
 
-Package installation output streams in real-time. When an agent runs a package installation command, it sees progress as it happens, just like on a regular system.
+Root is contained by the hardware VM boundary; it is not host root.
 
-```
-$ apt-get install python3
-Hit:1 http://deb.debian.org/debian bookworm InRelease
-Reading package lists...
-Building dependency tree...
-Setting up python3 (3.11.2-1) ...
-```
+## Streaming output
 
-## Security Considerations
+Package installation output streams in real-time, so the agent sees progress as
+it happens.
 
-The `sudo` binary is not installed in the sandbox. All setuid and setgid bits are stripped from every binary in the rootfs. The gateway endpoint only permits a small set of package management commands. Even the gateway's root access is contained within the disposable VM, which is destroyed after use.
+## Security considerations
 
-This approach follows the same pattern used by major cloud development platforms where the security boundary is the VM itself, not OS-level privilege restrictions within it. The key difference is that Nanosandbox does not grant agents unrestricted root access. Instead, root operations are mediated through a single, auditable endpoint.
+- The VM boundary — not in-guest privilege separation — is the primary security
+  control.
+- Prefer user-space package managers; they keep the agent unprivileged.
+- Only enable root (`run_as_root` / `--run-as-root`) with trusted images and
+  workflows, because the whole agent process runs as root in that VM.
+- The sandbox and its installed packages are destroyed with the VM.

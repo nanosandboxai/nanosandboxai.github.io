@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scroll Through the Walls</title>
+<link rel="stylesheet" href="base.css">
+<style>
+/* Combo B: today's hero untouched. Features are regrouped by isolation layer in a sticky scrollytelling box; then an agent-arena bento replaces the plain lists. */
+.hero { display: grid; grid-template-columns: 1.35fr 1fr; gap: 24px; align-items: center; }
+.hero > * { min-width: 0; }
+@media (max-width: 900px) { .hero { grid-template-columns: 1fr; } }
+.walk { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+.walk .pin { position: sticky; top: 64px; align-self: start; border: 1px solid var(--border-secondary); background: var(--bg-inverse); padding: 16px; }
+.walk .pin .stack { --stack-h: 340px; }
+.walk .pin p { margin: 0; font-size: 12px; }
+.step { border: 1px solid var(--border-secondary); background: var(--bg-elevated); padding: 18px; margin-bottom: 14px; transition: border-color .25s, transform .25s, box-shadow .25s; }
+.step:last-child { margin-bottom: 0; }
+.step.on { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); transform: translateX(4px); }
+.step .k { font-size: 11px; letter-spacing: .1em; color: var(--text-muted); text-transform: uppercase; }
+.step.on .k { color: var(--accent-ink); }
+.step h3 { margin: 6px 0 6px; font-size: 16px; color: var(--text-heading); }
+.step p { margin: 0 0 10px; color: var(--text-tertiary); font-size: 13px; }
+.step .feats { font-size: 13px; }
+@media (max-width: 900px) { .walk { grid-template-columns: 1fr; } .walk .pin { position: relative; top: 0; } .walk .pin .stack { --stack-h: 260px; } .lyr { --lw: 180px; --lh: 128px; } }
+
+.arena { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.arena .wide { grid-column: span 2; }
+.arena .tall { grid-row: span 2; }
+.tile { border: 1px solid var(--border-secondary); background: var(--bg-elevated); padding: 16px; min-width: 0; }
+.tile.dark { background: var(--bg-inverse); border-color: var(--border-primary); }
+.big { font-size: clamp(40px, 6vw, 64px); font-weight: 700; color: var(--accent); letter-spacing: -.04em; line-height: 1; font-variant-numeric: tabular-nums; margin: 8px 0; }
+@media (max-width: 900px) { .arena { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .arena { grid-template-columns: 1fr; } .arena .wide { grid-column: auto; } .arena .tall { grid-row: auto; } }
+.pair { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 24px; }
+@media (max-width: 900px) { .pair { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main class="container">
+  <section class="box inv hero">
+    <div>
+      <div class="brand"><div class="logo"><i></i></div><div><h1>NANOSANDBOX</h1><p>VM-Isolated Sandboxes for AI Code Agents</p></div></div>
+      <p class="muted" style="margin:0 0 16px">Deploy AI agents in hardware-isolated microVMs with sub-second boot times. OCI image support, cross-platform (macOS, Linux), and built-in multi-agent TUI for concurrent development workflows.</p>
+      <div class="code"><code>curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash</code><button class="copy" type="button">[copy]</button></div>
+    </div>
+    <div class="box"><h2 style="font-size:15px">Subscribe for updates</h2>
+      <form class="form" onsubmit="event.preventDefault(); this.querySelector('button').textContent='subscribed ✓'"><label for="eb" hidden>Email</label><input id="eb" type="email" placeholder="you@company.com" required><button class="btn" type="submit">subscribe</button></form>
+    </div>
+  </section>
+
+  <section class="walk" id="walk">
+    <div class="pin">
+      <h2 class="h2">Isolation Model</h2>
+      <div class="stack" id="stk"><div class="stack-3d">
+        <div class="lyr" style="--i:0" data-l="0"><span>L0 host</span></div>
+        <div class="lyr" style="--i:1" data-l="1"><span>L1 hypervisor</span></div>
+        <div class="lyr" style="--i:2" data-l="2"><span>L2 microvm</span></div>
+        <div class="lyr" style="--i:3" data-l="3"><span>L3 guest kernel</span></div>
+        <div class="lyr core" style="--i:4" data-l="4"><span>agent</span></div>
+      </div></div>
+      <p class="faint"># scroll the steps → the stack opens and lights the wall you are reading</p>
+    </div>
+    <div>
+      <div class="step" data-l="4"><span class="k">L4 · agent</span><h3>The agent gets root, in a room of its own</h3><p>Claude, Codex or Goose has full control of an OCI image. Nothing it runs touches your shell.</p><div class="feats"><div><p style="margin:0"><b>OCI Image Support</b><span>Docker Hub, GHCR, or any private registry</span></p></div><div><p style="margin:0"><b>MCP Server Support</b><span>Model Context Protocol tooling per agent</span></p></div></div></div>
+      <div class="step" data-l="3"><span class="k">L3 · guest kernel</span><h3>Its own kernel and syscall filter</h3><p>Every sandbox boots an independent kernel, with syscall filtering and package-install policy inside the guest.</p><div class="feats"><div><p style="margin:0"><b>Streaming I/O</b><span>Real-time output with backpressure handling</span></p></div></div></div>
+      <div class="step" data-l="2"><span class="k">L2 · microvm</span><h3>libkrun microVM, sub-second boot</h3><p>A minimal VM with VirtioFS mounts. The agent edits a git clone, not your working tree.</p><div class="feats"><div><p style="margin:0"><b>Sub-Second Boot Times</b><span>Near-instant sandbox creation</span></p></div><div><p style="margin:0"><b>Project Mounting</b><span>VirtioFS with branch tracking</span></p></div></div></div>
+      <div class="step" data-l="1"><span class="k">L1 · hypervisor</span><h3>Hardware virtualization</h3><p>Apple Hypervisor.framework on Apple Silicon, KVM on Linux. The CPU enforces the boundary.</p><div class="feats"><div><p style="margin:0"><b>Cross-Platform</b><span>macOS Apple Silicon (HVF), Linux (KVM)</span></p></div></div></div>
+      <div class="step" data-l="0"><span class="k">L0 · host</span><h3>Your machine stays clean</h3><p>Secrets are injected per sandbox, never mounted. <span class="head">nanosb rm</span> leaves nothing behind.</p><div class="feats"><div><p style="margin:0"><b>Multi-Agent TUI</b><span>Drive every sandbox from one terminal</span></p></div></div></div>
+    </div>
+  </section>
+
+  <section class="box">
+    <h2>Agent Arena</h2>
+    <div class="arena">
+      <div class="cage" tabindex="0"><div class="bars"></div><span class="st">vm-a1 running</span><div class="av">Cl</div><div><b>claude</b><br><small>python:3.12-slim</small></div></div>
+      <div class="tile"><span class="kicker">cold start, median</span><div class="big" data-count="180" data-suffix="ms">180ms</div><small class="muted">fresh microVM per task</small></div>
+      <div class="tile dark wide tall"><span class="kicker" style="color:var(--accent)">coming soon · caging tournament</span><h3 class="head" style="margin:8px 0 6px;font-size:18px">Which agent escapes first?</h3><p class="muted" style="margin:0 0 14px;font-size:13px">Agents attack their own sandbox. We publish the scoreboard.</p>
+        <div class="board">
+          <div><span>01</span><div class="track"><div class="fill" data-w="92%"></div></div><span>claude · 0 esc</span></div>
+          <div><span>02</span><div class="track"><div class="fill" data-w="81%"></div></div><span>codex · 0 esc</span></div>
+          <div><span>03</span><div class="track"><div class="fill" data-w="70%"></div></div><span>goose · 0 esc</span></div>
+          <div><span>04</span><div class="track"><div class="fill" data-w="58%"></div></div><span>aider · 0 esc</span></div>
+        </div>
+      </div>
+      <div class="cage" tabindex="0"><div class="bars"></div><span class="st">vm-b7 running</span><div class="av">Cx</div><div><b>codex</b><br><small>node:22-slim</small></div></div>
+      <div class="cage" tabindex="0"><div class="bars"></div><span class="st">vm-c2 running</span><div class="av">Go</div><div><b>goose</b><br><small>rust:1.82</small></div></div>
+    </div>
+  </section>
+
+  <section class="pair">
+    <div class="term"><div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><div class="term-tabs"><span class="on">Run agent</span><span>TUI Mode</span></div></div><pre class="term-body" id="term"></pre></div>
+    <div class="box"><h2>Common Commands</h2><div class="cmds">
+      <div><b>nanosb pull &lt;IMAGE&gt;</b><span>Pull an OCI image</span><button class="copy" type="button">[copy]</button></div>
+      <div><b>nanosb run &lt;IMAGE&gt; [CMD]</b><span>Run in a new sandbox</span><button class="copy" type="button">[copy]</button></div>
+      <div><b>nanosb exec &lt;ID&gt; &lt;CMD&gt;</b><span>Exec in a running sandbox</span><button class="copy" type="button">[copy]</button></div>
+      <div><b>nanosb ps</b><span>List running sandboxes</span><button class="copy" type="button">[copy]</button></div>
+      <div><b>nanosb stop &lt;SANDBOX&gt;</b><span>Stop a sandbox</span><button class="copy" type="button">[copy]</button></div>
+      <div><b>nanosb doctor</b><span>Check prerequisites</span><button class="copy" type="button">[copy]</button></div>
+    </div></div>
+  </section>
+
+  <footer class="box inv footer"><nav><a href="#">Documentation</a><a href="#">GitHub</a><a href="#">Agents</a><a href="#">MCP</a></nav><span class="faint">NanoSandbox © 2026 | Open Source Project</span></footer>
+</main>
+<script src="base.js"></script>
+<script>
+NS.chrome();
+NS.term(document.getElementById('term'), NS.demoLines);
+NS.spread(document.getElementById('stk'), document.getElementById('walk'), 26, 66);
+NS.light(4);
+NS.steps('.step');
+NS.extras();
+</script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Zoom Out of the Cage</title>
+<link rel="stylesheet" href="base.css">
+<style>
+/* Combo D: today's hero, then a pinned scroll scene. The layers are drawn as nested terminal boxes (today's box language) instead of a 3D stack;
+   scrolling zooms out from the caged agent to the host. Arena cages + ticker follow. */
+.hero { display: grid; grid-template-columns: 1.35fr 1fr; gap: 24px; align-items: center; }
+.hero > * { min-width: 0; }
+@media (max-width: 900px) { .hero { grid-template-columns: 1fr; } }
+
+.zoom { height: 260vh; position: relative; }
+.zoom-pin { position: sticky; top: 52px; height: calc(100vh - 100px); min-height: 420px; display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; }
+.view { position: relative; overflow: hidden; border: 1px solid var(--border-primary); background: var(--bg-inverse); }
+.nest-root { position: absolute; inset: 18px; transform-origin: 50% 50%; will-change: transform; }
+.nest { position: absolute; inset: 0; border: 1px dashed var(--border-primary); transition: border-color .3s, background .3s; }
+.nest > .lbl { position: absolute; top: 6px; left: 8px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); transition: color .3s; white-space: nowrap; }
+.nest .nest { inset: 34px 30px 30px; }
+.nest.on { border-style: solid; border-color: var(--accent); background: var(--accent-wash); }
+.nest.on > .lbl { color: var(--accent-ink); }
+.nest .cage { position: absolute; inset: 30px; min-height: 0; justify-content: center; align-items: center; text-align: center; }
+.nest .cage.on { border-color: var(--accent); }
+.nest .cage.on .bars { transform: translateY(0); }
+.side { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.depth { border: 1px solid var(--border-secondary); background: var(--bg-secondary); padding: 14px; }
+.depth .row { display: grid; grid-template-columns: 34px 1fr; gap: 8px; padding: 6px 0; border-bottom: 1px dashed var(--border-secondary); color: var(--text-muted); font-size: 12.5px; transition: color .25s; }
+.depth .row:last-child { border-bottom: 0; }
+.depth .row.on { color: var(--text-heading); }
+.depth .row.on b { color: var(--accent-ink); }
+.depth b { font-weight: 400; }
+.caption { border: 1px solid var(--border-secondary); background: var(--bg-elevated); padding: 14px; font-size: 13px; color: var(--text-secondary); min-height: 110px; }
+.caption strong { display: block; color: var(--text-heading); margin-bottom: 4px; }
+.meter { height: 4px; background: var(--bg-tertiary); } .meter i { display: block; height: 100%; width: 0; background: var(--accent); }
+@media (max-width: 860px) { .zoom-pin { grid-template-columns: 1fr; grid-template-rows: 1fr auto; } .depth { display: none; } .caption { min-height: 0; } }
+
+.arena-head { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+.arena .ticker { margin: 0 -16px 14px; }
+.row3 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+@media (max-width: 900px) { .row3 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main class="container">
+  <section class="box inv hero">
+    <div>
+      <div class="brand"><div class="logo"><i></i></div><div><h1>NANOSANDBOX</h1><p>VM-Isolated Sandboxes for AI Code Agents</p></div></div>
+      <p class="muted" style="margin:0 0 16px">Deploy AI agents in hardware-isolated microVMs with sub-second boot times. OCI image support, cross-platform (macOS, Linux), and a built-in multi-agent TUI.</p>
+      <div class="code"><code>curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash</code><button class="copy" type="button">[copy]</button></div>
+    </div>
+    <div class="box"><h2 style="font-size:15px">Subscribe for updates</h2>
+      <form class="form" onsubmit="event.preventDefault(); this.querySelector('button').textContent='subscribed ✓'"><label for="ed" hidden>Email</label><input id="ed" type="email" placeholder="you@company.com" required><button class="btn" type="submit">subscribe</button></form>
+    </div>
+  </section>
+
+  <section class="zoom" id="zoom" aria-label="Zoom out through the isolation layers">
+    <div class="zoom-pin">
+      <div class="view">
+        <div class="nest-root" id="root">
+          <div class="nest" data-l="0"><span class="lbl">L0 · host · your laptop</span>
+            <div class="nest" data-l="1"><span class="lbl">L1 · hypervisor · hvf / kvm</span>
+              <div class="nest" data-l="2"><span class="lbl">L2 · libkrun microvm · virtiofs /work</span>
+                <div class="nest" data-l="3"><span class="lbl">L3 · guest kernel · seccomp</span>
+                  <div class="cage" data-l="4"><div class="bars"></div><div class="av" style="margin:0 auto">Cl</div><b>claude</b><small>rm -rf / → only the sandbox</small></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="side">
+        <h2 class="h2" style="margin:0">Zoom Out</h2>
+        <div class="meter"><i id="meter"></i></div>
+        <div class="depth">
+          <div class="row" data-l="4"><span>L4</span><b>agent in its cage</b></div>
+          <div class="row" data-l="3"><span>L3</span><b>guest kernel</b></div>
+          <div class="row" data-l="2"><span>L2</span><b>microVM</b></div>
+          <div class="row" data-l="1"><span>L1</span><b>hypervisor</b></div>
+          <div class="row" data-l="0"><span>L0</span><b>your host</b></div>
+        </div>
+        <div class="caption" id="cap"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="box arena">
+    <div class="arena-head"><h2>Agent Arena</h2><span class="faint" style="font-size:12px">hover a cage to lock it</span></div>
+    <div class="ticker" aria-hidden="true"><div><span><b>▣</b> claude 180ms</span><span><b>▣</b> codex 176ms</span><span><b>▣</b> goose 190ms</span><span><b>▣</b> opencode 172ms</span><span><b>▣</b> aider 185ms</span><span><b>▣</b> gemini-cli 181ms</span></div></div>
+    <div class="cages">
+      <div class="cage" tabindex="0"><div class="bars"></div><span class="st">vm-a1 running</span><div class="av">Cl</div><div><b>claude</b><br><small>python:3.12-slim</small></div></div>
+      <div class="cage" tabindex="0"><div class="bars"></div><span class="st">vm-b7 running</span><div class="av">Cx</div><div><b>codex</b><br><small>node:22-slim</small></div></div>
+      <div class="cage" tabindex="0"><div class="bars"></div><span class="st">vm-c2 running</span><div class="av">Go</div><div><b>goose</b><br><small>rust:1.82</small></div></div>
+      <div class="cage" tabindex="0"><div class="bars"></div><span class="st">vm-d4 running</span><div class="av">Oc</div><div><b>opencode</b><br><small>golang:1.23</small></div></div>
+    </div>
+    <div class="board" style="margin-top:16px">
+      <div><span>01</span><div class="track"><div class="fill" data-w="92%"></div></div><span>claude · 0 escapes</span></div>
+      <div><span>02</span><div class="track"><div class="fill" data-w="81%"></div></div><span>codex · 0 escapes</span></div>
+    </div>
+  </section>
+
+  <section class="row3">
+    <div class="term"><div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><div class="term-tabs"><span class="on">Run agent</span><span>TUI Mode</span></div></div><pre class="term-body" id="term"></pre></div>
+    <div class="box"><h2>Common Commands</h2><div class="cmds">
+      <div><b>nanosb pull &lt;IMAGE&gt;</b><span>Pull an OCI image</span><button class="copy" type="button">[copy]</button></div>
+      <div><b>nanosb run &lt;IMAGE&gt; [CMD]</b><span>Run in a new sandbox</span><button class="copy" type="button">[copy]</button></div>
+      <div><b>nanosb exec &lt;ID&gt; &lt;CMD&gt;</b><span>Exec in a running sandbox</span><button class="copy" type="button">[copy]</button></div>
+      <div><b>nanosb ps</b><span>List running sandboxes</span><button class="copy" type="button">[copy]</button></div>
+      <div><b>nanosb doctor</b><span>Check prerequisites</span><button class="copy" type="button">[copy]</button></div>
+    </div></div>
+  </section>
+
+  <footer class="box inv footer"><nav><a href="#">Documentation</a><a href="#">GitHub</a><a href="#">Agents</a><a href="#">MCP</a></nav><span class="faint">NanoSandbox © 2026 | Open Source Project</span></footer>
+</main>
+<script src="base.js"></script>
+<script>
+NS.chrome();
+NS.term(document.getElementById('term'), NS.demoLines);
+NS.extras();
+const caps = {
+  4: ['The agent, caged', 'Claude has root inside an OCI image. It can install, delete and break things. Keep scrolling.'],
+  3: ['Its own guest kernel', 'Not your kernel, not a shared namespace. Syscall filtering runs here.'],
+  2: ['A libkrun microVM', 'Boots in about 180 ms. Your project arrives as a VirtioFS mount on a separate git branch.'],
+  1: ['Hardware virtualization', 'Hypervisor.framework on Apple Silicon, KVM on Linux. The CPU enforces the wall.'],
+  0: ['Your host, untouched', 'Secrets are injected per sandbox. nanosb rm leaves nothing behind.']
+};
+const zoom = document.getElementById('zoom'), root = document.getElementById('root'), cap = document.getElementById('cap'), meter = document.getElementById('meter');
+let last = -1;
+// Zoom so the layer at the current depth fills the view; interpolate between layers.
+const levels = [0, 1, 2, 3, 4].map(l => root.querySelector(`[data-l="${l}"]`));
+function update() {
+  const r = zoom.getBoundingClientRect(), span = r.height - innerHeight + 100;
+  const p = NS.reduce ? 1 : Math.min(1, Math.max(0, -r.top / span));
+  const W = root.offsetWidth, H = root.offsetHeight;
+  const sc = levels.map((el, k) => k === 0 ? 1 : Math.min(W / el.offsetWidth, H / el.offsetHeight) * 0.92);
+  const depth = 4 * (1 - p), k = Math.min(3, Math.floor(depth)), f = depth - k;
+  const s = Math.exp(Math.log(sc[k]) * (1 - f) + Math.log(sc[k + 1]) * f);
+  root.style.transform = `scale(${s.toFixed(3)})`;
+  meter.style.width = (p * 100).toFixed(1) + '%';
+  const l = Math.round(depth);
+  if (l !== last) { last = l; NS.light(l); cap.innerHTML = `<strong>${caps[l][0]}</strong>${caps[l][1]}`; }
+}
+addEventListener('scroll', update, { passive: true }); addEventListener('resize', update); update();
+</script>
+</body>
+</html>

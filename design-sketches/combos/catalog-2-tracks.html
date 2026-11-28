@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Docs Learning Tracks</title>
+<link rel="stylesheet" href="base.css">
+<style>
+/* Idea 2: docs organised by what the reader wants to do, with progress, plus a doc page that links out to the catalogs. */
+.hero h1 { margin: 0 0 6px; font-size: clamp(24px, 3.6vw, 38px); color: var(--text-heading); letter-spacing: -.02em; line-height: 1.1; }
+.hero h1 span { color: var(--accent); }
+.hero p { margin: 0; color: var(--text-tertiary); max-width: 70ch; }
+.tracks { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 1000px) { .tracks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .tracks { grid-template-columns: 1fr; } }
+.track { border: 1px solid var(--border-secondary); background: var(--bg-elevated); padding: 14px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; transition: border-color .2s, transform .2s; text-align: left; font: inherit; color: inherit; }
+.track:hover, .track.on { border-color: var(--accent); transform: translateY(-2px); }
+.track .num { font-size: 11px; color: var(--text-muted); letter-spacing: .1em; text-transform: uppercase; }
+.track b { color: var(--text-heading); font-size: 15px; }
+.track small { color: var(--text-tertiary); font-size: 12px; }
+.bar { height: 6px; background: var(--bg-tertiary); border: 1px solid var(--border-secondary); }
+.bar i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .4s; }
+.steps { display: grid; gap: 6px; }
+.step { display: grid; grid-template-columns: 22px 1fr auto; gap: 10px; align-items: center; padding: 9px 12px; border: 1px solid var(--border-secondary); background: var(--bg-elevated); font-size: 13px; }
+.step input { accent-color: #ff6b6b; width: 15px; height: 15px; }
+.step b { color: var(--text-heading); font-weight: 400; }
+.step.done b { color: var(--text-muted); text-decoration: line-through; }
+.step span { color: var(--text-muted); font-size: 11px; }
+.resume { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; border: 1px solid var(--accent); background: var(--bg-selected); padding: 12px 14px; font-size: 13px; }
+/* doc page mock */
+.docpage { display: grid; grid-template-columns: 190px minmax(0, 1fr) 210px; gap: 18px; }
+@media (max-width: 1000px) { .docpage { grid-template-columns: minmax(0, 1fr); } .docpage aside { display: none; } }
+.side { font-size: 12px; display: grid; gap: 10px; align-content: start; }
+.side div b { display: block; color: var(--text-muted); font-weight: 400; text-transform: uppercase; letter-spacing: .08em; font-size: 10.5px; margin-bottom: 4px; }
+.side a { display: block; padding: 2px 0 2px 8px; color: var(--text-tertiary); text-decoration: none; border-left: 2px solid transparent; }
+.side a.on { color: var(--accent); border-left-color: var(--accent); }
+.doc h2 { font-size: 20px; color: var(--text-heading); margin: 0 0 8px; }
+.doc h3 { font-size: 14px; color: var(--text-heading); margin: 18px 0 6px; }
+.doc p { color: var(--text-secondary); font-size: 13.5px; margin: 0 0 10px; max-width: 70ch; }
+.crumb { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+.toc { font-size: 12px; display: grid; gap: 4px; align-content: start; position: sticky; top: 60px; }
+.toc b { color: var(--text-muted); font-weight: 400; text-transform: uppercase; letter-spacing: .08em; font-size: 10.5px; }
+.toc a { color: var(--text-tertiary); text-decoration: none; padding-left: 8px; border-left: 2px solid var(--border-secondary); }
+.toc a.on { color: var(--accent); border-left-color: var(--accent); }
+.usewith { margin-top: 12px; display: grid; gap: 6px; }
+.usewith a { display: block; border: 1px solid var(--border-secondary); background: var(--bg-elevated); padding: 8px 10px; text-decoration: none; font-size: 12px; color: var(--text-tertiary); }
+.usewith a b { display: block; color: var(--text-heading); font-weight: 400; }
+.usewith a:hover { border-color: var(--accent); }
+.pn { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+.pn a { border: 1px solid var(--border-secondary); padding: 10px 12px; text-decoration: none; font-size: 12px; color: var(--text-tertiary); }
+.pn a b { display: block; color: var(--text-heading); font-weight: 400; font-size: 13px; }
+.pn a:last-child { text-align: right; }
+.pn a:hover { border-color: var(--accent); }
+</style>
+</head>
+<body>
+<main class="container">
+  <section class="box inv hero">
+    <p class="kicker" style="margin-bottom:8px">$ nanosb docs</p>
+    <h1>Pick a goal. <span>Follow the track.</span></h1>
+    <p>The same 18 docs pages, grouped by what you want to do instead of by topic. Progress is remembered in your browser, and every page links to the skills and MCP servers it mentions.</p>
+  </section>
+
+  <div class="resume" id="resume"></div>
+  <div class="tracks" id="tracks"></div>
+  <section class="box">
+    <h2 id="trackTitle">Start</h2>
+    <div class="steps" id="steps"></div>
+  </section>
+
+  <section class="box inv">
+    <h2>A docs page, connected</h2>
+    <div class="docpage">
+      <aside class="side" id="side"></aside>
+      <article class="doc">
+        <div class="crumb">docs / Agents / MCP Servers</div>
+        <h2>MCP Servers</h2>
+        <p>MCP servers give an agent extra tools. Each one runs inside the agent's own microVM, so it gets the same walls the agent does.</p>
+        <h3 id="add">Add a server to sandbox.yml</h3>
+        <p>List servers under your agent in <code>sandbox.yml</code>, then run <code>nanosb apply</code>. Configuration is declarative: there is no in-TUI hot-reload.</p>
+        <h3 id="secrets">Pass secrets</h3>
+        <p>Servers that need a token read it from the sandbox environment. Secrets are injected per sandbox, never mounted.</p>
+        <div class="pn"><a href="#"><span>← previous</span><b>Agents Overview</b></a><a href="#"><span>next →</span><b>Skills</b></a></div>
+      </article>
+      <aside class="toc">
+        <b>On this page</b>
+        <a href="#" class="on">Add a server</a>
+        <a href="#">Pass secrets</a>
+        <div class="usewith">
+          <b style="margin-top:8px">Use it</b>
+          <a href="#"><b>GitHub</b>curated MCP · copy config →</a>
+          <a href="#"><b>Filesystem</b>curated MCP · copy config →</a>
+          <a href="#"><b>mcp-builder</b>skill · build your own →</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+<script src="base.js"></script>
+<script src="catalog-data.js"></script>
+<script>
+NS.chrome();
+const tracks = [
+  { id: 'start', n: 'Start', d: 'Install and run your first sandbox', pages: [['Getting Started', 'System Requirements'], ['Getting Started', 'Installation'], ['Getting Started', 'Quick Start'], ['Troubleshooting', 'Doctor Command']] },
+  { id: 'run', n: 'Run agents', d: 'Claude, Codex, Goose and more, side by side', pages: [['Agents', 'Agents Overview'], ['CLI Reference', 'TUI Mode'], ['CLI Reference', 'Project Mounting'], ['CLI Reference', 'Commands']] },
+  { id: 'secure', n: 'Lock it down', d: 'Secrets, syscalls and packages', pages: [['Security', 'Security Overview'], ['Security', 'Secrets Management'], ['Security', 'Syscall Filtering'], ['Security', 'Package Installation'], ['Architecture', 'Architecture Overview']] },
+  { id: 'extend', n: 'Extend', d: 'Give agents tools and skills', pages: [['Agents', 'MCP Servers'], ['Agents', 'Skills'], ['CLI Reference', 'Configuration'], ['CLI Reference', 'Global Flags'], ['Troubleshooting', 'Common Errors']] }
+];
+let done = {}; try { done = JSON.parse(localStorage.getItem('docs-done') || '{}'); } catch (e) {}
+if (!Object.keys(done).length) done = { 'System Requirements': 1, 'Installation': 1 };
+let cur = 'start';
+const save = () => { try { localStorage.setItem('docs-done', JSON.stringify(done)); } catch (e) {} };
+function render() {
+  document.getElementById('tracks').innerHTML = tracks.map((t, i) => { const n = t.pages.filter(p => done[p[1]]).length; return `<button type="button" class="track ${t.id === cur ? 'on' : ''}" data-id="${t.id}"><span class="num">track ${i + 1} · ${t.pages.length} pages</span><b>${t.n}</b><small>${t.d}</small><div class="bar"><i style="width:${Math.round(n / t.pages.length * 100)}%"></i></div><small>${n} of ${t.pages.length} read</small></button>`; }).join('');
+  const t = tracks.find(x => x.id === cur);
+  document.getElementById('trackTitle').textContent = t.n;
+  document.getElementById('steps').innerHTML = t.pages.map(([s, p]) => `<label class="step ${done[p] ? 'done' : ''}"><input type="checkbox" ${done[p] ? 'checked' : ''} data-p="${p}"><b>${p}</b><span>${s}</span></label>`).join('');
+  const next = tracks.flatMap(x => x.pages.map(p => [x, p])).find(([, p]) => !done[p[1]]);
+  document.getElementById('resume').innerHTML = next ? `<span>Continue where you left off: <b class="head">${next[1][1]}</b> <span class="faint">(${next[0].n})</span></span><button class="btn fill" type="button">continue →</button>` : '<span>All tracks complete.</span>';
+}
+document.getElementById('tracks').onclick = e => { const b = e.target.closest('.track'); if (b) { cur = b.dataset.id; render(); } };
+document.getElementById('steps').onchange = e => { const p = e.target.dataset.p; if (e.target.checked) done[p] = 1; else delete done[p]; save(); render(); };
+document.getElementById('side').innerHTML = CAT.docs.map(s => `<div><b>${s.s}</b>${s.p.map(p => `<a href="#" class="${p === 'MCP Servers' ? 'on' : ''}">${p}</a>`).join('')}</div>`).join('');
+render();
+</script>
+</body>
+</html>

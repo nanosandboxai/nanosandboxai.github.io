@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import PageHero from '@/app/components/page-hero'
 import comingSoonData from '@data/coming-soon.json'
 
 interface ComingSoonPost {
@@ -16,10 +17,12 @@ const posts = comingSoonData as ComingSoonPost[]
 export default function ComingSoonPage() {
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-8 font-mono">
-        <h1 className="text-2xl font-bold text-[var(--accent)] mb-2">Coming Soon...</h1>
-        <p className="text-[var(--text-tertiary)] text-sm">What we're building next for Nanosandbox.</p>
-      </div>
+      <PageHero
+        command="git log --branches=next"
+        title="What we're building"
+        accent="next."
+        description={<p>What we're building next for Nanosandbox.</p>}
+      />
 
       {posts.length === 0 ? (
         <div className="border border-[var(--border-secondary)] bg-[var(--bg-tertiary)] p-8 text-center font-mono">

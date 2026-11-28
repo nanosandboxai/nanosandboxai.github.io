@@ -10,8 +10,10 @@ const MCP_REGISTRY_OUTPUT = path.resolve(GENERATED_DATA_DIR, 'mcp-registry.json'
 const PUBLIC_SKILLS_API = 'https://openskills.space/api/skills'
 const PUBLIC_SKILLS_OUTPUT = path.resolve(GENERATED_DATA_DIR, 'skills-public.json')
 const LOCAL_SKILLS_INDEX = path.resolve(__dirname, '../agents-registry/index.json')
+const LOCAL_SKILLS_FALLBACK = path.resolve(__dirname, 'local-skills/index.json')
 const LOCAL_SKILLS_OUTPUT = path.resolve(GENERATED_DATA_DIR, 'skills-local.json')
 const AGENTS_REGISTRY_DIR = path.resolve(__dirname, '../agents-registry')
+const PRODUCT_REGISTRIES_DIR = path.resolve(__dirname, process.env.NANOSB_REGISTRIES_DIR ?? '../nanosandbox/registries')
 const AGENTS_OUTPUT = path.resolve(GENERATED_DATA_DIR, 'agents-registry.json')
 
 const ARTICLES_DIR = path.resolve(__dirname, '../articles/articles')
@@ -229,7 +231,12 @@ function skillsRegistryPlugin(): Plugin {
       }
 
       try {
-        const localIndexRaw = await fs.readFile(LOCAL_SKILLS_INDEX, 'utf8')
+        let localIndexRaw: string
+        try {
+          localIndexRaw = await fs.readFile(LOCAL_SKILLS_INDEX, 'utf8')
+        } catch {
+          localIndexRaw = await fs.readFile(LOCAL_SKILLS_FALLBACK, 'utf8')
+        }
         const localIndex = JSON.parse(localIndexRaw) as LocalSkillsIndex
         const localSkills = (localIndex.skills ?? []).map((skill) => ({
           name: skill.name ?? '',
@@ -443,15 +450,37 @@ function agentsRegistryPlugin(): Plugin {
     async buildStart() {
       await fs.mkdir(path.resolve(__dirname, 'src/data'), { recursive: true })
       try {
-        // Load index.json
-        const indexRaw = await fs.readFile(path.join(AGENTS_REGISTRY_DIR, 'index.json'), 'utf8')
-        const index = JSON.parse(indexRaw)
+        let index: { agents?: unknown[]; skills?: unknown[] } = { agents: [], skills: [] }
+        try {
+          const indexRaw = await fs.readFile(path.join(AGENTS_REGISTRY_DIR, 'index.json'), 'utf8')
+          index = JSON.parse(indexRaw)
+        } catch {
+          console.warn('[agents-registry] index.json not found, using empty defaults')
+        }
 
-        // Load models.json
-        const modelsRaw = await fs.readFile(path.join(AGENTS_REGISTRY_DIR, 'models/models.json'), 'utf8')
-        const models = JSON.parse(modelsRaw)
+        let models: { agents?: Record<string, unknown> } = { agents: {} }
+        try {
+          const modelsRaw = await fs.readFile(path.join(PRODUCT_REGISTRIES_DIR, 'models/models.json'), 'utf8')
+          models = JSON.parse(modelsRaw)
+        } catch (err) {
+          console.warn('[agents-registry] models.json not found, using empty defaults:', err)
+        }
 
-        // Load MCP sources
+        let providerCatalog: {
+          canonical?: Record<string, string>
+          credentials?: Record<string, string[]>
+          agents?: Record<string, unknown>
+        } = {}
+        try {
+          const providerCatalogRaw = await fs.readFile(
+            path.join(PRODUCT_REGISTRIES_DIR, 'models/provider-catalog.json'),
+            'utf8'
+          )
+          providerCatalog = JSON.parse(providerCatalogRaw)
+        } catch (err) {
+          console.warn('[agents-registry] provider-catalog.json not found, using empty defaults:', err)
+        }
+
         let mcpSources: Array<{ id: string; url: string; description: string }> = []
         try {
           const sourcesRaw = await fs.readFile(path.join(AGENTS_REGISTRY_DIR, 'mcps/sources.yaml'), 'utf8')
@@ -477,7 +506,6 @@ function agentsRegistryPlugin(): Plugin {
           mcpSources = registries
         } catch { /* no sources.yaml */ }
 
-        // Load full agent YAML files
         const agents: Array<Record<string, unknown>> = []
         const agentsDir = path.join(AGENTS_REGISTRY_DIR, 'agents')
         try {
@@ -508,12 +536,22 @@ function agentsRegistryPlugin(): Plugin {
           mcpSources,
           models: models.agents ?? {},
           agentDefinitions: agents,
+          providerCatalog,
         }
 
         await fs.writeFile(AGENTS_OUTPUT, JSON.stringify(result, null, 2))
-        console.log(`[agents-registry] Loaded ${(index.agents ?? []).length} agents, ${Object.keys(models.agents ?? {}).length} agent model configs`)
+        console.log(`[agents-registry] Loaded ${result.agentDefinitions.length} agent definitions, ${Object.keys(result.models).length} agent model configs`)
       } catch (err) {
         console.warn('[agents-registry] Failed to load, build continues with cached data:', err)
+      } finally {
+        await ensureJsonFile(AGENTS_OUTPUT, {
+          agents: [],
+          skills: [],
+          mcpSources: [],
+          models: {},
+          agentDefinitions: [],
+          providerCatalog: { canonical: {}, credentials: {}, agents: {} },
+        })
       }
     },
   }

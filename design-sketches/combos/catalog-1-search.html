@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Unified Search</title>
+<link rel="stylesheet" href="base.css">
+<style>
+/* Idea 1: one search for docs, skills and MCP. Search-first docs landing + a ⌘K palette on every page. */
+.hero { text-align: left; }
+.hero h1 { margin: 0 0 6px; font-size: clamp(24px, 3.6vw, 38px); color: var(--text-heading); letter-spacing: -.02em; line-height: 1.1; }
+.hero h1 span { color: var(--accent); }
+.hero p { margin: 0 0 16px; color: var(--text-tertiary); max-width: 70ch; }
+.sbox { display: flex; align-items: center; gap: 10px; border: 1px solid var(--accent); background: var(--bg-elevated); padding: 12px 14px; box-shadow: 0 0 0 4px var(--accent-wash); }
+.sbox span { color: var(--accent); }
+.sbox input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: var(--text-heading); font: 16px var(--mono); }
+.sbox kbd, .kbd { font: 11px var(--mono); border: 1px solid var(--border-primary); border-bottom-width: 2px; padding: 1px 6px; color: var(--text-tertiary); background: var(--bg-secondary); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; font-size: 12px; }
+.chips button { font: 12px var(--mono); border: 1px solid var(--border-secondary); background: var(--bg-secondary); color: var(--text-tertiary); padding: 3px 10px; cursor: pointer; }
+.chips button:hover { color: var(--accent); border-color: var(--accent); }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; margin: 16px 0 10px; }
+.filters button { font: 12px var(--mono); border: 1px solid var(--border-secondary); background: transparent; color: var(--text-tertiary); padding: 4px 10px; cursor: pointer; }
+.filters button.on { background: var(--accent); color: #000; border-color: var(--accent); }
+.groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 900px) { .groups { grid-template-columns: 1fr; } }
+.grp { border: 1px solid var(--border-secondary); background: var(--bg-secondary); min-width: 0; }
+.grp h3 { margin: 0; padding: 8px 12px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border-secondary); display: flex; justify-content: space-between; }
+.grp h3 b { color: var(--accent); font-weight: 400; }
+.row { display: grid; grid-template-columns: auto 1fr; gap: 10px; padding: 9px 12px; border-bottom: 1px dashed var(--border-secondary); text-decoration: none; transition: background .15s; }
+.row:hover, .row.sel { background: var(--bg-selected); }
+.row:last-child { border-bottom: 0; }
+.badge { font-size: 10px; padding: 1px 6px; border: 1px solid var(--border-primary); color: var(--text-tertiary); align-self: start; margin-top: 2px; }
+.badge.doc { border-color: #6ea2ff; color: #6ea2ff; } .badge.skill { border-color: var(--green); color: var(--green); } .badge.mcp { border-color: var(--accent); color: var(--accent-ink); }
+.row b { color: var(--text-heading); font-weight: 600; font-size: 13px; display: block; }
+.row small { color: var(--text-tertiary); font-size: 12px; }
+.row mark { background: var(--accent-wash); color: var(--text-heading); }
+.empty { padding: 12px; color: var(--text-muted); font-size: 12px; }
+.note { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 900px) { .note { grid-template-columns: 1fr; } }
+.note div { border: 1px solid var(--border-secondary); background: var(--bg-elevated); padding: 14px; font-size: 13px; color: var(--text-tertiary); }
+.note b { display: block; color: var(--text-heading); margin-bottom: 4px; }
+/* palette */
+.scrim[hidden] { display: none; }
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: grid; place-items: start center; padding-top: 12vh; z-index: 50; }
+.pal { width: min(640px, calc(100vw - 32px)); border: 1px solid var(--accent); background: var(--bg-inverse); box-shadow: 0 20px 60px rgba(0,0,0,.4); }
+.pal .sbox { box-shadow: none; border: 0; border-bottom: 1px solid var(--border-secondary); }
+.pal .list { max-height: 50vh; overflow: auto; }
+.pal footer { display: flex; gap: 14px; padding: 6px 12px; font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border-secondary); }
+.trigger { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: 44px; z-index: 20; }
+</style>
+</head>
+<body>
+<main class="container">
+  <section class="box inv hero">
+    <p class="kicker" style="margin-bottom:8px">$ nanosb search</p>
+    <h1>One search for docs, skills <span>and MCP servers.</span></h1>
+    <p>Today the 18 docs pages, 80 skills and 8,232 MCP servers live behind three separate pages. One box finds all of them, and <span class="kbd">⌘K</span> opens it from anywhere on the site.</p>
+    <label class="sbox" for="q"><span>$</span><input id="q" value="mcp" autocomplete="off" aria-label="Search docs, skills and MCP servers"><kbd>⌘K</kbd></label>
+    <div class="chips" id="chips"><span class="faint">try:</span></div>
+  </section>
+
+  <section>
+    <div class="filters" id="filters"></div>
+    <div class="groups" id="groups"></div>
+  </section>
+
+  <section class="note">
+    <div><b>Why it helps</b>Docs and catalogs are found the same way, so readers stop guessing which page holds the answer.</div>
+    <div><b>Search inside 8,232 servers</b>The MCP group searches the whole registry, with the 9 curated servers ranked first.</div>
+    <div><b>Everywhere</b>⌘K or <span class="kbd">/</span> opens the palette on every page, including the docs sidebar.</div>
+  </section>
+</main>
+<button class="btn fill trigger" type="button" id="open">⌘K search</button>
+<div class="scrim" id="scrim" hidden>
+  <div class="pal" role="dialog" aria-label="Search">
+    <label class="sbox" for="pq"><span>$</span><input id="pq" autocomplete="off" aria-label="Search everything"><kbd>esc</kbd></label>
+    <div class="list" id="plist"></div>
+    <footer><span>↑↓ move</span><span>↵ open</span><span>esc close</span></footer>
+  </div>
+</div>
+<script src="base.js"></script>
+<script src="catalog-data.js"></script>
+<script>
+NS.chrome();
+const C = window.CAT;
+const all = [
+  ...C.docs.flatMap(s => s.p.map(p => ({ t: 'doc', n: p, d: 'Docs · ' + s.s }))),
+  ...C.skills.map(s => ({ t: 'skill', n: s.n, d: s.c + ' · ' + s.d })),
+  ...C.mcp.map(m => ({ t: 'mcp', n: m.n, d: 'curated · ' + m.d })),
+  ...C.mcpRegistry.map(m => ({ t: 'mcp', n: m.n, d: 'registry · ' + m.d }))
+];
+let type = 'all';
+const esc = s => s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+const hl = (s, q) => q ? esc(s).replace(new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig'), '<mark>$1</mark>') : esc(s);
+const match = (q) => all.filter(x => !q || (x.n + ' ' + x.d).toLowerCase().includes(q.toLowerCase()));
+function render() {
+  const q = document.getElementById('q').value.trim(), res = match(q);
+  const g = { doc: ['Docs', C.counts.docs], skill: ['Skills', C.counts.skills], mcp: ['MCP servers', C.counts.mcp] };
+  document.getElementById('groups').innerHTML = Object.entries(g).filter(([k]) => type === 'all' || type === k).map(([k, [label, total]]) => {
+    const items = res.filter(x => x.t === k).slice(0, 6);
+    return `<div class="grp"><h3>${label} <b>${items.length} of ${total.toLocaleString()}</b></h3>${items.map(x => `<a class="row" href="#"><span class="badge ${k}">${k}</span><span><b>${hl(x.n, q)}</b><small>${hl(x.d, q)}</small></span></a>`).join('') || '<div class="empty">no match</div>'}</div>`;
+  }).join('');
+}
+document.getElementById('filters').innerHTML = [['all', 'All'], ['doc', 'Docs'], ['skill', 'Skills'], ['mcp', 'MCP']].map(([k, l]) => `<button type="button" data-k="${k}" class="${k === type ? 'on' : ''}">${l}</button>`).join('');
+document.getElementById('filters').onclick = e => { const b = e.target.closest('button'); if (!b) return; type = b.dataset.k; [...e.currentTarget.children].forEach(x => x.classList.toggle('on', x === b)); render(); };
+['mcp', 'secrets', 'github', 'pdf', 'mount'].forEach(w => { const b = document.createElement('button'); b.type = 'button'; b.textContent = w; b.onclick = () => { document.getElementById('q').value = w; render(); }; document.getElementById('chips').append(b); });
+document.getElementById('q').addEventListener('input', render);
+render();
+// palette
+const scrim = document.getElementById('scrim'), pq = document.getElementById('pq'), plist = document.getElementById('plist'); let sel = 0;
+function prender() { const q = pq.value.trim(), r = match(q).slice(0, 9); sel = Math.min(sel, Math.max(0, r.length - 1)); plist.innerHTML = r.map((x, i) => `<a class="row ${i === sel ? 'sel' : ''}" href="#"><span class="badge ${x.t}">${x.t}</span><span><b>${hl(x.n, q)}</b><small>${hl(x.d, q)}</small></span></a>`).join('') || '<div class="empty">no match</div>'; }
+const openP = () => { scrim.hidden = false; pq.value = document.getElementById('q').value; sel = 0; prender(); pq.focus(); };
+document.getElementById('open').onclick = openP;
+scrim.onclick = e => { if (e.target === scrim) scrim.hidden = true; };
+pq.addEventListener('input', () => { sel = 0; prender(); });
+addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openP(); }
+  if (scrim.hidden) return;
+  if (e.key === 'Escape') scrim.hidden = true;
+  if (e.key === 'ArrowDown') { sel++; prender(); e.preventDefault(); }
+  if (e.key === 'ArrowUp') { sel = Math.max(0, sel - 1); prender(); e.preventDefault(); }
+});
+</script>
+</body>
+</html>

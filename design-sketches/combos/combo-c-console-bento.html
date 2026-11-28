@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Console Bento</title>
+<link rel="stylesheet" href="base.css">
+<style>
+/* Combo C: today's boxes rearranged as an arena-style bento grid. The layer stack is one tile and opens on hover; cages, counter and leaderboard are tiles too. */
+.bento { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.bento > * { min-width: 0; }
+.s2 { grid-column: span 2; } .s4 { grid-column: 1 / -1; } .r2 { grid-row: span 2; }
+.tile { border: 1px solid var(--border-secondary); background: var(--bg-secondary); padding: 16px; position: relative; }
+.tile.inv { background: var(--bg-inverse); border-color: var(--border-primary); }
+.tile .tag { position: absolute; top: 0; right: 0; font-size: 10.5px; padding: 2px 8px; border-left: 1px solid var(--border-secondary); border-bottom: 1px solid var(--border-secondary); color: var(--text-muted); background: var(--bg-inverse); }
+.stack-tile .stack { --stack-h: 330px; --gap: 22px; }
+.stack-tile:hover .stack, .stack-tile:focus-within .stack { --gap: 58px; }
+.stack-tile .foot { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; margin-top: 8px; }
+.stack-tile .hint { font-size: 11px; color: var(--text-muted); }
+.big { font-size: clamp(40px, 5vw, 60px); font-weight: 700; color: var(--accent); letter-spacing: -.04em; line-height: 1; font-variant-numeric: tabular-nums; margin: 10px 0 6px; }
+.lede { color: var(--text-tertiary); margin: 0 0 16px; font-size: 13.5px; }
+.cage { min-height: 160px; }
+.term-body { height: 260px; }
+@media (max-width: 980px) { .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); } .r2 { grid-row: auto; } }
+@media (max-width: 560px) { .bento { grid-template-columns: 1fr; } .s2 { grid-column: auto; } .stack-tile .stack { --stack-h: 260px; } .lyr { --lw: 170px; --lh: 120px; } .stack-tile .legend { display: none; } }
+</style>
+</head>
+<body>
+<main class="container">
+  <div class="bento">
+    <section class="tile inv s2">
+      <div class="brand"><div class="logo"><i></i></div><div><h1>NANOSANDBOX</h1><p>VM-Isolated Sandboxes for AI Code Agents</p></div></div>
+      <p class="lede">Hardware-isolated microVMs with sub-second boot, OCI images, and a multi-agent TUI. One cage per agent.</p>
+      <div class="code"><code>curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash</code><button class="copy" type="button">[copy]</button></div>
+    </section>
+
+    <section class="tile inv s2 r2 stack-tile" tabindex="0" aria-label="Isolation layers, hover to open">
+      <span class="tag">isolation.model</span>
+      <h2 class="h2">Isolation Layers</h2>
+      <div class="stack"><div class="stack-3d">
+        <div class="lyr" style="--i:0" data-l="0"><span>L0 host</span></div>
+        <div class="lyr" style="--i:1" data-l="1"><span>L1 hvf / kvm</span></div>
+        <div class="lyr" style="--i:2" data-l="2"><span>L2 microvm</span></div>
+        <div class="lyr" style="--i:3" data-l="3"><span>L3 guest kernel</span></div>
+        <div class="lyr core" style="--i:4" data-l="4"><span>agent</span></div>
+      </div></div>
+      <div class="foot"><div class="legend"><span data-l="4">agent</span><span data-l="3">guest kernel</span><span data-l="2">microVM</span><span data-l="1">hypervisor</span><span data-l="0">host</span></div><span class="hint">hover to open ↗</span></div>
+    </section>
+
+    <div class="tile"><span class="kicker">cold start</span><div class="big" data-count="180" data-suffix="ms">180ms</div><small class="muted">median, apple m3</small></div>
+    <div class="tile"><span class="kicker">per agent</span><div class="big">1:1</div><small class="muted">agent to kernel</small></div>
+
+    <div class="cage" tabindex="0"><div class="bars"></div><span class="st">vm-a1 running</span><div class="av">Cl</div><div><b>claude</b><br><small>python:3.12-slim</small></div></div>
+    <div class="cage" tabindex="0"><div class="bars"></div><span class="st">vm-b7 running</span><div class="av">Cx</div><div><b>codex</b><br><small>node:22-slim</small></div></div>
+    <div class="cage" tabindex="0"><div class="bars"></div><span class="st">vm-c2 running</span><div class="av">Go</div><div><b>goose</b><br><small>rust:1.82</small></div></div>
+    <div class="cage" tabindex="0"><div class="bars"></div><span class="st">vm-d4 idle</span><div class="av">+</div><div><b>/add &lt;agent&gt;</b><br><small>spawn another cage</small></div></div>
+
+    <section class="term s2 r2"><div class="term-bar"><div class="dots"><i></i><i></i><i></i></div><div class="term-tabs"><span class="on">Run agent</span><span>TUI Mode</span><span>MCP</span></div></div><pre class="term-body" id="term"></pre></section>
+
+    <section class="tile inv s2"><span class="tag">coming soon</span><h2 class="h2">Caging Tournament</h2>
+      <div class="board">
+        <div><span>01</span><div class="track"><div class="fill" data-w="92%"></div></div><span>claude · 0 escapes</span></div>
+        <div><span>02</span><div class="track"><div class="fill" data-w="81%"></div></div><span>codex · 0 escapes</span></div>
+        <div><span>03</span><div class="track"><div class="fill" data-w="70%"></div></div><span>goose · 0 escapes</span></div>
+      </div>
+    </section>
+
+    <section class="tile s2"><h2 class="h2">Subscribe for updates</h2>
+      <form class="form" style="grid-template-columns:1fr auto" onsubmit="event.preventDefault(); this.querySelector('button').textContent='subscribed ✓'"><label for="ec" hidden>Email</label><input id="ec" type="email" placeholder="you@company.com" required><button class="btn fill" type="submit">subscribe</button></form>
+    </section>
+
+    <section class="tile s2"><h2 class="h2">Features</h2><div class="feats">
+      <div><p style="margin:0"><b>VM-Level Isolation</b><span>Own microVM and kernel via libkrun</span></p></div>
+      <div><p style="margin:0"><b>OCI Image Support</b><span>Docker Hub, GHCR, any private registry</span></p></div>
+      <div><p style="margin:0"><b>Project Mounting</b><span>VirtioFS with git branch tracking</span></p></div>
+      <div><p style="margin:0"><b>MCP Server Support</b><span>Tooling per agent</span></p></div>
+    </div></section>
+
+    <section class="tile s2"><h2 class="h2">Common Commands</h2><div class="cmds">
+      <div><b>nanosb pull &lt;IMAGE&gt;</b><span>Pull an OCI image</span><button class="copy" type="button">[copy]</button></div>
+      <div><b>nanosb run &lt;IMAGE&gt;</b><span>Run in a new sandbox</span><button class="copy" type="button">[copy]</button></div>
+      <div><b>nanosb ps</b><span>List sandboxes</span><button class="copy" type="button">[copy]</button></div>
+      <div><b>nanosb doctor</b><span>Check prerequisites</span><button class="copy" type="button">[copy]</button></div>
+    </div></section>
+
+    <footer class="tile inv s4 footer"><nav><a href="#">Documentation</a><a href="#">GitHub</a><a href="#">Agents</a><a href="#">MCP</a></nav><span class="faint">NanoSandbox © 2026 | Open Source Project</span></footer>
+  </div>
+</main>
+<script src="base.js"></script>
+<script>
+NS.chrome();
+NS.term(document.getElementById('term'), NS.demoLines);
+NS.idle();
+NS.extras();
+</script>
+</body>
+</html>

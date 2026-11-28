@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Boot Timeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: quiet, precise product page. One orchestrated moment: a 0→180 ms boot trace with a playhead that replays. Everything else is calm. Light + dark. */
+:root {
+  --bg: #fbfaf8; --raise: #ffffff; --ink: #17151a; --dim: #6b6670; --faint: #a8a3ad; --rule: #e7e3e0;
+  --coral: #f2555a; --coral-wash: #fdeceb; --ok: #2e9e6b;
+  --sans: "Inter Tight", ui-sans-serif, system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #111013; --raise: #18171b; --ink: #f1eff3; --dim: #9b96a1; --faint: #5d5862; --rule: #29272d; --coral: #ff6b6b; --coral-wash: #2a1718; --ok: #4cc58f; color-scheme: dark; } }
+:root[data-theme="dark"] { --bg: #111013; --raise: #18171b; --ink: #f1eff3; --dim: #9b96a1; --faint: #5d5862; --rule: #29272d; --coral: #ff6b6b; --coral-wash: #2a1718; --ok: #4cc58f; color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; border-radius: 4px; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+.mono { font-family: var(--mono); }
+
+header .wrap { display: flex; align-items: center; gap: 32px; height: 68px; }
+.logo { display: flex; align-items: center; gap: 9px; font-weight: 600; letter-spacing: -.01em; }
+.logo span { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--ink); display: grid; place-items: center; }
+.logo span::after { content: ""; width: 6px; height: 6px; border-radius: 1.5px; background: var(--coral); }
+nav { display: flex; gap: 26px; font-size: 14px; color: var(--dim); }
+nav a { position: relative; }
+nav a::after { content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 1px; background: var(--ink); transform: scaleX(0); transform-origin: left; transition: transform .25s; }
+nav a:hover { color: var(--ink); } nav a:hover::after { transform: scaleX(1); }
+.right { margin-left: auto; display: flex; gap: 10px; }
+.btn { font: 500 14px var(--sans); padding: 8px 14px; border-radius: 8px; border: 1px solid var(--rule); background: var(--raise); cursor: pointer; color: var(--ink); transition: border-color .2s; }
+.btn:hover { border-color: var(--ink); }
+.btn.solid { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+@media (max-width: 800px) { nav { display: none; } .right .btn:first-child { display: none; } }
+
+.hero { padding-block: 64px 24px; max-width: 760px; }
+.badge { display: inline-flex; gap: 8px; align-items: center; font: 12.5px var(--mono); color: var(--dim); border: 1px solid var(--rule); border-radius: 999px; padding: 5px 12px 5px 6px; background: var(--raise); }
+.badge b { background: var(--coral-wash); color: var(--coral); font-weight: 500; border-radius: 999px; padding: 1px 8px; }
+h1 { font-size: clamp(40px, 6.4vw, 72px); line-height: 1.02; letter-spacing: -.045em; font-weight: 600; margin: 22px 0 18px; text-wrap: balance; }
+h1 .num { font-variant-numeric: tabular-nums; color: var(--coral); }
+.lede { color: var(--dim); font-size: 19px; max-width: 54ch; margin: 0 0 30px; }
+.install { display: flex; align-items: center; gap: 12px; border: 1px solid var(--rule); border-radius: 10px; background: var(--raise); padding: 6px 6px 6px 16px; font: 13px var(--mono); max-width: 640px; min-width: 0; }
+.install code { color: var(--dim); overflow-x: auto; white-space: nowrap; flex: 1; min-width: 0; }
+.install code b { color: var(--ink); font-weight: 400; }
+
+/* the boot trace */
+.trace { margin-block: 48px 24px; border: 1px solid var(--rule); border-radius: 14px; background: var(--raise); padding: 26px 26px 20px; position: relative; overflow: hidden; }
+.trace-head { display: flex; justify-content: space-between; gap: 12px; font: 12px var(--mono); color: var(--dim); margin-bottom: 34px; flex-wrap: wrap; align-items: center; }
+.trace-head b { color: var(--ink); font-weight: 500; }
+.lanes { position: relative; display: grid; gap: 12px; }
+.lane { display: grid; grid-template-columns: 150px 1fr; gap: 16px; align-items: center; font: 12.5px var(--mono); }
+.lane > span { color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lane .seg-track { position: relative; height: 22px; }
+.seg { position: absolute; top: 0; bottom: 0; left: var(--s); width: var(--d); border-radius: 5px; background: var(--coral-wash); border: 1px solid color-mix(in srgb, var(--coral) 40%, transparent); transform-origin: left; }
+.seg.done { background: var(--coral); border-color: var(--coral); }
+.seg.agent { background: var(--ok); border-color: var(--ok); }
+.axis { display: grid; grid-template-columns: 150px 1fr; gap: 16px; margin-top: 14px; font: 11px var(--mono); color: var(--faint); }
+.ticks { display: flex; justify-content: space-between; border-top: 1px solid var(--rule); padding-top: 6px; font-variant-numeric: tabular-nums; }
+.playhead { position: absolute; top: -8px; bottom: -8px; width: 1.5px; background: var(--ink); left: 0; }
+.playhead::before { content: attr(data-t); position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font: 500 11px var(--mono); background: var(--ink); color: var(--bg); padding: 1px 6px; border-radius: 4px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.replay { padding: 0; font: 12px var(--mono); background: none; border: 0; color: var(--dim); cursor: pointer; }
+.replay:hover { color: var(--ink); }
+@media (max-width: 600px) { .lane, .axis { grid-template-columns: 92px 1fr; gap: 10px; } .trace { padding: 18px 14px 40px; } }
+
+/* features */
+h2 { font-size: clamp(26px, 3.4vw, 36px); letter-spacing: -.03em; font-weight: 600; margin: 0 0 8px; text-wrap: balance; }
+.sec { padding-block: 60px; border-top: 1px solid var(--rule); }
+.sec-head { display: grid; grid-template-columns: 1fr 1.4fr; gap: 40px; }
+@media (max-width: 800px) { .sec-head { grid-template-columns: 1fr; gap: 20px; } }
+.sec-head > div:first-child p { color: var(--dim); margin: 0; max-width: 34ch; }
+.feat { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+@media (max-width: 560px) { .feat { grid-template-columns: 1fr; } }
+.feat div { padding: 18px 18px 18px 0; border-top: 1px solid var(--rule); transition: padding .25s; }
+.feat div:hover { padding-left: 8px; }
+.feat b { display: block; font-weight: 600; font-size: 15.5px; }
+.feat div:hover b::after { content: " →"; color: var(--coral); }
+.feat span { color: var(--dim); font-size: 14.5px; }
+
+.cmds { display: grid; gap: 0; font: 13.5px var(--mono); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; background: var(--raise); }
+.cmds div { display: grid; grid-template-columns: 240px 1fr auto; gap: 16px; padding: 12px 18px; border-top: 1px solid var(--rule); align-items: center; }
+.cmds div:first-child { border-top: 0; }
+.cmds div span { color: var(--dim); font-family: var(--sans); font-size: 14px; }
+.cmds button { font: 12px var(--mono); background: none; border: 0; color: var(--faint); cursor: pointer; opacity: 0; transition: opacity .15s; }
+.cmds div:hover button, .cmds button:focus-visible { opacity: 1; }
+@media (max-width: 640px) { .cmds div { grid-template-columns: 1fr auto; } .cmds div span { grid-column: 1; } }
+
+.news { display: flex; gap: 30px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+form { display: flex; gap: 8px; flex: 1; max-width: 440px; min-width: 0; }
+input { flex: 1; min-width: 0; font: 15px var(--sans); padding: 10px 14px; border: 1px solid var(--rule); border-radius: 8px; background: var(--raise); color: var(--ink); }
+input:focus { outline: none; border-color: var(--ink); }
+footer { border-top: 1px solid var(--rule); padding-block: 26px 40px; font-size: 13px; color: var(--dim); }
+footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <a class="logo" href="#"><span></span>nanosandbox</a>
+  <nav><a href="#">Agents</a><a href="#">MCP</a><a href="#">Skills</a><a href="#">Docs</a><a href="#">Articles</a><a href="#">Roadmap</a></nav>
+  <div class="right"><a class="btn" href="#">GitHub</a><a class="btn solid" href="#">Get started</a></div>
+</div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <span class="badge"><b>new</b>Linux + Docker sbx support shipped</span>
+    <h1>A whole VM for your agent, ready in <span class="num" id="h1ms">180</span>&nbsp;ms.</h1>
+    <p class="lede">Nanosandbox runs AI code agents in hardware-isolated microVMs with their own kernel. Fast enough that you start a fresh one for every task.</p>
+    <div class="install"><code><b>curl</b> -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash</code><button class="btn solid" type="button" id="cp">Copy</button></div>
+  </section>
+
+  <div class="trace" aria-label="Boot trace of a nanosandbox microVM">
+    <div class="trace-head"><span><b>nanosb run python:3.12-slim --agent claude</b></span><span>trace · apple m3 · hvf · <button class="replay" type="button" id="replay">↻ replay</button></span></div>
+    <div class="lanes" id="lanes">
+      <div class="lane"><span>hypervisor init</span><div class="seg-track"><i class="seg" style="--s:0%;--d:12%" data-a="0" data-b="22"></i></div></div>
+      <div class="lane"><span>guest kernel</span><div class="seg-track"><i class="seg" style="--s:12%;--d:38%" data-a="22" data-b="90"></i></div></div>
+      <div class="lane"><span>virtiofs /work</span><div class="seg-track"><i class="seg" style="--s:46%;--d:22%" data-a="83" data-b="122"></i></div></div>
+      <div class="lane"><span>network + secrets</span><div class="seg-track"><i class="seg" style="--s:56%;--d:24%" data-a="101" data-b="144"></i></div></div>
+      <div class="lane"><span>agent ready</span><div class="seg-track"><i class="seg agent" style="--s:80%;--d:20%" data-a="144" data-b="180"></i></div></div>
+      <i class="playhead" id="ph" data-t="180 ms"></i>
+    </div>
+    <div class="axis"><span></span><div class="ticks"><span>0</span><span>45</span><span>90</span><span>135</span><span>180 ms</span></div></div>
+  </div>
+
+  <section class="sec">
+    <div class="sec-head">
+      <div><h2>Isolation you don’t have to think about</h2><p>Everything an agent needs, nothing it can use to reach your host.</p></div>
+      <div class="feat">
+        <div><b>Own kernel per sandbox</b><span>libkrun microVM, not a shared-kernel container.</span></div>
+        <div><b>OCI images</b><span>Docker Hub, GHCR or a private registry.</span></div>
+        <div><b>Multi-agent TUI</b><span>Concurrent agents in panels.</span></div>
+        <div><b>Project mounting</b><span>VirtioFS with git branch tracking.</span></div>
+        <div><b>MCP servers + skills</b><span>Configured per agent, from the catalog.</span></div>
+        <div><b>Streaming I/O</b><span>Real-time output with backpressure.</span></div>
+        <div><b>macOS and Linux</b><span>Hypervisor.framework and KVM.</span></div>
+        <div><b>Secrets injection</b><span>Scoped per sandbox, never mounted.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <div><h2>Familiar CLI</h2><p>If you know Docker, you already know most of it.</p></div>
+      <div class="cmds" id="cmds">
+        <div><code>nanosb pull &lt;image&gt;</code><span>Pull an OCI image</span><button type="button">copy</button></div>
+        <div><code>nanosb run &lt;image&gt; [cmd]</code><span>Run in a new sandbox</span><button type="button">copy</button></div>
+        <div><code>nanosb exec &lt;id&gt; &lt;cmd&gt;</code><span>Execute in a running sandbox</span><button type="button">copy</button></div>
+        <div><code>nanosb ps</code><span>List running sandboxes</span><button type="button">copy</button></div>
+        <div><code>nanosb doctor</code><span>Check prerequisites</span><button type="button">copy</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec news">
+    <div><h2>Release notes by email</h2><p style="color:var(--dim);margin:0">A few times a month. Windows and the desktop app are next.</p></div>
+    <form onsubmit="event.preventDefault(); this.querySelector('button').textContent='Subscribed'"><label for="em5" hidden>Email</label><input id="em5" type="email" placeholder="you@company.com" required><button class="btn solid" type="submit">Subscribe</button></form>
+  </section>
+</main>
+<footer><div class="wrap"><span>nanosandbox © 2026 · open source</span><span>Docs · GitHub · Agents · MCP</span></div></footer>
+
+<script>
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const copy = (txt, btn, label) => navigator.clipboard?.writeText(txt).then(() => { btn.textContent = 'Copied'; setTimeout(() => btn.textContent = label, 1300); }).catch(() => {});
+document.getElementById('cp').onclick = e => copy(document.querySelector('.install code').textContent, e.target, 'Copy');
+document.querySelectorAll('#cmds button').forEach(b => b.onclick = () => copy(b.parentElement.querySelector('code').textContent, b, 'copy'));
+
+// Boot trace: playhead sweeps 0→180ms (slowed ×12 so the eye can follow), segments fill as they finish.
+const lanes = document.getElementById('lanes'), ph = document.getElementById('ph'), h1ms = document.getElementById('h1ms');
+const segs = [...lanes.querySelectorAll('.seg')];
+function place(t) {
+  const track = lanes.querySelector('.seg-track'), lr = lanes.getBoundingClientRect(), tr = track.getBoundingClientRect();
+  ph.style.left = (tr.left - lr.left + tr.width * t / 180) + 'px';
+  ph.dataset.t = Math.round(t) + ' ms'; h1ms.textContent = Math.round(t);
+  segs.forEach(s => { const a = +s.dataset.a, b = +s.dataset.b, p = Math.max(0, Math.min(1, (t - a) / (b - a))); s.style.transform = `scaleX(${p === 0 ? .001 : p})`; s.classList.toggle('done', p >= 1 && !s.classList.contains('agent')); });
+}
+let raf;
+function play() {
+  cancelAnimationFrame(raf);
+  if (reduce) { place(180); return; }
+  const t0 = performance.now(), dur = 2200;
+  (function f(now) { const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 2); place(180 * e); if (p < 1) raf = requestAnimationFrame(f); })(t0);
+}
+place(180); setTimeout(play, 400);
+document.getElementById('replay').onclick = play;
+addEventListener('resize', () => place(+ph.dataset.t.split(' ')[0]));
+</script>
+</body>
+</html>

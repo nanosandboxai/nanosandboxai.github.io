@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Containment Field</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: full-bleed live "containment field" canvas hero, then a dark grid of VM cells. Single dark look by choice. */
+:root {
+  color-scheme: dark;
+  --void: #07080a;
+  --cell: #0e1014;
+  --line: #1d2128;
+  --fg: #eceef2;
+  --dim: #8a909c;
+  --coral: #ff6b6b;
+  --coral-soft: rgba(255,107,107,.14);
+  --ok: #4ade80;
+  --font-ui: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--void); color: var(--fg); font-family: var(--font-ui); font-size: 15px; line-height: 1.55; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+
+/* nav */
+header { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(14px); background: rgba(7,8,10,.72); border-bottom: 1px solid var(--line); }
+.nav { display: flex; align-items: center; gap: 24px; height: 60px; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-weight: 500; letter-spacing: .02em; }
+.brand-mark { width: 22px; height: 22px; border: 2px solid var(--coral); border-radius: 6px; position: relative; box-shadow: 0 0 12px var(--coral-soft); }
+.brand-mark::after { content: ""; position: absolute; inset: 5px; background: var(--coral); border-radius: 2px; animation: breathe 2.4s ease-in-out infinite; }
+.links { display: flex; gap: 20px; font-size: 13.5px; color: var(--dim); margin-left: auto; flex-wrap: wrap; }
+.links a:hover { color: var(--fg); }
+.gh { font-family: var(--font-mono); font-size: 12.5px; border: 1px solid var(--line); padding: 6px 12px; border-radius: 999px; }
+@media (max-width: 760px) { .links { display: none; } .gh { margin-left: auto; } }
+
+/* hero */
+.hero { position: relative; border-bottom: 1px solid var(--line); overflow: hidden; }
+#field { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hero-inner { position: relative; padding-block: 96px 72px; display: grid; gap: 28px; pointer-events: none; }
+.hero-inner > * { pointer-events: auto; min-width: 0; }
+.cta > * { flex: 1 1 auto; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--coral); display: inline-flex; gap: 10px; align-items: center; }
+.eyebrow i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px var(--ok); animation: breathe 1.6s infinite; }
+h1 { font-size: clamp(40px, 7vw, 84px); line-height: 1; letter-spacing: -.035em; margin: 0; max-width: 13ch; text-wrap: balance; font-weight: 600; }
+h1 em { font-style: normal; color: var(--coral); }
+.lede { color: var(--dim); max-width: 52ch; font-size: 17px; margin: 0; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; }
+.install { display: flex; align-items: center; gap: 12px; font-family: var(--font-mono); font-size: 13px; background: rgba(14,16,20,.85); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; max-width: 100%; min-width: 0; }
+.install code { white-space: nowrap; overflow-x: auto; min-width: 0; }
+.install code b { color: var(--coral); font-weight: 400; }
+.btn { font: 500 13px var(--font-mono); background: var(--coral); color: #1a0606; border: 0; border-radius: 8px; padding: 8px 12px; cursor: pointer; flex-shrink: 0; transition: transform .15s; }
+.btn:hover { transform: translateY(-1px); }
+.btn.ghost { background: transparent; color: var(--fg); border: 1px solid var(--line); }
+.legend { display: flex; gap: 22px; flex-wrap: wrap; font-family: var(--font-mono); font-size: 12px; color: var(--dim); }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 8px; vertical-align: -1px; border-radius: 2px; }
+.legend .a::before { background: var(--coral); border-radius: 50%; }
+.legend .b::before { border: 1px solid #3a404b; }
+.legend .c::before { background: #ffd166; border-radius: 50%; }
+
+/* counters */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--line); }
+.stat { padding: 26px 20px; border-right: 1px solid var(--line); }
+.stat:last-child { border-right: 0; }
+.stat b { display: block; font: 600 34px var(--font-ui); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.stat span { color: var(--dim); font-size: 13px; }
+@media (max-width: 760px) { .stats { grid-template-columns: 1fr 1fr; } .stat:nth-child(2) { border-right: 0; } .stat:nth-child(-n+2) { border-bottom: 1px solid var(--line); } }
+
+/* cells */
+section { padding-block: 80px; }
+h2 { font-size: clamp(28px, 4vw, 42px); letter-spacing: -.025em; margin: 0 0 12px; font-weight: 600; text-wrap: balance; }
+.sub { color: var(--dim); margin: 0 0 40px; max-width: 60ch; }
+.cells { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.cellv { background: var(--cell); padding: 26px; position: relative; min-height: 180px; transition: background .3s; overflow: hidden; }
+.cellv::before { content: ""; position: absolute; inset: 10px; border: 1px dashed transparent; border-radius: 8px; transition: border-color .3s, inset .3s; }
+.cellv:hover { background: #12151a; }
+.cellv:hover::before { border-color: rgba(255,107,107,.45); inset: 6px; }
+.cellv .id { font-family: var(--font-mono); font-size: 11px; color: var(--dim); letter-spacing: .08em; }
+.cellv h3 { margin: 14px 0 8px; font-size: 17px; font-weight: 600; }
+.cellv p { margin: 0; color: var(--dim); font-size: 14px; }
+.cellv .pulse { position: absolute; right: 22px; top: 24px; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); opacity: .8; animation: breathe 2s infinite; }
+
+/* commands */
+.cmds { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+@media (max-width: 860px) { .cmds { grid-template-columns: 1fr; } }
+.term { background: var(--cell); border: 1px solid var(--line); border-radius: 14px; font-family: var(--font-mono); font-size: 13px; overflow: hidden; min-width: 0; }
+.term-bar { display: flex; gap: 6px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+.term-bar i { width: 10px; height: 10px; border-radius: 50%; background: #2a2f38; }
+.term pre { margin: 0; padding: 18px; overflow-x: auto; color: var(--dim); min-height: 230px; }
+.term pre .c { color: var(--fg); }
+.term pre .ok { color: var(--ok); }
+.cmd-list { display: grid; gap: 2px; font-family: var(--font-mono); font-size: 13px; }
+.cmd-list div { display: flex; gap: 16px; padding: 10px 12px; border-radius: 8px; transition: background .2s; }
+.cmd-list div:hover { background: var(--cell); }
+.cmd-list b { font-weight: 500; min-width: 190px; }
+.cmd-list span { color: var(--dim); }
+@media (max-width: 520px) { .cmd-list div { flex-direction: column; gap: 2px; } }
+
+/* subscribe + footer */
+.sub-box { border: 1px solid var(--line); border-radius: 18px; padding: 40px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px; align-items: center; background: radial-gradient(600px 200px at 0% 0%, var(--coral-soft), transparent), var(--cell); }
+@media (max-width: 760px) { .sub-box { grid-template-columns: 1fr; padding: 26px; } }
+form { display: flex; gap: 8px; flex-wrap: wrap; }
+input { flex: 1; min-width: 0; font: 14px var(--font-mono); background: var(--void); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 11px 12px; }
+input:focus { border-color: var(--coral); outline: none; }
+footer { border-top: 1px solid var(--line); padding-block: 28px; color: var(--dim); font-size: 13px; }
+footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+@keyframes breathe { 50% { opacity: .35; } }
+.reveal { transition: transform .7s cubic-bezier(.2,.7,.2,1), opacity .7s; }
+.reveal.pre { transform: translateY(18px); opacity: .001; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .reveal.pre { transform: none; opacity: 1; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#"><span class="brand-mark"></span>nanosandbox</a>
+    <nav class="links"><a href="#">MCP</a><a href="#">Skills</a><a href="#">Agents</a><a href="#">Docs</a><a href="#">Articles</a><a href="#">Coming soon</a></nav>
+    <a class="gh" href="#">★ GitHub</a>
+  </div>
+</header>
+
+<div class="hero">
+  <canvas id="field" aria-hidden="true"></canvas>
+  <div class="wrap hero-inner">
+    <span class="eyebrow"><i></i>6 sandboxes contained · 0 escapes</span>
+    <h1>Let agents run wild. <em>Inside a microVM.</em></h1>
+    <p class="lede">Every AI code agent gets its own kernel, its own filesystem and a hardware boundary it cannot cross. Boots in under a second on macOS and Linux.</p>
+    <div class="cta">
+      <div class="install"><code><b>$</b> curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash</code><button class="btn" type="button" data-copy="curl -fsSL https://github.com/nanosandboxai/nanosandbox/releases/latest/download/install.sh | bash">copy</button></div>
+    </div>
+    <div class="legend"><span class="a">agent process</span><span class="b">microVM boundary</span><span class="c">blocked syscall</span></div>
+  </div>
+</div>
+
+<div class="wrap stats">
+  <div class="stat"><b data-count="180">180</b><span>ms median boot</span></div>
+  <div class="stat"><b>1:1</b><span>agent to kernel</span></div>
+  <div class="stat"><b>HVF · KVM</b><span>hypervisors</span></div>
+  <div class="stat"><b>OCI</b><span>any registry image</span></div>
+</div>
+
+<section class="wrap">
+  <h2 class="reveal">One cell per agent</h2>
+  <p class="sub reveal">Hover a cell to see its wall. Each feature is a layer of the same promise: what happens in the sandbox stays in the sandbox.</p>
+  <div class="cells">
+    <div class="cellv reveal"><i class="pulse"></i><span class="id">VM-01 · libkrun</span><h3>VM-level isolation</h3><p>Independent guest kernel per sandbox. No shared namespaces to escape through.</p></div>
+    <div class="cellv reveal"><i class="pulse"></i><span class="id">VM-02 · boot</span><h3>Sub-second boot</h3><p>Optimised libkrun startup makes a fresh VM cheaper than reusing a dirty one.</p></div>
+    <div class="cellv reveal"><i class="pulse"></i><span class="id">VM-03 · oci</span><h3>OCI images</h3><p>Pull from Docker Hub, GHCR or a private registry. Your existing images just work.</p></div>
+    <div class="cellv reveal"><i class="pulse"></i><span class="id">VM-04 · tui</span><h3>Multi-agent TUI</h3><p>Claude, Codex and Goose side by side in panels, each in its own VM.</p></div>
+    <div class="cellv reveal"><i class="pulse"></i><span class="id">VM-05 · virtiofs</span><h3>Project mounting</h3><p>VirtioFS mounts with git branch tracking, so the agent works on a clone.</p></div>
+    <div class="cellv reveal"><i class="pulse"></i><span class="id">VM-06 · mcp</span><h3>MCP + skills</h3><p>Model Context Protocol servers and skills wired in, still behind the wall.</p></div>
+  </div>
+</section>
+
+<section class="wrap cmds">
+  <div>
+    <h2 class="reveal">Six commands to cage an agent</h2>
+    <p class="sub reveal">The CLI feels like Docker. The isolation feels like a separate machine.</p>
+    <div class="cmd-list">
+      <div><b>nanosb pull &lt;image&gt;</b><span>Pull an OCI image</span></div>
+      <div><b>nanosb run &lt;image&gt; [cmd]</b><span>Run in a fresh sandbox</span></div>
+      <div><b>nanosb exec &lt;id&gt; &lt;cmd&gt;</b><span>Exec into a running sandbox</span></div>
+      <div><b>nanosb ps</b><span>List running sandboxes</span></div>
+      <div><b>nanosb stop &lt;id&gt;</b><span>Stop a sandbox</span></div>
+      <div><b>nanosb doctor</b><span>Check runtime prerequisites</span></div>
+    </div>
+  </div>
+  <div class="term" aria-label="Animated terminal session">
+    <div class="term-bar"><i></i><i></i><i></i></div>
+    <pre id="typer"></pre>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="sub-box">
+    <div><h2>Get release notes, not spam</h2><p class="sub" style="margin:0">Windows support, the desktop app and the agent caging tournament are next.</p></div>
+    <form onsubmit="event.preventDefault(); this.querySelector('button').textContent='subscribed ✓'"><label for="em1" hidden>Email</label><input id="em1" type="email" placeholder="you@company.com" required><button class="btn" type="submit">Subscribe</button></form>
+  </div>
+</section>
+
+<footer><div class="wrap"><span>nanosandbox © 2026 · open source</span><span>Docs · GitHub · Agents · MCP</span></div></footer>
+
+<script>
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Containment field: agents bounce inside VM cells; hitting a wall flashes it.
+(() => {
+  const c = document.getElementById('field'), x = c.getContext('2d');
+  let W, H, boxes = [], dpr = Math.min(devicePixelRatio || 1, 2);
+  function layout() {
+    W = c.clientWidth; H = c.clientHeight; c.width = W * dpr; c.height = H * dpr; x.setTransform(dpr,0,0,dpr,0,0);
+    const cols = W > 900 ? 3 : 2, rows = 2, pad = 18, left = W > 900 ? W * 0.52 : 0, bw = (W - left - pad * (cols + 1)) / cols, bh = (H - pad * (rows + 1)) / rows;
+    boxes = [];
+    for (let r = 0; r < rows; r++) for (let k = 0; k < cols; k++) {
+      const b = { x: left + pad + k * (bw + pad), y: pad + r * (bh + pad), w: bw, h: bh, flash: 0, label: 'vm-0' + (boxes.length + 1) };
+      b.p = { x: b.x + b.w / 2, y: b.y + b.h / 2, vx: (Math.random() - .5) * 3.2, vy: (Math.random() - .5) * 3.2, trail: [] };
+      boxes.push(b);
+    }
+  }
+  function frame() {
+    x.clearRect(0, 0, W, H);
+    const faint = W <= 900;
+    for (const b of boxes) {
+      const p = b.p; p.x += p.vx; p.y += p.vy;
+      let hit = false;
+      if (p.x < b.x + 6 || p.x > b.x + b.w - 6) { p.vx *= -1; hit = true; }
+      if (p.y < b.y + 6 || p.y > b.y + b.h - 6) { p.vy *= -1; hit = true; }
+      p.x = Math.max(b.x + 6, Math.min(b.x + b.w - 6, p.x)); p.y = Math.max(b.y + 6, Math.min(b.y + b.h - 6, p.y));
+      if (hit) b.flash = 1;
+      p.trail.push([p.x, p.y]); if (p.trail.length > 26) p.trail.shift();
+      x.globalAlpha = faint ? .35 : 1;
+      x.strokeStyle = `rgba(255,${107 + 100 * (1 - b.flash)},${107 + 100 * (1 - b.flash)},${.12 + b.flash * .7})`;
+      x.lineWidth = 1 + b.flash * 1.5; x.setLineDash(b.flash > .1 ? [] : [4, 6]);
+      x.strokeRect(b.x, b.y, b.w, b.h); x.setLineDash([]);
+      x.fillStyle = '#4b515c'; x.font = '11px Geist Mono, monospace'; x.fillText(b.label, b.x + 10, b.y + 18);
+      if (b.flash > .3) { x.fillStyle = '#ffd166'; x.fillText('EPERM · blocked', b.x + 10, b.y + b.h - 12); }
+      x.beginPath(); p.trail.forEach(([tx, ty], i) => i ? x.lineTo(tx, ty) : x.moveTo(tx, ty));
+      x.strokeStyle = 'rgba(255,107,107,.35)'; x.lineWidth = 2; x.stroke();
+      x.beginPath(); x.arc(p.x, p.y, 4.5, 0, 7); x.fillStyle = '#ff6b6b'; x.shadowColor = '#ff6b6b'; x.shadowBlur = 14; x.fill(); x.shadowBlur = 0;
+      b.flash *= .93; x.globalAlpha = 1;
+    }
+    if (!reduce) requestAnimationFrame(frame);
+  }
+  layout(); addEventListener('resize', layout); frame();
+})();
+
+// Typing terminal
+(() => {
+  const el = document.getElementById('typer');
+  const script = [['c','$ nanosb run python:3.12-slim --agent claude'],['','  pulling python:3.12-slim … done'],['ok','  ✓ microVM booted in 182ms (HVF)'],['ok','  ✓ /work mounted via virtiofs (branch agent/claude-1)'],['','  agent> rm -rf / --no-preserve-root'],['','  guest kernel: only the sandbox was harmed'],['c','$ nanosb ps'],['','  ID        AGENT   IMAGE              UP'],['','  a1f3c9    claude  python:3.12-slim   4s']];
+  if (reduce) { el.innerHTML = script.map(([k,t]) => `<span class="${k}">${t}</span>`).join('\n'); return; }
+  let i = 0;
+  function line() {
+    if (i >= script.length) { setTimeout(() => { el.textContent = ''; i = 0; line(); }, 3500); return; }
+    const [k, t] = script[i++], s = document.createElement('span'); s.className = k; el.append(s, '\n');
+    let j = 0; const typing = k === 'c';
+    (function ch() { s.textContent = t.slice(0, ++j); if (j < t.length) setTimeout(ch, typing ? 28 : 4); else setTimeout(line, typing ? 380 : 160); })();
+  }
+  line();
+})();
+
+// Reveal + copy
+(() => {
+  const els = [...document.querySelectorAll('.reveal')];
+  if (!reduce && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.remove('pre'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -40px 0px' });
+    els.forEach((e, i) => { if (e.getBoundingClientRect().top > innerHeight) { e.classList.add('pre'); e.style.transitionDelay = (i % 6) * 60 + 'ms'; io.observe(e); } });
+  }
+  document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', () => { navigator.clipboard?.writeText(b.dataset.copy).then(() => { b.textContent = 'copied'; setTimeout(() => b.textContent = 'copy', 1400); }).catch(() => {}); }));
+})();
+</script>
+</body>
+</html>

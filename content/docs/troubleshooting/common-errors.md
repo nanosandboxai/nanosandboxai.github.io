@@ -7,8 +7,8 @@ order: 1
 ## Image Not Found
 
 **Error:**
-```
-Error: image not found: ghcr.io/nanosandboxai/agents-registry/claude:latest
+```text
+Error: image not found: ghcr.io/nanosandboxai/nanosandbox/claude:latest
   Caused by: manifest unknown
 ```
 
@@ -16,13 +16,13 @@ Error: image not found: ghcr.io/nanosandboxai/agents-registry/claude:latest
 
 1. **Typo in image name.** Verify the image reference is correct:
    ```bash
-   nanosb pull ghcr.io/nanosandboxai/agents-registry/claude:latest
+   nanosb pull ghcr.io/nanosandboxai/nanosandbox/claude:latest
    ```
 
 2. **Authentication required.** The registry may require login:
    ```bash
    echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
-   nanosb pull ghcr.io/nanosandboxai/agents-registry/claude:latest
+   nanosb pull ghcr.io/nanosandboxai/nanosandbox/claude:latest
    ```
 
 3. **Platform mismatch.** The image may not support your architecture. Try pulling with the short name which auto-resolves to the correct platform:
@@ -33,7 +33,7 @@ Error: image not found: ghcr.io/nanosandboxai/agents-registry/claude:latest
 ## Sandbox Creation Failed
 
 **Error:**
-```
+```text
 Error: failed to create sandbox
   Caused by: krun_create_ctx returned -1
 ```
@@ -65,51 +65,10 @@ Error: failed to create sandbox
    nanosb run --memory 2048 claude
    ```
 
-## Windows Hypervisor Errors
-
-**Error:**
-```
-Error: failed to create sandbox
-  Caused by: WHPX not available
-```
-
-**Causes and fixes:**
-
-1. **Hypervisor launch is disabled.** Enable it and reboot:
-   ```powershell
-   bcdedit /set hypervisorlaunchtype auto
-   ```
-
-2. **Windows virtualization features are disabled.** Enable Hyper-V and WHPX in "Turn Windows features on or off", then reboot.
-
-3. **User is not allowed to talk to the Host Compute Service.** If `nanosb doctor` reports `[✗] Hyper-V Access`, add yourself to the `Hyper-V Administrators` group (or run nanosb from an elevated terminal):
-   ```powershell
-   # Elevated PowerShell:
-   Add-LocalGroupMember -Group 'Hyper-V Administrators' -Member $env:USERNAME
-   # Log out and back in for the group to take effect.
-   ```
-
-5. **Missing runtime files.** Ensure these four files exist (they have no `.exe` extension because they run inside the Linux guest):
-   - `%USERPROFILE%\.nanosandbox\libs\libkrunfw.dll`
-   - `%USERPROFILE%\.nanosandbox\libs\busybox`
-   - `%USERPROFILE%\.nanosandbox\libs\vsock_proxy`
-   - `%USERPROFILE%\.nanosandbox\libs\fuse_mount`
-
-   Re-run the installer if any of them is missing:
-   ```powershell
-   irm https://github.com/nanosandboxai/cli/releases/latest/download/install.ps1 | iex
-   ```
-
-6. **Quick check with the doctor command.**
-   ```powershell
-   nanosb doctor
-   ```
-   It reports each runtime file (and Hyper-V Access) individually and prints the exact command to reinstall.
-
 ## Timeout Errors
 
 **Error:**
-```
+```text
 Error: sandbox execution timed out after 60s
 ```
 
@@ -139,7 +98,7 @@ Error: sandbox execution timed out after 60s
 ## Permission Errors
 
 **Error:**
-```
+```text
 Error: permission denied
   Caused by: /dev/kvm: Permission denied
 ```
@@ -151,8 +110,8 @@ sudo usermod -aG kvm $USER
 ```
 
 **Error:**
-```
-Error: permission denied writing to /workspace
+```text
+Error: permission denied writing to /home/developer
 ```
 
 **Fix:** The mount point permissions must allow the guest user (typically UID 0 or 1000) to write. Check host directory permissions:
@@ -162,24 +121,10 @@ ls -la ./project
 chmod 755 ./project
 ```
 
-**Windows (FUSE workspace on NTFS):** NTFS does not track POSIX ownership the same way. If a guest tool needs to write outside the user-owned tree (system package installs, build scripts that touch `/etc`, etc.), retry with `--run-as-root`:
-
-```powershell
-nanosb run --run-as-root <image> "<command>"
-```
-
-Or inside the TUI:
-
-```
-/add <agent> --run-as-root
-```
-
-Keep the default off for normal development; some agents refuse to start as root.
-
 ## Network Errors
 
 **Error:**
-```
+```text
 Error: network configuration failed
   Caused by: gvproxy not found in PATH
 ```
@@ -198,7 +143,7 @@ Alternatively, use TSI mode (default) which does not require gvproxy.
 ## Codesigning Errors (macOS)
 
 **Error:**
-```
+```text
 Error: failed to create VM
   Caused by: hv_vm_create: HV_ERROR
 ```
@@ -214,7 +159,7 @@ brew reinstall nanosandbox
 ```
 
 **Error:**
-```
+```text
 Error: EXC_BAD_ACCESS when creating VM
 ```
 
@@ -228,7 +173,7 @@ The output must include `com.apple.security.hypervisor` set to `true`.
 ## Image Layer Corruption
 
 **Error:**
-```
+```text
 Error: layer verification failed
   Caused by: sha256 digest mismatch for blob abc123...
 ```
@@ -242,8 +187,8 @@ nanosb pull <image>
 ## Virtio-fs Mount Failures
 
 **Error:**
-```
-Error: failed to mount /workspace
+```text
+Error: failed to mount /home/developer
   Caused by: virtio-fs device not ready
 ```
 
@@ -260,7 +205,3 @@ Error: failed to mount /workspace
    ```
 
 3. **Symlink issues.** If paths aren't resolving, check for symlinks in the project path.
-
-4. **Windows path edge cases.** On Windows, very long paths and mixed case can still cause confusing behavior in older tools. Use a shorter workspace path when possible and keep path casing consistent.
-
-   The previous "directory not empty" cleanup issue in common package-manager workflows is fixed in current builds.

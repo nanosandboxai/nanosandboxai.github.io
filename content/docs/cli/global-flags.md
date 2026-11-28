@@ -4,8 +4,6 @@ description: "Flags available across all nanosb commands"
 order: 3
 ---
 
-# Global Flags
-
 These flags can be used with any `nanosb` subcommand.
 
 ## Reference
@@ -16,13 +14,17 @@ These flags can be used with any `nanosb` subcommand.
 | `--verbose` | boolean | `false` | Enable debug logging. Prints internal state, API calls, and timing information to stderr. |
 | `--config <path>` | string (repeatable) | `./sandbox.yml` | Path to a `sandbox.yml` configuration file. Can be specified multiple times; files are merged in order. |
 | `--sandbox <name>` | string | *(all)* | Start only the named sandbox from the configuration file. |
-| `--project <path>` | string | *(cwd)* | Project directory to mount into the sandbox at `/workspace`. |
+| `--project <path>` | string | *(cwd)* | Project directory to mount into the sandbox at `/home/developer` (default; overridable via `project.mount_point`). |
 | `--cpus <n>` | integer | *(from config)* | Override the number of CPU cores allocated to the sandbox. |
 | `--memory <mb>` | integer | *(from config)* | Override memory allocation in MB. |
 | `--timeout <secs>` | integer | *(from config)* | Override the maximum runtime in seconds. |
+| `--disk <mb>` | integer | *(from config)* | Override the per-sandbox disk quota in MB (0 = unlimited). |
+| `--max-pids <n>` | integer | *(from config)* | Override the maximum guest process count (0 = default 512). |
 | `--permissions <level>` | string | `default` | Agent permission level: `default`, `accept-edits`, or `allow-all`. |
 | `-e KEY=VALUE` | string (repeatable) | *(none)* | Inject an environment variable into the sandbox. Can be specified multiple times. |
 | `--env-file <path>` | string (repeatable) | *(none)* | Load environment variables from a file. Can be specified multiple times. |
+| `-r, --resume` | boolean | `false` | Resume the most recent saved session for this project. Conflicts with `--session`. |
+| `--session <id>` | string | *(none)* | Resume a specific saved session id from history. |
 
 ## Repeatable Flags
 
@@ -75,7 +77,7 @@ Human-readable tabular output suited for terminal use.
 nanosb ps
 ```
 
-```
+```text
 NAME     IMAGE    STATUS   CPUS  MEMORY  UPTIME
 claude   claude   running  2     4096    5m32s
 codex    codex    running  4     4096    3m17s

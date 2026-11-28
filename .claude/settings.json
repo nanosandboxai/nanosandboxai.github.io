@@ -1,0 +1,6 @@
+{
+  "env": {
+    "ARCHIFY_UPDATE_CHECK_DISABLED": "1",
+    "ARCHIFY_UPDATE_NOTICE_DISABLED": "1"
+  }
+}
